@@ -54,7 +54,7 @@ function Get-FslDisk {
             }
             Write-Output $VHDInfo
         }
-        else { #User did a folder, get all VHD's
+        else { 
             Write-Error "File path should include a .vhd or .vhdx extension."
         }
     }
