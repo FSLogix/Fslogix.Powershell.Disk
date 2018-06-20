@@ -1,26 +1,25 @@
-<#
-    .SYNOPSIS
-    Returns a VHD's properties and it's information/values.
+function Get-FslDisk {
+    <#
+        .SYNOPSIS
+        Returns a VHD's properties and it's information/values.
 
-    .DESCRIPTION
-    Obtains a single VHD or multiple VHD's based on User's path.
-    The script will return the respective VHD's properties and it's information/values.
+        .DESCRIPTION
+        Obtains a single VHD or multiple VHD's based on User's path.
+        The script will return the respective VHD's properties and it's information/values.
 
-    .PARAMETER path
-    User specified path location to a VHD or a folder containing VHD's.
-    If user wants specific VHD, path must include .vhd extension.
+        .PARAMETER path
+        User specified path location to a VHD or a folder containing VHD's.
+        If user wants specific VHD, path must include .vhd extension.
 
-    .EXAMPLE
-    get-FslVHD -path C:\Users\Daniel\ODFC\test1.vhd
-    Will return the properties associated with test1.vhd
+        .EXAMPLE
+        get-FslVHD -path C:\Users\Daniel\ODFC\test1.vhd
+        Will return the properties associated with test1.vhd
 
-    .EXAMPLE
-    get-fslVHD -path C:\Users\Daniel\ODFC\
-    Will return the properties associated with all the VHD's
-    within this path.
-#>
-function Get-FslDisk
- {
+        .EXAMPLE
+        get-fslVHD -path C:\Users\Daniel\ODFC\
+        Will return the properties associated with all the VHD's
+        within this path.
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]

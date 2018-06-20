@@ -26,7 +26,12 @@ function convertTo-VHDx {
         [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
         [ValidateSet("True", "False")]
         [Alias("confirm")]
-        [System.string]$Remove_Old = "False"
+        [System.string]$Remove_Old = "False",
+
+        [Parameter(Position = 4, Mandatory = $false, ValueFromPipeline = $true)]
+        [ValidateSet("True", "False")]
+        [Alias("overwrite")]
+        [System.string]$Remove_Existing = "False"
     )
     
     begin {
@@ -37,9 +42,7 @@ function convertTo-VHDx {
         $VHDTypeFound = $false
 
         $Confirm_Delete = $false
-        if ($Remove_Old -eq "true") {
-            $Confirm_Delete = $true
-        }
+        $Confirm_Overwrite = $false
     }
     
     process {
@@ -52,20 +55,40 @@ function convertTo-VHDx {
             $VHDTypeFound = $true
         }
 
+        if ($Remove_Old -eq "true") {
+            $Confirm_Delete = $true
+        }
+
+        if($Remove_Existing -eq "true"){
+            $Confirm_Overwrite = $true
+        }
+
+
+        if(-not(test-path -path $Path)){
+            write-error "Path: $Path could not be found"
+            exit
+        }
+        
         if ($testforVHD.Extension -eq ".vhdx") {
             Write-Warning "Already a .vhdx. Exiting script..."
             exit
         }
 
+        if($Path -notlike "*.vhd"){
+            Write-Error "Path must include .vhd extension"
+            exit
+        }
+
+
         if ($testforVHD.Extension -eq ".vhd") {
             Write-Verbose "Obtaining single VHD $testforVHD"
-            $VHDs = Get-FslDisk -path $path
+            $VHD = Get-FslDisk -path $path
         }else {
             Write-Error "File path must include .vhd extension"
             exit
         }
 
-        if ($null -eq $VHDs) {
+        if ($null -eq $VHD) {
             Write-Warning "Could not find any VHDs."
             exit
         }
@@ -73,35 +96,51 @@ function convertTo-VHDx {
         Write-Verbose "Obtained VHD(s)."
         Write-Verbose "Converting VHD(s) to .vhdx"
 
-        foreach ($vhd in $VHDs) {
+        $name = split-path -path $VHD.Path -leaf
+        $Old_Path = $VHD.path
+        $New_Path = $Old_path + "x"
 
-            $name = split-path -path $vhd.path -leaf
-            $VHDx = $vhd.path + "x"
-
-            if($vhd.attached -eq $true){
-                write-error "VHD $name is currently in use. Cannot convert."
-            }
-            
-            try {
-                Convert-VHD -path $vhd.path -DestinationPath $VHDx
-                Write-Verbose "$name succesfully converted to a .vhdx"
-            }
-            catch {
-                write-error $Error[0]
+        $AlreadyExists = get-childitem -path $New_Path -ErrorAction SilentlyContinue
+        if($null -ne $AlreadyExists){
+            if($Confirm_Overwrite){
+                Write-Warning "$New_Path already exists. User confirmed Overwrite."
+                try{
+                    remove-item -Path $New_Path -Force 
+                }catch{
+                    Write-Error $Error[0]
+                }
+            }else{
+                Write-Warning "VHD: $New_Path already exists here."
+                Write-Warning "User denied overwrite. Exiting script..."
                 exit
             }
+        }
 
-            if ($Confirm_Delete) {
-                try {
-                    remove-item -Path $vhd.path -Force
-                    Write-Verbose "Removed old VHD."
-                }
-                catch {
-                    Write-Error $Error[0]
-                    exit
-                }
-            }#if confirm_delete
-        }#foreach
+        if($VHD.attached -eq $true){
+            Write-Warning "VHD $name is currently in use. Cannot convert."
+            exit
+        }
+
+        try {
+            Convert-VHD -path $Old_Path -DestinationPath $New_Path
+            Write-Verbose "$name succesfully converted to a .vhd"
+        }
+        catch {
+            write-error $Error[0]
+            exit
+        }
+
+        if ($Confirm_Delete) {
+            try {
+                Write-Verbose "User confirmed deletion of old VHD"
+                remove-item -Path $Old_Path -Force 
+                Write-Verbose "Removed old VHD."
+            }
+            catch {
+                Write-Error $Error[0]
+                exit
+            }
+        }
     }#process
     
     end {

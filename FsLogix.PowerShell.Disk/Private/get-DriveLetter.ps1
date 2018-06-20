@@ -76,7 +76,7 @@ function get-driveletter {
             $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
                         
             <# For some reason, after assigning an partition access path drive letter, the variable
-               driveLetter will be null unless remounted. Maybe the code above (line 65) needs to be
+               driveLetter will be null unless remounted. Maybe the code above (line 76) needs to be
                assigned differently  #>
             if ($null -eq $driveLetter) {
                 #Refresh mount
