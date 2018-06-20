@@ -1,30 +1,30 @@
-<#
-    .SYNOPSIS
-    Migrates a vhd to another location.
-
-    .PARAMETER Path
-    Location for either all VHD's or a specific VHD
-
-    .PARAMETER Destination
-    Where the user want's the VHD's migrated to
-
-    .PARAMETER Ovewrite
-    If the destination path already contains the same VHD,
-    user can determine to overwrite.
-
-    .EXAMPLE
-    move-fslvhd -path C:\Users\danie\ODFC\test1.vhdx -Destination C:\Users\danie\FSLOGIX\test1.vhdx
-    Migrates test1.vhdx in ODFC, to FSLOGIX.
-
-    .EXAMPLE
-    move-fslvhd -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX
-    Migrates all the VHD's in ODFC to FSLOGIX.
-
-    .EXAMPLE
-    move-fslvhd -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX -overwrite Yes
-    Migrates all the VHD's in ODFC to FSLOGIX and overwrites if the VHD already exists.
-#>
 function move-FslDisk {
+    <#
+        .SYNOPSIS
+        Migrates a vhd to another location.
+
+        .PARAMETER Path
+        Location for either all VHD's or a specific VHD
+
+        .PARAMETER Destination
+        Where the user want's the VHD's migrated to
+
+        .PARAMETER Ovewrite
+        If the destination path already contains the same VHD,
+        user can determine to overwrite.
+
+        .EXAMPLE
+        move-fslvhd -path C:\Users\danie\ODFC\test1.vhdx -Destination C:\Users\danie\FSLOGIX\test1.vhdx
+        Migrates test1.vhdx in ODFC, to FSLOGIX.
+
+        .EXAMPLE
+        move-fslvhd -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX
+        Migrates all the VHD's in ODFC to FSLOGIX.
+
+        .EXAMPLE
+        move-fslvhd -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX -overwrite Yes
+        Migrates all the VHD's in ODFC to FSLOGIX and overwrites if the VHD already exists.
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
@@ -40,26 +40,6 @@ function move-FslDisk {
     
     begin {
         set-strictmode -Version latest
-
-        $PSDefaultParameterValues = @{"*:Verbose" = $True}
-        $Vhds = get-fslvhd -path $path
-        $Overwrite = $Overwrite.ToLower()
-        
-        if ($null -eq $Vhds) {
-            Write-Verbose "Could not find any VHDs in $path"
-            exit
-        }
-        else {
-            try {
-                $count = $vhds.count
-            }
-            catch [System.Management.Automation.PropertyNotFoundException] {
-                ##When calling the get-childitem cmdlet, if the cmldet only returns one
-                #object, then it loses the count property, despite working on terminal.
-                $count = 1 
-            }
-            write-verbose "Retrieved $count VHD(s)."
-        }
         
         if (-not(test-path -path $path)) {
             write-error "Path: $path is invalid."
@@ -74,7 +54,26 @@ function move-FslDisk {
     
     process {
 
-        foreach ($currVhd in $Vhds) {
+        $VHDs = get-childitem -Path $Path -filter "*.vhd*"
+        if ($null -eq $Vhds) {
+            Write-Verbose "Could not find any VHDs in $path"
+            exit
+        }
+        else {
+            $VhdDetails = $VHDs.FullName | get-fsldisk
+            try {
+                $count = $VhdDetails.count
+            }
+            catch [System.Management.Automation.PropertyNotFoundException] {
+                ##When calling the get-childitem cmdlet, if the cmldet only returns one
+                #object, then it loses the count property, despite working on terminal.
+                $count = 1 
+            }
+            write-verbose "Retrieved $count VHD(s)."
+        }
+        
+
+        foreach ($currVhd in $VhdDetails) {
 
             $name = split-path -Path $currVhd.path -leaf
 
