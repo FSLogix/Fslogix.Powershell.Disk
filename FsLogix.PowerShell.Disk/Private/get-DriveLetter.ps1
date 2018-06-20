@@ -37,7 +37,7 @@ function get-driveletter {
             Write-Verbose "$VHDPath is valid."
         }
         else {
-            Write-Verbose "$VHDPath is invalid."
+            Write-Error "$VHDPath is invalid."
             exit
         }
 

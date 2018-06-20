@@ -2,7 +2,7 @@
     .SYNOPSIS
     Creates a new VHD of .vhd or .vhdx extension
 
-    .PARAMETER NewVHDPathc
+    .PARAMETER NewVHDPath
     Location for where the user wants to place the new VHD.
 
     .PARAMETER VHDParentPath
