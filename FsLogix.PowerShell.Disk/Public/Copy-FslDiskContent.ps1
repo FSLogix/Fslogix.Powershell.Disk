@@ -23,8 +23,8 @@ function Copy-FslDiskContent {
         set-strictmode -version latest
 
         #If paths are invalid, Mount-fslvhd script will handle it        
-        $First_DL = mount-FSLVHD -path $FirstVHDPath
-        $Second_DL = mount-FSLVHD -path $SecondVHDPath
+        $First_DL = get-driveletter -path $FirstVHDPath
+        $Second_DL = get-driveletter -path $SecondVHDPath
 
         $FirstFilePath = join-path($First_DL) ($FirstFilePath)
         $SecondFilePath = join-path($Second_DL) ($SecondFilePath)

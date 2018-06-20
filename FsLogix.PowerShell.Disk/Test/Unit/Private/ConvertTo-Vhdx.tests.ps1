@@ -8,8 +8,8 @@ Describe $sut {
 
     Context -Name 'Outputs that should throw' {
 
-        it 'Used path with .vhd extension instead of .vhdx, should throw' {
-            $incorrect_path = { convertTo-VHD -Path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd" } | Out-Null
+        it 'Used path with .vhdx extension instead of .vhd, should throw' {
+            $incorrect_path = { convertTo-VHD -Path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx" } | Out-Null
             $incorrect_path | Should throw
         }
         it 'Used incorrect extension, should throw' {
@@ -33,17 +33,17 @@ Describe $sut {
             Assert-MockCalled -CommandName "remove-item" -Times 0 -ParameterFilter {$path -eq "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx"}
         }
     }
-    Context -Name 'Test Convert to vhd' {
+    Context -Name 'Test Convert to vhdx' {
         BeforeEach {
-            if (-not(test-path -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx")) {
-                convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhd"
+            if (-not(test-path -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhd")) {
+                convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx"
             }
         }
         it 'Overwrite existing, Should not throw' {
-            {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx" -overwrite "true"} | should not throw
+            {convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhd" -overwrite "true"} | should not throw
         }
-        it 'Overwrite existing and delete old .vhdx file, should not throw' {
-            {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx" -overwrite "true" -confirm "true"} | should not throw
+        it 'Overwrite existing and delete old .vhd file, should not throw' {
+            {convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhd" -overwrite "true" -confirm "true"} | should not throw
         }
     }
 }
