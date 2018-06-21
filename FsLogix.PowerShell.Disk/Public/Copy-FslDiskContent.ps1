@@ -5,7 +5,7 @@ function Copy-FslDiskContent {
         [Alias("VHD1")]
         [System.String]$FirstVHDPath,
 
-        [Parameter(Position = 1, Mandatory = $true)]
+        [Parameter(Position = 1, Mandatory = $false)]
         [Alias("File")]
         [System.string]$FirstFilePath,
 
@@ -13,7 +13,7 @@ function Copy-FslDiskContent {
         [Alias("VHD2")]
         [System.String]$SecondVHDPath,
 
-        [Parameter(Position = 3, Mandatory = $true)]
+        [Parameter(Position = 3, Mandatory = $false)]
         [Alias("File2")]
         [System.String]$SecondFilePath
     )

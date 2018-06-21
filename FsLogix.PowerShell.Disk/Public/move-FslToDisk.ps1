@@ -58,24 +58,7 @@ function move-FslToDisk {
         }
 
         Write-Verbose "Obtaining VHD's."
-        $VHDs = get-childitem -path $VhdPath -Filter "*.vhd*"
-
-        if ($null -eq $VHDs) {
-            Write-Error "Could not find any VHD's in $Vhdpath"
-            exit
-        }
-        else {
-            $VhdDetails = $VHDs.FullName | get-fsldisk
-            try {
-                $count = $VhdDetails.count
-            }
-            catch [System.Management.Automation.PropertyNotFoundException] {
-                # When calling the get-childitem cmdlet, if the cmldet only returns one
-                # object, then it loses the count property, despite working on terminal.
-                $count = 1 
-            }
-            write-verbose "Retrieved $count VHD(s)."
-        }
+        $VhdDetails = get-fslvhd -path $vhdpath
 
         Write-Verbose "Transfering files to VHD(s)"
         
