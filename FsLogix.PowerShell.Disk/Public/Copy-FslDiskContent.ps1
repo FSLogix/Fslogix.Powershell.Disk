@@ -22,7 +22,7 @@ function Copy-FslDiskContent {
     
         set-strictmode -version latest
 
-        #If paths are invalid, Mount-fslvhd script will handle it        
+        #If paths are invalid, get-driveletter script will handle it        
         $First_DL = get-driveletter -path $FirstVHDPath
         $Second_DL = get-driveletter -path $SecondVHDPath
 
@@ -33,21 +33,23 @@ function Copy-FslDiskContent {
     process {
 
         $Contents = get-childitem -path $FirstFilePath
-        if($Contents.Count -eq 0){
+
+        if (-not(test-path -path $FirstFilePath)) {
+            write-error "Could not find path: $firstfilepath"
+            exit
+        }
+
+        if ($Contents.Count -eq 0) {
             Write-Error "No Files found in $FirstFilePath"
             exit
         }
 
-        if(-not(test-path -path $FirstFilePath)){
-            write-error "Could not ifnd path: $firstfilepath"
-            exit
-        }
-        if(-not(test-path -path $SecondFilePath)){
+        if (-not(test-path -path $SecondFilePath)) {
             write-error "Could not find path: $SecondFilePath"
             exit
         }
 
-        $Contents | ForEach-Object {  #Could there be a faster way?
+        $Contents | ForEach-Object { 
 
             try {
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force

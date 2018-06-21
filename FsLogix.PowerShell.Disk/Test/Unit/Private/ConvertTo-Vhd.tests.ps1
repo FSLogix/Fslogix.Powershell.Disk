@@ -9,7 +9,7 @@ Describe $sut {
     Context -Name 'Outputs that should throw' {
 
         it 'Used path with .vhd extension instead of .vhdx, should throw' {
-            $incorrect_path = { convertTo-VHD -Path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd" } | Out-Null
+            s$incorrect_path = { convertTo-VHD -Path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd" } | Out-Null
             $incorrect_path | Should throw
         }
         it 'Used incorrect extension, should throw' {

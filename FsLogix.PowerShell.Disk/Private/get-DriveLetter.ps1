@@ -50,11 +50,12 @@ function get-driveletter {
     process {
         
         try {
-            $mount = Mount-VHD $VHDPath -Passthru -ErrorAction Stop
+            $mount = Mount-VHD -path $VHDPath -Passthru -ErrorAction Stop
             Write-Verbose "VHD succesfully mounted."
         }
         catch {
-            Write-Error "Could not mount VHD. Perhaps the VHD Path is incorrect."
+            write-error $Error[0]
+            Write-Error "Could not mount VHD. Perhaps the VHD Path is incorrect or already attached."
             break
         }
 

@@ -56,7 +56,7 @@ function move-FslDisk {
 
         $VHDs = get-childitem -Path $Path -filter "*.vhd*"
         if ($null -eq $Vhds) {
-            Write-Verbose "Could not find any VHDs in $path"
+            Write-Warning "Could not find any VHDs in $path"
             exit
         }
         else {
@@ -76,13 +76,11 @@ function move-FslDisk {
         foreach ($currVhd in $VhdDetails) {
 
             $name = split-path -Path $currVhd.path -leaf
+            $CheckIfAlreadyExists = Get-childitem -path $Destination | Where-Object {$_.Name -eq $name}
 
             if ($currVhd.attached -eq $true) {
                 Write-Error "VHD: $name is currently in use."
-            }
-            else { 
-                $CheckIfAlreadyExists = Get-childitem -path $Destination | Where-Object {$_.Name -eq $name}
-                
+            }else { 
                 if ($CheckIfAlreadyExists) {
                     switch ($Overwrite) {
                         "yes" {
@@ -94,8 +92,7 @@ function move-FslDisk {
                             Write-Verbose "Will not overwrite. Canceled migration for $name."
                         }
                     }
-                }
-                else {
+                }else {
                     try {
                         move-item -path $currVhd.path -Destination $Destination -Force
                         Write-Verbose "Migrated $name to $Destination"
