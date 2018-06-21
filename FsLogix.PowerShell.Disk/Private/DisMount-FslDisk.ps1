@@ -17,7 +17,7 @@ function dismount-FslDisk {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
-        [Alias("VHDPath")]
+        [Alias("Path")]
         [System.String]$FullName
     )
     

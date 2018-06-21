@@ -64,7 +64,7 @@ function get-driveletter {
     
         if($null -eq $driveLetter){
 
-            Write-verbose "DriveLetter is null, assigning drive letter."
+            Write-warning "DriveLetter is null, assigning drive letter."
             $mount | Get-Disk -Passthru |New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false -Force
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         
@@ -73,7 +73,7 @@ function get-driveletter {
         #A drive letter was never initialized to the VHD
         if ($driveLetter -like "*\\?\Volume{*") {
 
-            Write-Verbose "Driveletter is invalid: $Driveletter. Reassigning Drive Letter."
+            Write-warning "Driveletter is invalid: $Driveletter. Reassigning Drive Letter."
             $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
                         
             <# For some reason, after assigning an partition access path drive letter, the variable
