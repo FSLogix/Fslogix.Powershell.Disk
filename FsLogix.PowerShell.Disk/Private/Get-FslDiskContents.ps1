@@ -1,4 +1,24 @@
 function Get-FslDiskContents {
+    <#
+        .SYNOPSIS
+        Get's the contents of a VHD.
+
+        .DESCRIPTION
+        User can either get contents of a VHD, or get contents in a specified path in a VHD.
+
+        .PARAMETER VHDPath
+        Path to the VHD. Cannot be a folder, must be a VHD and include .vhd/.vhdx extension.
+
+        .PARAMETER path
+        An optional folder path within the VHD
+
+        .EXAMPLE
+        get-fsldiskcontents C:\users\danie\ODFC\test1.vhd
+        returns all the folders in test1.vhd
+
+        get-fsldiskcontents C:\users\danie\ODFC\test1.vhd share\test
+        returns all the contents in 'share\test' directory within test1.vhd
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
@@ -14,21 +34,28 @@ function Get-FslDiskContents {
     
     process {
 
+        Write-Verbose "Obtaining VHDs"
         ## Helper functions get-fslvhd and get-fsldisk will help with errors ##
         $VHDs = get-fslVHD -path $VHDPath
 
         ## Get contents ##
+        Write-Verbose "Obtaining items in VHD"
         foreach($vhd in $VHDs){
 
-            $name = split-path -path $vhd.path -leaf
-            if($vhd.Attached){
-                write-error "Vhd: $name is currently in use."
-                break;
-            }
-
+            ## Helper function get-driveletter will help with error handling ##
             $DriveLetter = get-driveletter -path $vhd.path
             $FilePath = join-path ($DriveLetter)($path)
-            get-childitem -Path $FilePath
+
+            if(-not(test-path -path $FilePath)){
+                write-error "Path: $filepath is invalid."
+            }
+
+            try{
+                Write-Verbose "Getting child items"
+                get-childitem -Path $FilePath
+            }catch{
+                Write-Error $Error[0]
+            }
 
             dismount-FslDisk -path $vhd.path
         }
