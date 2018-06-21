@@ -1,4 +1,4 @@
-function Get-FslDiskContents {
+function move-FslDiskContents {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
