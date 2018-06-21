@@ -8,7 +8,9 @@ Describe $sut {
 
     context -name 'Outputs that should throw'{
 
-        Mock 'mount-vhd'
+        Mock 'mount-vhd'{
+            $null
+        }
 
         it 'User entered wrong path'{
             $invalid = {get-driveletter -path "C:\blah"} | Out-Null
@@ -19,7 +21,9 @@ Describe $sut {
         }
     }
     Context -name 'Should not throw'{
-        
+        if(-not(test-path -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd")){
+            new-fsldisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd"
+        }
         it 'Run script with correct vhd path'{
             {get-driveletter -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd"} | should not throw
             dismount-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd"

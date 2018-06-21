@@ -32,6 +32,9 @@ function move-FslDiskContents {
             exit
         }
 
+        ## Using get-fsldisk rather than get-fslVHD because this function's script
+        ## should only get an user input of a specified VHD rather than directory
+        ## Get-fsldisk helper function will validate the user's input
         $VHD = get-fsldisk -path $VhdPath
 
         $name = split-path -Path $VHD.path -leaf

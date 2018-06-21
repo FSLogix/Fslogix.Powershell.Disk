@@ -35,6 +35,7 @@ function get-driveletter {
 
         $Attached = $false
 
+        Write-Verbose "Validating path: $VHDPath"
         if (test-path $VHDPath) {
             Write-Verbose "$VHDPath is valid."
         }
@@ -96,12 +97,13 @@ function get-driveletter {
             else {
                 $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter 
             }      
-            <# For some reason, after assigning an partition access path drive letter, the variable
-               driveLetter will be null unless remounted. Maybe the code above needs to be
-               assigned differently  #>
+        
             if ($null -eq $driveLetter) {
-                #Refresh mount
-                            
+                
+                ## If the VHD is mounted, then the assigned driver letter won't be updated.
+                ## Have to dismount and remount for the drive letter to be updated.
+                ## Perhaps there is a way to prevent this and speed the script up.
+
                 try {
                     Write-Verbose "Remounting VHD."
                     Dismount-VHD $VHDPath -Passthru -ErrorAction Stop
@@ -129,7 +131,6 @@ function get-driveletter {
 
         Write-Output $driveLetter
         #return $driveLetter
-    
     }#end process
     end {
     }

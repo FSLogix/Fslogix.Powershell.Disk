@@ -6,11 +6,14 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 
 Describe $sut {
     Context -name "Outputs Should throw" {
-        ## Need to add test cases
+        it 'Invalid path'{
+            $Invalid_Command = {get-fsldiskcontents -vhdpath "C:\blah"} | Out-Null
+            $Invalid_Command | should throw
+        }
     }
     Context -name "Outputs should NOT throw" {
         it 'Valid path parameter' {
-            $Command = {get-fsldiskcontents -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.6.vhdx"}
+            $Command = {get-fsldiskcontents -vhdpath "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.6.vhdx"}
             $Command | should not throw
         }
     }

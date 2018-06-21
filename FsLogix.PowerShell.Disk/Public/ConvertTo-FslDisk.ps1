@@ -14,7 +14,7 @@ function ConvertTo-FslDisk {
         If user wants to remove the old VHD after conversion.
 
         .PARAMETER Remove_Existing
-        If user wants to remove the VHD is the specified VHD already exist.
+        If user wants to remove the VHD if the specified VHD already exist.
 
         .EXAMPLE
         ConvertTo-fsldisk -path "C:\Users\danie\documents\ODFC\test1.vhd" -type "vhdx"

@@ -4,21 +4,15 @@ function Get-FslDisk {
         Returns a VHD's properties and it's information/values.
 
         .DESCRIPTION
-        Obtains a single VHD or multiple VHD's based on User's path.
+        Helper function for Get-FslVHD
+        Obtains a single VHD.
         The script will return the respective VHD's properties and it's information/values.
 
         .PARAMETER path
-        User specified path location to a VHD or a folder containing VHD's.
-        If user wants specific VHD, path must include .vhd extension.
-
+        User specified path location to a VHD. Must include .vhd/.vhdx extension
         .EXAMPLE
         get-FslVHD -path C:\Users\Daniel\ODFC\test1.vhd
-        Will return the properties associated with test1.vhd
-
-        .EXAMPLE
-        get-fslVHD -path C:\Users\Daniel\ODFC\
-        Will return the properties associated with all the VHD's
-        within this path.
+        Will return the properties associated with test1.vhdKs
     #>
     [CmdletBinding()]
     param (
