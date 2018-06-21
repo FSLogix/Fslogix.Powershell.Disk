@@ -38,12 +38,16 @@ function Copy-FslDiskContent {
             exit
         }
 
+        if(-not(test-path -path $FirstFilePath)){
+            write-error "Could not ifnd path: $firstfilepath"
+            exit
+        }
         if(-not(test-path -path $SecondFilePath)){
             write-error "Could not find path: $SecondFilePath"
             exit
         }
 
-        $Contents | ForEach-Object { 
+        $Contents | ForEach-Object {  #Could there be a faster way?
 
             try {
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force
