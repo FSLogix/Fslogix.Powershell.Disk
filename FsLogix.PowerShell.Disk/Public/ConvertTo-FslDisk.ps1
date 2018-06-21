@@ -79,6 +79,16 @@ function ConvertTo-FslDisk {
         
         ## Convert to VHD                      ##
         ## Helper functions will handle errors ##
+        
+        #This functionality is the exact same as the one below
+        #Should figure out which one is faster and use faster one.
+        <#foreach($vhd in $VhdDetails){
+            if($Convert_To_VHD){
+                convertTo-VHD -path $vhd.path -confirm $Remove_Old -overwrite $Remove_Existing
+            }else{
+                convertTo-VHDx -path $vhd.path -confirm $Remove_Old -overwrite $Remove_Existing
+            }
+        }#>
         if($Convert_To_VHD){
             foreach($vhd in $VhdDetails){
                 convertTo-VHD -path $vhd.path -confirm $Remove_Old -overwrite $Remove_Existing
