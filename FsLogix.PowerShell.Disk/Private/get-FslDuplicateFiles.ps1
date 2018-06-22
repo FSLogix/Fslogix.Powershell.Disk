@@ -8,7 +8,11 @@ function get-FslDuplicateFiles {
         [System.String]$Folderpath,
 
         [Parameter(Position = 2, Mandatory = $true, ValueFromPipeline = $true)]
-        [System.String]$Csvpath
+        [System.String]$Csvpath,
+
+        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
+        [ValidateSet("True", "False")]
+        [System.String]$Remove
     )
     
     begin {
@@ -16,7 +20,9 @@ function get-FslDuplicateFiles {
     }
     
     process {
-        $HashArray = new-object System.Collections.ArrayList        
+
+        $HashArray = new-object System.Collections.ArrayList   
+        $Duplicates = new-object System.Collections.ArrayList     
         $name = split-path -path $path -leaf
 
         $DriveLetter = get-Driveletter -path $path
@@ -71,6 +77,7 @@ function get-FslDuplicateFiles {
                     else {
                         $output = ',' + ',' + $cmpFile.FullName
                     }
+                    $Duplicates.add($cmpFile.fullname) > $null
                     Add-Content -path $Csvpath $output
                 }
             }
@@ -78,6 +85,17 @@ function get-FslDuplicateFiles {
             ## We found all duplicates of this hash. No more comparisons ##
             $HashArray.Add($FileHash) > $null
         }#foreach
+        if($remove -eq "true"){
+            foreach($fp in $Duplicates){
+                $filename = split-path -path $fp -leaf
+                try{
+                    Write-Verbose "Removing duplicate file: $filename"
+                    remove-item -path $fp -Force
+                }catch{
+                    Write-Error $Error[0]
+                }
+            }
+        }
         dismount-FslDisk -path $path
     }#process
     

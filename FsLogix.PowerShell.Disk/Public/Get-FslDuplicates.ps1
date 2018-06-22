@@ -1,7 +1,9 @@
 function Get-FslDuplicates {
     <#
         .SYNOPSIS
-        Returns any duplicate files within disk.
+        Returns any duplicate files within disk into a comma separated excel file.
+        User can opt to have duplicate files removed.
+
     #>
     [CmdletBinding()]
     param (
@@ -15,7 +17,6 @@ function Get-FslDuplicates {
             Mandatory = $false, 
             ValueFromPipeline = $true,
             HelpMessage = 'Specific directory search within a VHD')]
-        
         [System.String]$Path,
 
         [Parameter(Position = 2, Mandatory = $true)]
@@ -24,8 +25,7 @@ function Get-FslDuplicates {
         [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("Confirm")]
         [ValidateSet("True", "False")]
-        [System.String]$Remove_Duplicates
-
+        [System.String]$Remove_Duplicates = "false"
     )
     
     begin {
@@ -70,7 +70,7 @@ function Get-FslDuplicates {
         foreach ($vhd in $VHDs) {
             
             ## Get-Duplicate Helper function
-            get-FslDuplicateFiles -path $vhd.path -folderpath $Path -csvpath $Csvpath
+            get-FslDuplicateFiles -path $vhd.path -folderpath $Path -csvpath $Csvpath -remove $Remove_Duplicates
         }
     }
     
