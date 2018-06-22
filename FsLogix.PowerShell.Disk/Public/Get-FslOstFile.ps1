@@ -41,7 +41,7 @@ function Get-FslOstFile {
                     # object, then it loses the count property, despite working on terminal.
                     $count = 1 
                 }
-                Write-Verbose "Retrieved $count Osts in $vhd.path"
+                Write-Verbose "Retrieved $count Osts in $($vhd.path)"
             }
             try{
                 ## Helper function dismount-fsldisk ##

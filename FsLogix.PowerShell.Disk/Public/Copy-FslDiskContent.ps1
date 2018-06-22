@@ -59,8 +59,9 @@ function Copy-FslDiskContent {
             }
         }#foreach
 
-        dismount-FslVHD -path $FirstVHDPath
-        dismount-FslVHD -path $SecondVHDPath
+        $FirstVHDPath | dismount-FslDisk
+        $SecondVHDPath | dismount-FslDisk
+      
     }
     
     end {

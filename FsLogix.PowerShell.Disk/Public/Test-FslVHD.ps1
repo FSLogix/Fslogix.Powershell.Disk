@@ -22,6 +22,7 @@ function Test-FslVHD {
         }
         Write-Verbose "Validated Path: $path"
 
+        ## Helper function Get-FslVHD/Get-FslDisk will help handle error cases"
         Write-Verbose "Retrieving VHD(s)"
         $VHDs = Get-FslVHD -path $path
         if($null -eq $VHDs){
@@ -38,8 +39,7 @@ function Test-FslVHD {
                 Write-Warning "$name is unhealthy"
             }
         }
-        Write-Verbose "Finised Testing. Exiting script..."
-        
+        Write-Verbose "Finished Testing. Exiting script..."
     }
     
     end {

@@ -20,7 +20,7 @@ function dismount-FslDisk {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $false)]
+        [Parameter(Position = 0, Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("Path")]
         [System.String]$FullName
     )

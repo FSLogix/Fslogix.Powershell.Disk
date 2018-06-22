@@ -40,7 +40,7 @@ function Get-FslDisk {
             write-verbose "Extension confirmed..."
             try {
                 Write-Verbose "Obtaining VHD information"
-                $VHDInfo = $Path | get-vhd -ErrorAction SilentlyContinue
+                $VHDInfo = $Path | get-vhd
             }
             catch {
                 Write-Error $Error[0]

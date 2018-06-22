@@ -1,42 +1,42 @@
-<#
-    .SYNOPSIS
-    Creates a new VHD of .vhd or .vhdx extension
-
-    .PARAMETER NewVHDPath
-    Location for where the user wants to place the new VHD.
-
-    .PARAMETER VHDParentPath
-    Optional Parent Path for the new VHD
-
-    .PARAMETER SizeInGB
-    The Size of the new VHD. Defaulted at 10gb.
-
-    .PARAMETER Type
-    VHD Type of Dynamic or Fixed
-
-    .PARAMETER Confirm_Delete
-    User choice to confirm overwrite of VHD if one already exists in the
-    given path.
-
-    .EXAMPLE
-    New-FslVHD -path C:\Users\Desktop\ODFC\test1.vhdx
-    Creates a new VHD, test1.vhdx, in the ODFC folder with a default size 
-    of 10gb and automatically formats a volume and drive letter.
-
-    .EXAMPLE
-    New-FslVHD C:\Users\Desktop\ODFC\FSLOGIX\test1.vhdx -parentpath C:\users\Desktop\ODFC\test2.vhdx
-    Creates a new VHD, test1.vhdx with test2.vdhx as it's parent.
-
-    .EXAMPLE
-    new-FslVHD C:\Users\Desktop\ODFC\test1.vhdx -Size 25gb -Type Dynamic
-    Creates a new dynamic VHD, test1.vhdx, of size 25gb.
-
-    .EXAMPLE
-    new-FslVHD C:\Users\Desktop\ODFC\test1.vhdx -overwrite true
-    Creates a new VHD, test1.vhdx, and overwrites the old test1.vhdx
-    that existed in the given path.
-#>
 function New-FslDisk {
+    <#
+        .SYNOPSIS
+        Creates a new VHD of .vhd or .vhdx extension
+
+        .PARAMETER NewVHDPath
+        Location for where the user wants to place the new VHD.
+
+        .PARAMETER VHDParentPath
+        Optional Parent Path for the new VHD
+
+        .PARAMETER SizeInGB
+        The Size of the new VHD. Defaulted at 10gb.
+
+        .PARAMETER Type
+        VHD Type of Dynamic or Fixed
+
+        .PARAMETER Confirm_Delete
+        User choice to confirm overwrite of VHD if one already exists in the
+        given path.
+
+        .EXAMPLE
+        New-FslVHD -path C:\Users\Desktop\ODFC\test1.vhdx
+        Creates a new VHD, test1.vhdx, in the ODFC folder with a default size 
+        of 10gb and automatically formats a volume and drive letter.
+
+        .EXAMPLE
+        New-FslVHD C:\Users\Desktop\ODFC\FSLOGIX\test1.vhdx -parentpath C:\users\Desktop\ODFC\test2.vhdx
+        Creates a new VHD, test1.vhdx with test2.vdhx as it's parent.
+
+        .EXAMPLE
+        new-FslVHD C:\Users\Desktop\ODFC\test1.vhdx -Size 25gb -Type Dynamic
+        Creates a new dynamic VHD, test1.vhdx, of size 25gb.
+
+        .EXAMPLE
+        new-FslVHD C:\Users\Desktop\ODFC\test1.vhdx -overwrite true
+        Creates a new VHD, test1.vhdx, and overwrites the old test1.vhdx
+        that existed in the given path.
+    #>
     [CmdletBinding()]
     param (
         
@@ -180,9 +180,20 @@ function New-FslDisk {
             exit
         }
 
+        try{
+            Write-Verbose "Validating VHD..."
+            if(test-fslvhd -path $NewVHDPath){
+                Write-Verbose "VHD succesfully created. Exiting script..."
+            }else{
+                Write-Warning "VHD was created but unable to be used."
+            }
+        }catch{
+            Write-Error $Error[0]
+        }
+
     } #process
     
     end {
-        Write-Verbose "VHD succesfully created. Exiting script..."
+        
     }
 }

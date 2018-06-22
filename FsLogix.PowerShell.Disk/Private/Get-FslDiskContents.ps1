@@ -57,7 +57,7 @@ function Get-FslDiskContents {
                 Write-Error $Error[0]
             }
 
-            dismount-FslDisk -path $vhd.path
+            $vhd.path | dismount-FslDisk
         }
         
     }
