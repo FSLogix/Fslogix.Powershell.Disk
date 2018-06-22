@@ -31,7 +31,6 @@ function Get-FslDuplicates {
     begin {
         set-strictmode -Version latest
         $Remove = $false
-        $HashArray = new-object System.Collections.ArrayList
     }
     
     process {
@@ -50,12 +49,13 @@ function Get-FslDuplicates {
         }
 
         $CheckCsv = [System.IO.Path]::GetExtension($csvpath)
-        if($CheckCsv -ne ".csv"){
+        if ($CheckCsv -ne ".csv") {
             write-error "$Csvpath must have .csv extension"
             exit 
-        }else{
+        }
+        else {
             remove-item -path $Csvpath -Force -ErrorAction SilentlyContinue
-            Add-Content -Path $Csvpath 'Original,Duplicate'
+            Add-Content -Path $Csvpath 'VHD,Original,Duplicate'
         }
         
         ## Get VHDs ##
@@ -69,6 +69,7 @@ function Get-FslDuplicates {
         ## Search Duplicates ##
         foreach ($vhd in $VHDs) {
 
+            $HashArray = new-object System.Collections.ArrayList
             $name = split-path -path $vhd.path -leaf
 
             $DriveLetter = get-Driveletter -path $vhd.path
@@ -98,21 +99,30 @@ function Get-FslDuplicates {
 
                 ## Compare Current hash to rest of childitem's hash values ##
                 foreach ($cmpFile in $files | where-object {$_.Name -ne $file.Name}) {
-                    $get_FileHash = get-filehash -path $cmpFile.fullname
-                    $cmpHash = $get_FileHash.hash
+                    
+                    try {
+                        $get_FileHash = get-filehash -path $cmpFile.fullname
+                        $cmpHash = $get_FileHash.hash
+                    }
+                    catch [System.Management.Automation.PropertyNotFoundException] {
+                        Write-Warning "'$cmpfile' is not a file... Skipping."
+                        continue
+                    }   
 
                     ## Avoid comparing duplicates we've already checked ##
-                    if($HashArray.Contains($cmpHash)){
+                    if ($HashArray.Contains($cmpHash)) {
+                        Write-Verbose "Already found $cmpfile's duplicates"
                         break;
                     }
 
-                    if($FileHash -eq $cmpHash){
+                    if ($FileHash -eq $cmpHash) {
                         Write-Verbose "Duplicate found!"
-                        if($currentfile -eq 0){
+                        if ($currentfile -eq 0) {
                             $currentfile++
-                            $output = $file.name + ',' + $cmpFile.fullname
-                        }else{
-                            $output = ',' + $cmpFile.FullName
+                            $output = $name + ',' + $file.name + ',' + $cmpFile.fullname
+                        }
+                        else {
+                            $output = ',' + ',' + $cmpFile.FullName
                         }
                         Add-Content -path $Csvpath $output
                     }
