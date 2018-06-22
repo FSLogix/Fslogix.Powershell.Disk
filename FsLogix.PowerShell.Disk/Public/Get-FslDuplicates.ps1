@@ -71,7 +71,6 @@ function Get-FslDuplicates {
 
             $name = split-path -path $vhd.path -leaf
 
-            
             $DriveLetter = get-Driveletter -path $vhd.path
             $Path_To_Search = join-path ($DriveLetter)($path)
             Write-Verbose "Searching for Duplicates in $($vhd.path)"
@@ -121,10 +120,7 @@ function Get-FslDuplicates {
 
                 ## We found all duplicates of this hash. No more comparisons ##
                 $HashArray.Add($FileHash) > $null
-
-
             }
-            
             dismount-FslDisk -path $vhd.path
         }
     }
