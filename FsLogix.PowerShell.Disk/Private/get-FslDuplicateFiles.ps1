@@ -21,8 +21,10 @@ function get-FslDuplicateFiles {
     
     process {
 
-        $HashArray = new-object System.Collections.ArrayList   
-        $Duplicates = new-object System.Collections.ArrayList     
+        $HashArray = @{}
+        $Duplicates = @{}
+        $HashCounter = 1
+
         $name = split-path -path $path -leaf
 
         $DriveLetter = get-Driveletter -path $path
@@ -38,7 +40,9 @@ function get-FslDuplicateFiles {
         $files = get-childitem -path $Path_To_Search -Recurse | Sort-Object -Property LastWriteTime -Descending
         foreach ($file in $files) {
 
+            $DupCounter = 1
             $currentfile = 0
+
             try {
                 ## Get File's hash value, skipping if folder ##
                 $get_FileHash = Get-FileHash -path $file.fullname
@@ -52,7 +56,7 @@ function get-FslDuplicateFiles {
 
             ## Compare Current hash to rest of childitem's hash values ##
             foreach ($cmpFile in $files | where-object {$_.Name -ne $file.Name}) {
-                    
+                
                 try {
                     $get_FileHash = get-filehash -path $cmpFile.fullname
                     $cmpHash = $get_FileHash.hash
@@ -63,7 +67,7 @@ function get-FslDuplicateFiles {
                 }   
 
                 ## Avoid comparing duplicates we've already checked ##
-                if ($HashArray.Contains($cmpHash)) {
+                if ($HashArray.ContainsValue($cmpHash)) {
                     Write-Verbose "Already found $cmpfile's duplicates"
                     break;
                 }
@@ -77,14 +81,17 @@ function get-FslDuplicateFiles {
                     else {
                         $output = ',' + ',' + $cmpFile.FullName
                     }
-                    $Duplicates.add($cmpFile.fullname) > $null
-                    Add-Content -path $Csvpath $output
+                    $Duplicates.add($DupCounter++, $cmpFile.fullname)
+                    Add-Content -path $Csvpath $output -Force -ErrorAction SilentlyContinue
                 }
-            }
+            }#foreach cmp
 
             ## We found all duplicates of this hash. No more comparisons ##
-            $HashArray.Add($FileHash) > $null
-        }#foreach
+            $HashArray.Add($HashCounter++, $FileHash)
+            
+        }#foreach file
+
+        ## User wants to delete duplicate files ##
         if($remove -eq "true"){
             foreach($fp in $Duplicates){
                 $filename = split-path -path $fp -leaf
@@ -96,6 +103,8 @@ function get-FslDuplicateFiles {
                 }
             }
         }
+        
+        ## Finish process ##
         dismount-FslDisk -path $path
     }#process
     
