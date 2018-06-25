@@ -11,7 +11,7 @@
     REsize-FSLDisk -SizeBytess 10gb -Path C:\Users\danie\test1.vhdx
     Will resize test1.vhdx to 10gb.
 
-    .EXAMPLE
+    .EXAMPLESet-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
     Resize-FSLDisk -perent 20 -Path C:\Users\danie\test1.vhdx
     Will resize test1.vhdx 20% bigger
 

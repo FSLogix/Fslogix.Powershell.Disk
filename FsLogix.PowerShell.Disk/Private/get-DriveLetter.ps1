@@ -74,15 +74,30 @@ function get-driveletter {
         }
     
         if ($null -eq $driveLetter) {
+            ## Usually occurs when mounting a VHD and the drive letter is already in use
 
             Write-warning "DriveLetter is null, assigning drive letter."
             if ($Attached) {
-                $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath} | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false -Force
+                try {
+                    $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath} 
+                    $disk | New-Partition -AssignDriveLetter -UseMaximumSize  | Format-Volume -FileSystem NTFS -Confirm:$false -Force
+                    $disk
+                }
+                catch {
+                    Write-Error $Error[0]
+                    exit
+                }
                 $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
             }
             else {
-                $mount | Get-Disk -Passthru |New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false -Force
-                $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+                try {
+                    $mount | get-disk | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false -Force
+                }
+                catch {
+                    Write-Error $Error[0]
+                    exit
+                }
+                $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter 
             }
         }
 

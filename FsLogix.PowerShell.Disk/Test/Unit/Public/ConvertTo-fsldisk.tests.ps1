@@ -29,4 +29,14 @@ Describe $sut {
             $Invalid_input | should throw
         }
     }    
+    Context -Name "Should not throw"{
+        mock -CommandName Convert-VHD -MockWith {} -Verifiable
+        it 'Valid path'{
+            $Valid_input = { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd" -convertTo vhdx }
+            $Valid_input | should not throw
+        }
+        It 'Asserts all verifiable mocks' {
+            Assert-VerifiableMocks
+        }
+    }
 }

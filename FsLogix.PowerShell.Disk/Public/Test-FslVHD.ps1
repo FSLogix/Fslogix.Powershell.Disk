@@ -33,7 +33,9 @@ function Test-FslVHD {
         Write-Verbose "Testing VHD(s)"
         foreach($vhd in $VHDs){
             $Name = split-path -path $vhd.path -leaf
-            if(Test-VHD -path $vhd.path){
+            $output = Test-VHD -path $vhd.path
+            if($output){
+                Write-Output $output
                 Write-Verbose "$Name is healthy"
             }else{
                 Write-Warning "$name is unhealthy"

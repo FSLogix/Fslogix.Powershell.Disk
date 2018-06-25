@@ -16,4 +16,10 @@ Describe $sut{
     it 'Assert the mock is called'{
         Assert-MockCalled -CommandName "dismount-vhd" -Times 1 -ParameterFilter {$path -eq "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd"}
     }
+
+    Context -name 'Should not throw'{
+        it 'Calling dismount-fsldisk without path'{
+            {dismount-FslDisk} | should not throw
+        }
+    }
 }

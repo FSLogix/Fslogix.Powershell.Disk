@@ -42,6 +42,7 @@ function Get-FslOstFile {
                     $count = 1 
                 }
                 Write-Verbose "Retrieved $count Osts in $($vhd.path)"
+                Write-Output $osts
             }
             try{
                 ## Helper function dismount-fsldisk ##

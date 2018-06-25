@@ -6,7 +6,7 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 
 Describe $sut {
     Context -name "Outputs Should throw" {
-        it 'Invalid path'{
+        it 'Invalid vhd path'{
             $Invalid_Command = {get-fsldiskcontents -vhdpath "C:\blah"} | Out-Null
             $Invalid_Command | should throw
         }
