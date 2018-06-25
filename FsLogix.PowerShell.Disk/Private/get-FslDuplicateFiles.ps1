@@ -37,12 +37,10 @@ function get-FslDuplicateFiles {
         if (-not(test-path -path $Path_To_Search)) {
             Write-Warning "$name : Could not find path: $Path_To_Search"
         }
-
-        ## Find Duplicate Algorithm ##
-        ## Is there a faster comparing algorithm? ##
+        
         $files = get-childitem -path $Path_To_Search -Recurse | Sort-Object -Property LastWriteTime -Descending 
-        foreach($file in $files){
-
+       
+       foreach($file in $files){
             try {
                 ## Get File's hash value, skipping if folder ##
                 $get_FileHash = Get-FileHash -path $file.fullname
@@ -54,18 +52,15 @@ function get-FslDuplicateFiles {
                 continue
             }
 
-            ## Hashtable will have unique values of hashcode ##
+            ## Hashtable will have unique values of hashcode, if we find one, then a duplicate exists ##
             if ($HashArray.ContainsValue($FileHash)) {
                 Write-Verbose "Duplicate found!"
                 $Duplicates.add($DupCounter++, $file.fullname)
                 if ($csvLineNumber++ -eq 0) {
                     $csvLineNumber++
                     $file | Add-Member @{VHD = $name}
-
                 }else {
-
                     $file | Add-Member @{VHD = ' '}
-                
                 }
                 $file | Add-Member @{Original = $HashInfo[$FileHash]}
                 $file | Add-Member @{Duplicate = $file.fullname}
@@ -74,7 +69,8 @@ function get-FslDuplicateFiles {
                 $fileProperties | export-Csv -path $Csvpath -Delimiter "`t" -NoTypeInformation -Append -Force
 
             } else {
-                ## Add first occuring hash code of a file ##
+                ## Add first occuring hash code of a file                    ##
+                ## Only unique Hash Codes will exist within these hashtables ##
                 $HashArray.Add($HashCounter++,$FileHash)
                 $HashInfo.add($FileHash, $file.name)
             }
