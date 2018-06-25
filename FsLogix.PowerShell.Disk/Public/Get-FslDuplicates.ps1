@@ -79,8 +79,7 @@ function Get-FslDuplicates {
             exit 
         }
         else {
-            remove-item -path $Csvpath -Force -ErrorAction SilentlyContinue
-            Add-Content -Path $Csvpath 'VHD,Original,Duplicate'
+            remove-item -path $Csvpath -Force -ErrorAction SilentlyContinuege
         }
         
         ## Get VHDs ##

@@ -22,8 +22,11 @@ function get-FslDuplicateFiles {
     process {
 
         $HashArray = @{}
+        $HashInfo = @{}
         $Duplicates = @{}
         $HashCounter = 1
+        $DupCounter = 1
+        $csvLineNumber = 0
 
         $name = split-path -path $path -leaf
 
@@ -37,11 +40,8 @@ function get-FslDuplicateFiles {
 
         ## Find Duplicate Algorithm ##
         ## Is there a faster comparing algorithm? ##
-        $files = get-childitem -path $Path_To_Search -Recurse | Sort-Object -Property LastWriteTime -Descending
-        foreach ($file in $files) {
-
-            $DupCounter = 1
-            $currentfile = 0
+        $files = get-childitem -path $Path_To_Search -Recurse | Sort-Object -Property LastWriteTime -Descending 
+        foreach($file in $files){
 
             try {
                 ## Get File's hash value, skipping if folder ##
@@ -54,43 +54,32 @@ function get-FslDuplicateFiles {
                 continue
             }
 
-            ## Compare Current hash to rest of childitem's hash values ##
-            foreach ($cmpFile in $files | where-object {$_.Name -ne $file.Name}) {
+            ## Hashtable will have unique values of hashcode ##
+            if ($HashArray.ContainsValue($FileHash)) {
+                Write-Verbose "Duplicate found!"
+                $Duplicates.add($DupCounter++, $file.fullname)
+                if ($csvLineNumber++ -eq 0) {
+                    $csvLineNumber++
+                    $file | Add-Member @{VHD = $name}
+
+                }else {
+
+                    $file | Add-Member @{VHD = ' '}
                 
-                try {
-                    $get_FileHash = get-filehash -path $cmpFile.fullname
-                    $cmpHash = $get_FileHash.hash
                 }
-                catch [System.Management.Automation.PropertyNotFoundException] {
-                    Write-Warning "'$cmpfile' is not a file... Skipping."
-                    continue
-                }   
+                $file | Add-Member @{Original = $HashInfo[$FileHash]}
+                $file | Add-Member @{Duplicate = $file.fullname}
+               
+                $fileProperties =  $file | Select-Object -Property VHD, Original, Duplicate
+                $fileProperties | export-Csv -path $Csvpath -Delimiter "`t" -NoTypeInformation -Append -Force
 
-                ## Avoid comparing duplicates we've already checked ##
-                if ($HashArray.ContainsValue($cmpHash)) {
-                    Write-Verbose "Already found $cmpfile's duplicates"
-                    break;
-                }
-
-                if ($FileHash -eq $cmpHash) {
-                    Write-Verbose "Duplicate found!"
-                    if ($currentfile -eq 0) {
-                        $currentfile++
-                        $output = $name + ',' + $file.name + ',' + $cmpFile.fullname
-                    }
-                    else {
-                        $output = ',' + ',' + $cmpFile.FullName
-                    }
-                    $Duplicates.add($DupCounter++, $cmpFile.fullname)
-                    Add-Content -path $Csvpath $output -Force -ErrorAction SilentlyContinue
-                }
-            }#foreach cmp
-
-            ## We found all duplicates of this hash. No more comparisons ##
-            $HashArray.Add($HashCounter++, $FileHash)
-            
-        }#foreach file
-
+            } else {
+                ## Add first occuring hash code of a file ##
+                $HashArray.Add($HashCounter++,$FileHash)
+                $HashInfo.add($FileHash, $file.name)
+            }
+        }
+    
         ## User wants to delete duplicate files ##
         if($remove -eq "true"){
             foreach($fp in $Duplicates){
