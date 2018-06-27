@@ -56,9 +56,7 @@ function get-driveletter {
             $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
 
-        }
-        else {
-        
+        }else {
             try {
                 ## Need to mount
                 $mount = Mount-VHD -path $VHDPath -Passthru -ErrorAction Stop
@@ -72,7 +70,8 @@ function get-driveletter {
             #Obtain drive letter
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }
-    
+        
+        ## This bug usually occurs because the Driveletter associated with the disk is already in use. ##
         if ($null -eq $driveLetter) {
             try {
                 $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
@@ -82,28 +81,9 @@ function get-driveletter {
                 Write-Error $Error[0]
             }
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
-            if ($null -eq $driveLetter) {
-                $driveLetter = $disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter
-                Write-Verbose "Refreshing mount"
-                try {
-                    dismount-FslDisk -path $VHDPath
-                }
-                catch {
-                    Write-Error $Error[0]
-                }
-
-                try {
-                    $mount = mount-vhd -path $VHDPath -Passthru -ErrorAction stop
-                    $driveLetter = $mount | get-disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
-                    Write-Verbose "Remounted VHD"
-                }
-                catch {
-                    Write-Error "Could not remount VHD"
-                    break
-                }
-            }
         }
-        #A drive letter was never initialized to the VHD
+        
+        ## A drive letter was never initialized to the VHD ##
         if ($driveLetter -like "*\\?\Volume{*") {
 
             Write-warning "Driveletter is invalid: $Driveletter. Reassigning Drive Letter."
