@@ -6,10 +6,9 @@ function get-driveletter {
         Created by Jim Moyle @ FSLogix
 
         .SYNOPSIS
-        Obtains a VHD path and mounts the VHD to the next available
-        drive Letter. Allows ability to search and use folders/items
-        within a VHD. User will need to then dismount VHD on their
-        own. 
+        Obtains a virtual disk and returns the Drive Letter associated with it.
+        If either Drive Letter is null or invalid, the script will assign the
+        next available drive letter.
 
         .DESCRIPTION
         This function can be added to any script that requires mounting 
