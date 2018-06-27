@@ -30,35 +30,32 @@ function get-driveletter {
     )
     begin {
         Set-StrictMode -Version Latest
+        $Attached = $false
     }
     process {
-
-        $Attached = $false
-
+    
         Write-Verbose "Validating path: $VHDPath"
         if (test-path $VHDPath) {
             Write-Verbose "$VHDPath is valid."
-        }
-        else {
+        }else {
             Write-Error "$VHDPath is invalid."
             exit
         }
 
-        $VHDProperties = get-vhd -path $VHDPath
+        ## Helper function ##
+        $VHDProperties = get-fslVHD -path $VHDPath
 
-        if ($VHDProperties.Attached -eq $true) {
-            $Attached = $true        
-        }
+        if ($VHDProperties.Attached -eq $true) { $Attached = $true }
 
         if ($Attached) {
-
-            ## If disk is already mounted, can skip mounting process.
+        
+            ## If disk is already mounted, can skip mounting process. ##
             $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
 
         }else {
             try {
-                ## Need to mount
+                ## Need to mount ##
                 $mount = Mount-VHD -path $VHDPath -Passthru -ErrorAction Stop
                 Write-Verbose "VHD succesfully mounted."
             }
@@ -67,7 +64,6 @@ function get-driveletter {
                 Write-Error "Could not mount VHD. Perhaps the VHD Path is incorrect or already attached."
                 break
             }
-            #Obtain drive letter
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }
         
