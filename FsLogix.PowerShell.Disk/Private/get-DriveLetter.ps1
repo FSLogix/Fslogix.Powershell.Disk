@@ -74,33 +74,35 @@ function get-driveletter {
         }
     
         if ($null -eq $driveLetter) {
-            ## Usually occurs when mounting a VHD and the drive letter is already in use
-
-            Write-warning "DriveLetter is null, assigning drive letter."
-            if ($Attached) {
-                try {
-                    $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath} 
-                    $disk | New-Partition -AssignDriveLetter -UseMaximumSize  | Format-Volume -FileSystem NTFS -Confirm:$false -Force
-                    $disk
-                }
-                catch {
-                    Write-Error $Error[0]
-                    exit
-                }
-                $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+            try {
+                $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
+                $disk | set-disk -IsOffline $false
             }
-            else {
+            catch {
+                Write-Error $Error[0]
+            }
+            $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+            if ($null -eq $driveLetter) {
+                $driveLetter = $disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter
+                Write-Verbose "Refreshing mount"
                 try {
-                    $mount | get-disk | New-Partition -AssignDriveLetter -UseMaximumSize | Format-Volume -FileSystem NTFS -Confirm:$false -Force
+                    dismount-FslDisk -path $VHDPath
                 }
                 catch {
                     Write-Error $Error[0]
-                    exit
                 }
-                $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter 
+
+                try {
+                    $mount = mount-vhd -path $VHDPath -Passthru -ErrorAction stop
+                    $driveLetter = $mount | get-disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+                    Write-Verbose "Remounted VHD"
+                }
+                catch {
+                    Write-Error "Could not remount VHD"
+                    break
+                }
             }
         }
-
         #A drive letter was never initialized to the VHD
         if ($driveLetter -like "*\\?\Volume{*") {
 
