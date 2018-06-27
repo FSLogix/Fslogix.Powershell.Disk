@@ -17,7 +17,9 @@ function move-FslDiskContents {
     )
     
     begin {
-        set-strictmode -Version latest
+        ## Helper function to validate requirements
+        Get-Requirements
+
         Write-Verbose "Begining script.."
     }
     

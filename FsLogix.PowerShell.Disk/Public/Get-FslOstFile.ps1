@@ -2,11 +2,16 @@ function Get-FslOstFile {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
-        [System.string]$path
+        [System.string]$path,
+
+        [Parameter(Position = 0, Mandatory = $false, ValueFromPipeline = $false)]
+        [Validateset("True","false")]
+        [System.String]$confirm = "false"
     )
     
     begin {
-        set-strictmode -Version latest
+        ## Helper function to validate requirements
+        Get-Requirements
     }
     
     process {
@@ -42,7 +47,20 @@ function Get-FslOstFile {
                     $count = 1 
                 }
                 Write-Verbose "Retrieved $count Osts in $($vhd.path)"
-                Write-Output $osts
+            }
+            ## If user wants to delete Osts ##
+            if($count -gt 1 -and $confirm -eq 'true'){
+                $latestOst = $osts | Sort-Object -Property LastWriteTime -Descending | Select-Object -First 1
+                Write-Verbose "Removing $($count-1) Duplicate OST Files"
+            
+                try{
+                    $osts | Where-Object {$_.Name -ne $latestOst.Name} | Remove-Item -Force -ErrorAction Stop              
+                    Write-Verbose "Successfully removed duplicate ost files"
+                }catch{
+                    Write-Verbose "Could not remove duplicate ost files."
+                    Write-Error $Error[0]
+                }
+            
             }
             try{
                 ## Helper function dismount-fsldisk ##

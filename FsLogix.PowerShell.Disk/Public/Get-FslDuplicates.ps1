@@ -54,7 +54,9 @@ function Get-FslDuplicates {
     )
     
     begin {
-        set-strictmode -Version latest
+        ## Helper function to validate requirements
+        Get-Requirements
+
         $Remove = $false
     }
     
@@ -79,7 +81,7 @@ function Get-FslDuplicates {
             exit 
         }
         else {
-            remove-item -path $Csvpath -Force -ErrorAction SilentlyContinuege
+            remove-item -path $Csvpath -Force -ErrorAction SilentlyContinue
         }
         
         ## Get VHDs ##
@@ -89,7 +91,6 @@ function Get-FslDuplicates {
             Write-Warning "Could not find VHDs in $vhdpath"
             exit
         }
-        
         ## Search Duplicates ##
         foreach ($vhd in $VHDs) {
             

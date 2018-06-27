@@ -111,13 +111,14 @@ function get-driveletter {
             }
             else {
                 $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter 
-            }      
-        
+            }
             if ($null -eq $driveLetter) {
-                
+
                 ## If the VHD is mounted, then the assigned driver letter won't be updated.
                 ## Have to dismount and remount for the drive letter to be updated.
                 ## Perhaps there is a way to prevent this and speed the script up.
+
+                ## Update 1 Tried using 'Update-disk', the function will then return wrong drive letter
 
                 try {
                     Write-Verbose "Remounting VHD."
@@ -137,8 +138,8 @@ function get-driveletter {
                     Write-Error "Could not remount VHD"
                     break
                 }
-                            
-            }#end if(null)
+            
+            }#end if(null) 
         }#end if {volume}
         else {
             Write-Verbose "VHD mounted on drive letter [$DriveLetter]"

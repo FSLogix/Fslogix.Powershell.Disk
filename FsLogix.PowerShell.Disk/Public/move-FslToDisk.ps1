@@ -41,7 +41,8 @@ function move-FslToDisk {
     )
     
     begin {
-        set-strictmode -Version latest
+        ## Helper function to validate requirements
+        Get-Requirements
     }
     
     process {
@@ -62,31 +63,37 @@ function move-FslToDisk {
 
         Write-Verbose "Transfering files to VHD(s)"
         
-        foreach($vhd in $VhdDetails){
+        foreach ($vhd in $VhdDetails) {
 
             $DriveLetter = get-driveletter -path $vhd.path
             $VHD_File_Location = join-path($DriveLetter) ($Destination)
 
-            if(-not(test-path -path $VHD_File_Location)){
+            if (-not(test-path -path $VHD_File_Location)) {
                 Write-Error "Could not find path: $VHD_FILE_LOCATION"
                 dismount-FslDisk -path $vhd.path
                 break;
             }
 
-            try{
-                Write-Verbose "Transfering file contents to $VHD_File_location"
-                switch($Overwrite){
-                    "Yes"{
-                        copy-item -path $FilePath -Destination $VHD_File_Location -Recurse -Force
-                    }
-                    "No"{
-                        copy-item -path $FilePath -Destination $VHD_File_Location -Recurse
+            Write-Verbose "Transfering file contents to $VHD_File_location"
+            
+            switch ($Overwrite) {
+                "Yes" {
+                    try{
+                        move-item -path $FilePath -Destination $VHD_File_Location -Recurse -Force
+                        Write-Verbose "Transfered file contents to $VHD_File_Location"
+                    }catch{
+                        Write-Error $Error[0]
                     }
                 }
-            }catch{
-                dismount- -path $vhd.path
-                Write-Error $Error[0]
+                "No" {
+                    try{
+                        move-item -path $FilePath -Destination $VHD_File_Location -Recurse
+                    }catch{
+                        Write-Warning "Item already exists. User opted to not overwrite."
+                    }
+                }
             }
+           
             dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
         }
     }

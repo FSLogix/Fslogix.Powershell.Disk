@@ -59,12 +59,17 @@ function New-FslDisk {
         [Parameter(Position = 4, Mandatory = $false)]
         [ValidateSet("True", "False")]
         [Alias("Overwrite")]
-        [System.String]$Confirm_Delete = "False"
+        [System.String]$Confirm_Delete = "False",
+        
+        [Parameter(Position = 5,ValuefromPipelineByPropertyName = $true, ValuefromPipeline = $true)]
+        [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$"
 
     )#param
     
     begin {
-        set-strictmode -Version latest
+        ## Helper function to validate requirements
+        Get-Requirements
+
 
         $VerbosePreference = "continue"
         
@@ -92,11 +97,6 @@ function New-FslDisk {
             $Custom_VHD = $true
         }
 
-        if((get-module).Name -notcontains "Hyper-V"){
-            Write-Error "Hyper-V module must be installed."
-            exit
-        }
-
     }#Begin
     
     process {
@@ -104,6 +104,8 @@ function New-FslDisk {
         if ($NewVHDPath -notlike "*.vhd*") {
             Write-Error "The file extension for $NewVHDPath must include a .vhd or .vhdx extension."
             exit
+        } else {
+            $VHD_Name = split-path -path $NewVHDPath -Leaf
         }
     
         if (test-path -path $NewVHDPath) {
@@ -122,6 +124,15 @@ function New-FslDisk {
                 }
             }
         }#Test-path
+
+        
+        if ($VHD_Name -match $OriginalMatch){
+            Write-Verbose "Validated VHD's name: $VHD_Name"
+        }else{
+            Write-Warning "VHD: $VHD_Name does not match regex."
+            Write-Error "VHD: $VHD_Name does not match regex"
+        }
+        
 
         if ($ParentPath_Found) {
             $Fixed_Found = $false
