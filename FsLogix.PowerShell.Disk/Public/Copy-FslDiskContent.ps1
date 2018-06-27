@@ -26,6 +26,9 @@ function Copy-FslDiskContent {
         $First_DL = get-driveletter -path $FirstVHDPath
         $Second_DL = get-driveletter -path $SecondVHDPath
 
+        $FirstVHD = split-path $FirstVHDPath -Leaf
+        $SecondVHD = split-path $SecondVHDPath -leaf
+
         $FirstFilePath = join-path($First_DL) ($FirstFilePath)
         $SecondFilePath = join-path($Second_DL) ($SecondFilePath)
     }
@@ -52,6 +55,7 @@ function Copy-FslDiskContent {
         $Contents | ForEach-Object { 
 
             try {
+                Write-Verbose "Copying VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force
             }
             catch {

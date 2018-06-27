@@ -44,8 +44,10 @@ function Get-FslDuplicates {
             HelpMessage = 'Specific directory search within a VHD')]
         [System.String]$Path,
 
-        [Parameter(Position = 2, Mandatory = $true)]
-        [System.String]$Csvpath = '$env:temp\test.csv',
+        [Parameter(Position = 2,
+            Mandatory = $false,
+            HelpMessage = 'CSV output file detailing duplicate files')]
+        [System.String]$Csvpath,
 
         [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("Confirm")]
@@ -56,7 +58,7 @@ function Get-FslDuplicates {
     begin {
         ## Helper function to validate requirements
         Get-Requirements
-
+    
         $Remove = $false
     }
     
@@ -75,15 +77,10 @@ function Get-FslDuplicates {
             }
         }
 
-        $CheckCsv = [System.IO.Path]::GetExtension($csvpath)
-        if ($CheckCsv -ne ".csv") {
-            write-error "$Csvpath must have .csv extension"
-            exit 
-        }
-        else {
+        if($Csvpath -ne ""){
             remove-item -path $Csvpath -Force -ErrorAction SilentlyContinue
         }
-        
+
         ## Get VHDs ##
         Write-Verbose "Retrieving VHD(s)"
         $VHDs = get-fslvhd -path $vhdpath
@@ -93,9 +90,8 @@ function Get-FslDuplicates {
         }
         ## Search Duplicates ##
         foreach ($vhd in $VHDs) {
-            
             ## Get-Duplicate Helper function
-            get-FslDuplicateFiles -path $vhd.path -folderpath $Path -csvpath $Csvpath -remove $Remove_Duplicates
+            get-FslDuplicateFiles -path $vhd.path -folderpath $Path -csvpath $Csvpath -remove $Remove_Duplicates | Out-Null
         }
     }
     

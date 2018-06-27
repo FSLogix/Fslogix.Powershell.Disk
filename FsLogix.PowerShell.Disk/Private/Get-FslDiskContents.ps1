@@ -52,14 +52,15 @@ function Get-FslDiskContents {
 
             try{
                 Write-Verbose "Getting child items"
-                get-childitem -Path $FilePath
+                $contents = get-childitem -Path $FilePath
             }catch{
                 Write-Error $Error[0]
             }
 
+            Write-Output $contents
+
             $vhd.path | dismount-FslDisk
         }
-        
     }
     
     end {
