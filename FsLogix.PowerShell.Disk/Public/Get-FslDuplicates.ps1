@@ -92,18 +92,13 @@ function Get-FslDuplicates {
                 }
         
                 $dirlist = New-Object System.Collections.Queue
+                $dirlist.Enqueue($Path_To_Search) ## Add Main Directory (VHD's DriveLetter)
                 $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } | Select-Object FullName
 
                 foreach ($dir in $Directories) {
                     $dirlist.Enqueue($dir.FullName)
                 }
-                if ($null -eq $Directories) {
-                    $dirlist.Enqueue($Path_To_Search)
-                }
-                else {
-                    $dirlist.Enqueue($Path_To_Search)
-                }
-                
+             
                 ## Find Duplicate Algorithm ##
                 foreach ($dir in $DirList) {
         
