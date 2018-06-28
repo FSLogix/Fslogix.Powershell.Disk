@@ -5,9 +5,7 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
 Describe $sut{
-    Mock 'Dismount-VHD'{
-        $null
-    }
+    Mock 'Dismount-VHD' -MockWith {$true}
     it 'returns some verbose lines'{
         #-Verbose 4>&1 pipelines verbose 4 to 1
         $verboseLine = dismount-FslDisk -fullname "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd" -Verbose 4>&1

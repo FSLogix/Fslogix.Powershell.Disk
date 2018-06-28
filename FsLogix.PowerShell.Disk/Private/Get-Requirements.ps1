@@ -19,14 +19,6 @@ function Get-Requirements {
         }else{
             Write-Verbose "Hyper-V found!"
         }
-        
-        Write-Verbose "Checking if Hyper-V is imported..."
-        if((get-module).name -notcontains 'Hyper-V'){
-            Write-Error "Hyper-V not loaded."
-            exit
-        }else{
-            Write-Verbose "Hyper-V is imported!"
-        }
 
         Write-Verbose "Checking if in administrator mode..."
         If (([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")){

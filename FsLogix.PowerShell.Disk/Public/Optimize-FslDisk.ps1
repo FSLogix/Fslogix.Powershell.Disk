@@ -14,6 +14,8 @@ function Optimize-FslDisk {
         get-requirements
     }
     
+
+    
     process {
         if(-not(test-path $path)){
             Write-Error "Could not find path: $path"
@@ -26,7 +28,7 @@ function Optimize-FslDisk {
         }
 
         ## Remove Duplicates ##
-        get-FslDuplicateFiles -path $path -Remove 'true'
+        get-FslDuplicateFiles -path $path -csvpath 'test.csv' -Remove 'true'
         ## Removed Duplicates
 
         try{

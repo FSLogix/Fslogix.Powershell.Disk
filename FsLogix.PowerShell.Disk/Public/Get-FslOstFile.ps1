@@ -12,6 +12,7 @@ function Get-FslOstFile {
     begin {
         ## Helper function to validate requirements
         Get-Requirements
+        $Totalremoved = 0
     }
     
     process {
@@ -54,7 +55,8 @@ function Get-FslOstFile {
                 Write-Verbose "Removing $($count-1) Duplicate OST Files"
             
                 try{
-                    $osts | Where-Object {$_.Name -ne $latestOst.Name} | Remove-Item -Force -ErrorAction Stop              
+                    $osts | Where-Object {$_.Name -ne $latestOst.Name} | Remove-Item -Force -ErrorAction Stop  
+                    $Totalremoved += $($count-1)         
                     Write-Verbose "Successfully removed duplicate ost files"
                 }catch{
                     Write-Verbose "Could not remove duplicate ost files."
@@ -68,7 +70,8 @@ function Get-FslOstFile {
             }catch{
                 Write-Error $Error[0]
             }
-        }
+        }#foreach
+        Write-Verbose "Removed $TotalRemoved OST's"
     }
     
     end {

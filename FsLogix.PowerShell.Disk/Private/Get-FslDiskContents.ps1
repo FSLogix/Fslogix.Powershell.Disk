@@ -25,7 +25,12 @@ function Get-FslDiskContents {
         [System.String]$VHDPath,
 
         [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true)]
-        [System.String]$path
+        [System.String]$path,
+
+        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true)]
+        [ValidateSet($false,$true)]
+        [System.Boolean]$recurse = 0
+
     )
     
     begin {
@@ -52,11 +57,18 @@ function Get-FslDiskContents {
 
             try{
                 Write-Verbose "Getting child items"
-                $contents = get-childitem -Path $FilePath
+                if($recurse){
+                    $contents = get-childitem -Path $FilePath -Recurse
+                }else{
+                    $contents = get-childitem -Path $FilePath
+                }
             }catch{
                 Write-Error $Error[0]
             }
-
+            
+            if($null -eq $contents){
+                Write-Warning "Could not find any contents."
+            }
             Write-Output $contents
 
             $vhd.path | dismount-FslDisk

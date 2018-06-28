@@ -22,6 +22,7 @@ function get-FslDuplicateFiles {
     process {
         $name = split-path -path $path -leaf
 
+        ## Helper functions built in will help with error checking ##
         $DriveLetter = get-Driveletter -path $path
         $Path_To_Search = join-path ($DriveLetter)($folderpath)
         Write-Verbose "Searching for Duplicates in $path"
@@ -30,16 +31,26 @@ function get-FslDuplicateFiles {
             Write-Warning "$name : Could not find path: $Path_To_Search"
         }
 
+        ## Need a better way to do this.                              ##
+        ## Trying to store $Path_To_Search and $Directories together. ##
+        $dirlist = New-Object System.Collections.Queue
         $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } | Select-Object FullName
-        
-        if($null -eq $Directories){
-            $DirList = $Path_To_Search
-        }else{
-            $DirList = $Directories.fullname
+
+        foreach ($dir in $Directories) {
+            $dirlist.Enqueue($dir.FullName)
+        }
+
+        ## Probably don't need this if statements, and keep it single ##
+        if ($null -eq $Directories) {
+            $dirlist.Enqueue($Path_To_Search)
+        }
+        else {
+            $dirlist.Enqueue($Path_To_Search)
         }
         
         ## Find Duplicate Algorithm ##
         foreach ($dir in $DirList) {
+
             Write-Verbose "Checking directory: $dir"
             $HashArray = @{}
             $HashInfo = @{}
@@ -47,11 +58,9 @@ function get-FslDuplicateFiles {
             $HashCounter = 1
             $DupCounter = 1
             $csvLineNumber = 0
+            
             $files = get-childitem -path $dir | Sort-Object -Property LastWriteTime -Descending
-            if($null -eq $files){
-                Write-Verbose "$dir is empty!"
-                break
-            }
+            
             foreach ($file in $files) {
                 try {
                     ## Get File's hash value, skipping if folder ##

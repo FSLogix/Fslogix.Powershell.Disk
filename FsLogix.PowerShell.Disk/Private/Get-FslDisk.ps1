@@ -38,8 +38,9 @@ function Get-FslDisk {
         Write-Verbose "Confirming Extension..."
         if ($path -like "*.vhd*") {
             write-verbose "Extension confirmed..."
+            $name = split-path -path $path -leaf
             try {
-                Write-Verbose "Obtaining VHD information"
+                Write-Verbose "Obtaining VHD: $name's information"
                 $VHDInfo = $Path | get-vhd
             }
             catch {
@@ -50,6 +51,7 @@ function Get-FslDisk {
         }
         else { 
             Write-Error "File path should include a .vhd or .vhdx extension."
+            exit
         }
     }
     end {

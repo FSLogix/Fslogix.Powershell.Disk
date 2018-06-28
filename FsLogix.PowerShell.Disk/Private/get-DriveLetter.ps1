@@ -4,19 +4,15 @@ function get-driveletter {
         Created on 6/6/18
         Created by Daniel Kim @ FSLogix    
         Created by Jim Moyle @ FSLogix
-
         .SYNOPSIS
         Obtains a virtual disk and returns the Drive Letter associated with it.
         If either Drive Letter is null or invalid, the script will assign the
         next available drive letter.
-
         .DESCRIPTION
         This function can be added to any script that requires mounting 
         a vhd and accessing it's contents.
-
         .PARAMETER VHDPath
         The target path for VHD location.
-
         .EXAMPLE
         mount-FSLVHD -path \\server\share\ODFC\vhd1.vhdx
         Will return the drive letter
@@ -42,7 +38,7 @@ function get-driveletter {
         }
 
         ## Helper function ##
-        $VHDProperties = get-fslVHD -path $VHDPath
+        $VHDProperties = get-fsldisk -path $VHDPath
 
         if ($VHDProperties.Attached -eq $true) { $Attached = $true }
 
@@ -60,7 +56,7 @@ function get-driveletter {
             }
             catch {
                 write-error $Error[0]
-                Write-Error "Could not mount VHD. Perhaps the VHD Path is incorrect or already attached."
+                Write-Error "Could not mount VHD. Perhaps the VHD Path."
                 break
             }
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1

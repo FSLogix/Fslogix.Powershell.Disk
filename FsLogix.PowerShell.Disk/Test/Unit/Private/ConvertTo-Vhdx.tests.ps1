@@ -1,4 +1,5 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$MyInvocation.MyCommand.Path
 $funcType = Split-Path $here -Leaf
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
@@ -27,7 +28,7 @@ Describe $sut {
     }
 
     Context -Name 'Test Remove-Item' {
-        mock 'remove-item'
+        mock 'remove-item' -MockWith {$true}
 
         it 'If no pre existing VHDs exist, then remove-item should not be called.' {
             Assert-MockCalled -CommandName "remove-item" -Times 0 -ParameterFilter {$path -eq "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.3.vhdx"}
