@@ -35,8 +35,16 @@ function Remove-FslDriveLetter {
 
             $Driveletter = get-driveletter -VHDPath $vhd.path
             $DL = $Driveletter.substring(0, 1)
-            $Volume = Get-Volume | where-Object {$_.DriveLetter -eq $DL}
             try {
+                Write-Verbose "Getting VHD's volume..."
+                $Volume = Get-Volume | where-Object {$_.DriveLetter -eq $DL}
+                Write-Verbose "Successfully retrieved VHD's volume"
+            }
+            catch {
+                Write-Error $Error[0]
+            }
+            try {
+                Write-Verbose "Removing Drive Letter"
                 $Volume | Get-Partition | Remove-PartitionAccessPath -AccessPath $Driveletter
                 Write-Verbose "Successfully removed $Driveletter"
             }

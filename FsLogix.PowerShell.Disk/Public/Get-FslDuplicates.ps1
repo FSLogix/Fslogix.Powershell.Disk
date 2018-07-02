@@ -15,7 +15,7 @@ function Get-FslDuplicates {
 
         .PARAMETER Remove_Duplicates
         Optional parameter if user wants to remove the duplicates.
-
+        
         .EXAMPLE
         get-fslduplicates -vhdpath C:\Users\danie\Documents\ODFC -csvpath $env:temp\test.csv
         Script will retrieve all VHD's in C:\Users\Danie\Documents\ODFC and search for duplicates.
@@ -52,12 +52,14 @@ function Get-FslDuplicates {
         [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
         [Alias("Confirm")]
         [ValidateSet("True", "False")]
-        [System.String]$Remove_Duplicates = "false"
+        [System.String]$Remove_Duplicates = "false",
+
+        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
+        [System.String]$log
     )
     
-    begin {
+    begin {        
         ## Helper function to validate requirements
-
         function get-FslDuplicateFiles {
             [CmdletBinding()]
             param (
@@ -92,13 +94,13 @@ function Get-FslDuplicates {
                 }
         
                 $dirlist = New-Object System.Collections.Queue
-                $dirlist.Enqueue($Path_To_Search) ## Add Main Directory (VHD's DriveLetter)
+                $dirlist.Enqueue($Path_To_Search)
                 $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } | Select-Object FullName
 
                 foreach ($dir in $Directories) {
                     $dirlist.Enqueue($dir.FullName)
                 }
-             
+          
                 ## Find Duplicate Algorithm ##
                 foreach ($dir in $DirList) {
         
@@ -139,9 +141,11 @@ function Get-FslDuplicates {
                             $file | Add-Member @{Original = $HashInfo[$FileHash]}
                             $file | Add-Member @{Duplicate = $file.name}
                             $file | Add-Member @{DuplicateCreationDate = $file.creationtime}
+                            $file | Add-Member @{FileSize_GB = [Math]::Round($file.length/1gb,2)}
+                            $file | Add-Member @{FileSize_MB = [Math]::Round($File.length/1mb, 2)}
                        
                             if ($Csvpath -ne "") {
-                                $fileProperties = $file | Select-Object -Property VHD, Folder, Original, Duplicate, DuplicateCreationDate
+                                $fileProperties = $file | Select-Object -Property VHD, Folder, Original, Duplicate, DuplicateCreationDate, FileSize_GB, FileSize_MB
                                 $fileProperties | export-Csv -path $Csvpath -NoTypeInformation -Append -Force
                             }
                         }
@@ -182,7 +186,7 @@ function Get-FslDuplicates {
                 ## Finish process ##
                 dismount-FslDisk -path $path
             }
-        }
+        }#get-fslduplicatefiles
         function Get-Requirements {
             [CmdletBinding()]
             param (
@@ -218,7 +222,7 @@ function Get-FslDuplicates {
             
             end {
             }
-        }
+        }#get-requirements
         function Get-FslVHD {
             <#
                 .SYNOPSIS
@@ -269,7 +273,7 @@ function Get-FslDuplicates {
             end {
                 
             }
-        }
+        }#get-fslvhd
         function get-driveletter {
             <#
                 .NOTES
@@ -397,7 +401,7 @@ function Get-FslDuplicates {
             }#end process
             end {
             }
-        }
+        }#get-driveletter
         function Get-FslDisk {
             <#
                 .SYNOPSIS
@@ -456,7 +460,7 @@ function Get-FslDuplicates {
             }
             end {
             }
-        }
+        }#get-fsldisk
         function dismount-FslDisk {
             <#
                 .SYNOPSIS
@@ -536,16 +540,9 @@ function Get-FslDuplicates {
         
             end {
             }
-        }
+        }#dismount-fsldisk
         
     
-        $Remove = $false
-    }
-    
-    process {
-
-        Get-Requirements
-
         ## Validate inputs ##
         if ($Remove_Duplicates -eq "true") {
             $Remove -eq $true
@@ -563,6 +560,17 @@ function Get-FslDuplicates {
             remove-item -path $Csvpath -Force -ErrorAction SilentlyContinue
         }
 
+        $Remove = $false
+    }#Begin
+    
+    process {
+
+        Write-Verbose "Checking requirments..."
+        Get-Requirements
+
+        $VerbosePreference = "continue"
+        start-transcript -LiteralPath $log
+
         ## Get VHDs ##
         Write-Verbose "Retrieving VHD(s)"
         $VHDs = get-fslvhd -path $vhdpath
@@ -572,31 +580,28 @@ function Get-FslDuplicates {
         }
         ## Search Duplicates ##
         foreach ($vhd in $VHDs) {
-            ## Get-Duplicate Helper function
             get-FslDuplicateFiles -path $vhd.path -folderpath $Path -csvpath $Csvpath -remove $Remove_Duplicates
         }
 
         ## Convert .csv file into a formatted excel file ##
         if ($null -ne $Csvpath) {
-            <#$xlspath = split-path -path $csvpath 
-            $xlspath += '\Test.xlsx'
-            write-verbose "Creating Excel document to: $xlspath"
-            remove-item -Path $xlspath -Force -ErrorAction SilentlyContinue
-
-            ## Code here ##
-            $Csvpath
-            $xlspath
-
-            Import-Csv $Csvpath | Export-Excel $xlspath -AutoSize          
             
-            remove-item -Path $Csvpath -Force -ErrorAction SilentlyContinue#>
+            <### Code here ##
+            $ConvertTo-CSV -csvpath $csvPath{
+                $xlspath = split-path -path $csvpath 
+                $xlspath += '\Test.xlsx'
+                write-verbose "Creating Excel document to: $xlspath"
+                remove-item -Path $xlspath -Force -ErrorAction SilentlyContinue
+                $Csvpath
+                $xlspath
+                Import-Csv $Csvpath | Export-Excel $xlspath -AutoSize  
+                remove-item -Path $Csvpath -Force -ErrorAction SilentlyContinue
+            }#>
         }
-        
         Write-Verbose "Finished Get-FslDuplicates script."
-        
-
-    }
+    }#process
     
     end {
+        stop-transcript
     }
 }

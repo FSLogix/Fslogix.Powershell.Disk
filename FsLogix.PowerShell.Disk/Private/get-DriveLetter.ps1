@@ -56,7 +56,6 @@ function get-driveletter {
             }
             catch {
                 write-error $Error[0]
-                Write-Error "Could not mount VHD. Perhaps the VHD Path."
                 break
             }
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
