@@ -41,7 +41,7 @@ function Get-FslVHD {
             $count = 1 
         }
         write-verbose "Retrieved $count VHD(s)."
-
+        
         Write-Output $VhdDetails
     }
     

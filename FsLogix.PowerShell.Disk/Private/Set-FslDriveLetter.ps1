@@ -5,6 +5,7 @@ function Set-FslDriveLetter {
         [System.String]$VHDPath,
 
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipeline = $true)]
+        [ValidatePattern('^[a-zA-Z]')]
         [System.Char]$Letter
     )
     
@@ -41,7 +42,7 @@ function Set-FslDriveLetter {
             }
 
             Write-Verbose "Succesfully changed $name's Driveletter to $letter."
-        
+            dismount-FslDisk -path $Vhd.path
         }
         
         
