@@ -20,23 +20,44 @@ function Set-FslDriveLetter {
             Write-Warning "Could not find any VHD's in path: $VHDPath"
             exit
         }
+        $Letters = [int]'A'[0]..[int]'Z'[0] | Foreach-Object {$([char]$_)}
+        $Drives = Get-PSDrive | Where-Object {$_.Provider.Name -eq 'FileSystem'}
+        $Free_DriveLetters = $Letters | Where-Object {$_ -notin $Drives.Name} 
+            
+        $NewLetter = "$Letter" + ":"
+        $Available = $false
+        foreach ($curLetter in $Free_DriveLetters) {
+            if ($curLetter.ToString() -eq $Letter) {
+                $Available = $true
+                break
+            }
+        }
+
+        if($Available -eq $false){
+            Write-Warning "DriveLetter $Letter is not available. Please use a different letter."
+            exit
+        }
 
         foreach ($vhd in $VHDs) {
             $name = split-path -path $vhd.path -leaf
-
-            try{
-                Write-Verbose "Getting $name's volume"
-                $DL = Get-driveletter -VHDPath $vhd.path
-                $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$($DL.substring(0,2))'"
-            }catch{
+            $DL = Get-driveletter -VHDPath $vhd.path
+            $subbedDL = $DL.substring(0,2)
+    
+            try {
+                Write-Verbose "Getting $name's volume: DL = $DL"
+                $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'"
+            }
+            catch {
                 Write-Error $Error[0]
                 exit
             }
-
-            try{
-                Write-Verbose "Assigning new driveletter: $letter"
-                Set-WmiInstance -input $drive -Arguments @{DriveLetter="$($Letter):"; Label="Label"}
-            }catch{
+    
+            Write-Verbose "Assigning new driveletter: $NewLetter"
+                
+            try {
+                $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter} | out-null
+            }
+            catch {
                 Write-Error $Error[0]
                 exit
             }

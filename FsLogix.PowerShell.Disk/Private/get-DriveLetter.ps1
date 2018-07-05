@@ -82,7 +82,7 @@ function get-driveletter {
                 $driveLetter = $disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter
             }
             else {
-                $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter 
+                $driveLetter = $mount | get-disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter | out-null
             }
             if ($null -eq $driveLetter) {
 
@@ -94,7 +94,7 @@ function get-driveletter {
 
                 try {
                     Write-Verbose "Remounting VHD."
-                    Dismount-VHD $VHDPath -Passthru -ErrorAction Stop
+                    Dismount-VHD $VHDPath -ErrorAction Stop 
                 }
                 catch {
                     Write-Error $Error[0]
@@ -102,21 +102,25 @@ function get-driveletter {
                 }
 
                 try {
-                    $mount = mount-vhd -path $VHDPath -Passthru -ErrorAction stop
-                    $driveLetter = $mount | get-disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+                    mount-vhd -path $VHDPath -ErrorAction stop
                     Write-Verbose "Remounted VHD"
                 }
                 catch {
                     Write-Error "Could not remount VHD"
-                    break
+                    exit
                 }
             
             }#end if(null) 
+            remove-variable -Name driveletter -ErrorAction SilentlyContinue
+            remove-variable -Name mount -ErrorAction SilentlyContinue
+            $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
+            $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }#end if {volume}
         else {
             Write-Verbose "VHD mounted on drive letter [$DriveLetter]"
         }#end else
 
+        Write-Verbose "Outputting $driveletter"
         Write-Output $driveLetter
         #return $driveLetter
     }#end process

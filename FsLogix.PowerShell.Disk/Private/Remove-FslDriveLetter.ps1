@@ -18,12 +18,17 @@ function Remove-FslDriveLetter {
         foreach ($vhd in $VHDs) {
             try {
                 ## Need to mount ##
-                $mount = Mount-VHD -path $vhd.path -Passthru -ErrorAction Stop
+                if ($vhd.attached) {
+                    $mount = get-disk | Where-Object {$_.Location -eq $vhd.path}
+                }
+                else {
+                    $mount = Mount-VHD -path $vhd.path -Passthru -ErrorAction Stop
+                }
                 Write-Verbose "VHD succesfully mounted."
             }
             catch {
                 write-error $Error[0]
-                Write-Error "Could not mount VHD. Perhaps the VHD Path."
+                Write-Error "Could not mount VHD. Perhaps the VHDs in use."
                 break
             }
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
