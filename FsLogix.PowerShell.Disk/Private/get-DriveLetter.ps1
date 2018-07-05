@@ -19,16 +19,16 @@ function get-driveletter {
     #>
 
     param(
-        [Parameter(Position = 0, Mandatory = $true)]
-        [Alias("path")]
+        [Parameter(Position = 0, Mandatory = $true)][Alias("path")]
         [string]$VHDPath
     )
     begin {
         Set-StrictMode -Version Latest
-        $Attached = $false
     }
     process {
     
+        $Attached = $false
+
         Write-Verbose "Validating path: $VHDPath"
         if (test-path $VHDPath) {
             Write-Verbose "$VHDPath is valid."
@@ -43,11 +43,8 @@ function get-driveletter {
         if ($VHDProperties.Attached -eq $true) { $Attached = $true }
 
         if ($Attached) {
-        
             ## If disk is already mounted, can skip mounting process. ##
-            $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
-            $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
-
+            $mount = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
         }else {
             try {
                 ## Need to mount ##
@@ -58,8 +55,8 @@ function get-driveletter {
                 write-error $Error[0]
                 break
             }
-            $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }
+        $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         
         ## This bug usually occurs because the Driveletter associated with the disk is already in use. ##
         if ($null -eq $driveLetter) {
@@ -77,6 +74,9 @@ function get-driveletter {
         if ($driveLetter -like "*\\?\Volume{*") {
 
             Write-warning "Driveletter is invalid: $Driveletter. Reassigning Drive Letter."
+            
+            
+            
             if ($Attached) {
                 $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
                 $driveLetter = $disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter
@@ -100,7 +100,6 @@ function get-driveletter {
                     Write-Error $Error[0]
                     Write-Error "Failed to Dismount $VHDPath vhd will need to be manually dismounted"
                 }
-
                 try {
                     mount-vhd -path $VHDPath -ErrorAction stop
                     Write-Verbose "Remounted VHD"

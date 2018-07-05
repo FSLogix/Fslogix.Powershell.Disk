@@ -55,20 +55,18 @@ function Set-FslDriveLetter {
             Write-Verbose "Assigning new driveletter: $NewLetter"
                 
             try {
-                $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter} | out-null
+                $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter} -ErrorAction Stop | out-null
             }
             catch {
                 Write-Error $Error[0]
+                Write-Error "The Drive Letter: $Letter, might already be mapped and in use."
                 exit
             }
 
             Write-Verbose "Succesfully changed $name's Driveletter to $letter."
             dismount-FslDisk -path $Vhd.path
         }
-        
-        
-    }
-    
+    }  
     end {
     }
 }
