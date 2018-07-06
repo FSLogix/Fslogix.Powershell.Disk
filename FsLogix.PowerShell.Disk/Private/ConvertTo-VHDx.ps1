@@ -14,32 +14,20 @@
 function convertTo-VHDx {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path,
 
-        [Parameter(Position = 1, Mandatory = $false)]
-        [System.string]$ParentPath,
-
-        [Parameter(Position = 2, Mandatory = $false)]
-        [System.string]$VhdType,
-
-        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet("True", "False")]
+        [Parameter(Position = 3, ValueFromPipelineByPropertyName = $true)]
         [Alias("confirm")]
-        [System.string]$Remove_Old = "False",
+        [Switch]$Remove_Old,
 
-        [Parameter(Position = 4, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet("True", "False")]
+        [Parameter(Position = 4, ValueFromPipelineByPropertyName = $true)]
         [Alias("overwrite")]
-        [System.string]$Remove_Existing = "False"
+        [Switch]$Remove_Existing
     )
     
     begin {
         set-strictmode -Version latest
-        $testforVHD = get-childitem -path $Path
-
-        $ParentPathFound = $false
-        $VHDTypeFound = $false
 
         $Confirm_Delete = $false
         $Confirm_Overwrite = $false
@@ -47,54 +35,24 @@ function convertTo-VHDx {
     
     process {
 
-        if ($ParentPath -ne "") {
-            $ParentPathFound = $true
-        }
-
-        if ($VhdType -ne "") {
-            $VHDTypeFound = $true
-        }
-
-        if ($Remove_Old -eq "true") {
+        if ($Remove_Old) {
             $Confirm_Delete = $true
         }
 
-        if($Remove_Existing -eq "true"){
+        if($Remove_Existing){
             $Confirm_Overwrite = $true
         }
 
 
         if(-not(test-path -path $Path)){
-            write-error "Path: $Path could not be found"
-            exit
-        }
-        
-        if ($testforVHD.Extension -eq ".vhdx") {
-            Write-Warning "Already a .vhdx. Exiting script..."
-            exit
+            write-error "Path: $Path could not be found" -ErrorAction Stop
         }
 
         if($Path -notlike "*.vhd"){
-            Write-Error "Path must include .vhd extension"
-            exit
+            Write-Error "Path must include .vhd extension" -ErrorAction Stop
         }
-
-
-        if ($testforVHD.Extension -eq ".vhd") {
-            Write-Verbose "Obtaining single VHD $testforVHD"
-            $VHD = Get-FslDisk -path $path
-        }else {
-            Write-Error "File path must include .vhd extension"
-            exit
-        }
-
-        if ($null -eq $VHD) {
-            Write-Warning "Could not find any VHDs."
-            exit
-        }
-
-        Write-Verbose "Obtained VHD(s)."
-        Write-Verbose "Converting VHD(s) to .vhdx"
+        
+        $VHD = Get-FslDisk -path $path
 
         $name = split-path -path $VHD.Path -leaf
         $Old_Path = $VHD.path
@@ -111,7 +69,6 @@ function convertTo-VHDx {
                 }
             }else{
                 Write-Warning "VHD: $New_Path already exists here."
-                Write-Warning "User denied overwrite. Exiting script..."
                 exit
             }
         }
@@ -132,7 +89,6 @@ function convertTo-VHDx {
 
         if ($Confirm_Delete) {
             try {
-                Write-Verbose "User confirmed deletion of old VHD"
                 remove-item -Path $Old_Path -Force 
                 Write-Verbose "Removed old VHD."
             }
@@ -144,6 +100,5 @@ function convertTo-VHDx {
     }#process
     
     end {
-        Write-Verbose "Completed script.."
     }
 }

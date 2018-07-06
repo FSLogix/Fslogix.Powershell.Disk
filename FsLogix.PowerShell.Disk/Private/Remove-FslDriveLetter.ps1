@@ -1,7 +1,18 @@
 function Remove-FslDriveLetter {
     [CmdletBinding()]
+    <#
+        .SYNOPSIS
+        Removes a drive letter associated with a virtual disk.
+
+        .PARAMETER Path
+        Path to a either specified virtual disk or directory containing disks.
+
+        .EXAMPLE
+        Remove-FslDriveLetter -path C:\Users\danie\Documents\test\test1.vhd
+        Removes the drive letter mapped to test1.vhd
+    #>
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, Mandatory = $true,ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path
     )
     
@@ -15,6 +26,10 @@ function Remove-FslDriveLetter {
             Write-Warning "Could not find VHD's in $path"
             exit
         }
+        if(-not(test-path -path $path)){
+            Write-Error "Could not find path: $path"
+            exit
+        }
         foreach ($vhd in $VHDs) {
             try {
                 ## Need to mount ##
@@ -24,7 +39,6 @@ function Remove-FslDriveLetter {
                 else {
                     $mount = Mount-VHD -path $vhd.path -Passthru -ErrorAction Stop
                 }
-                Write-Verbose "VHD succesfully mounted."
             }
             catch {
                 write-error $Error[0]
@@ -40,16 +54,14 @@ function Remove-FslDriveLetter {
 
             $Driveletter = get-driveletter -VHDPath $vhd.path
             $DL = $Driveletter.substring(0, 1)
+            
             try {
-                Write-Verbose "Getting VHD's volume..."
                 $Volume = Get-Volume | where-Object {$_.DriveLetter -eq $DL}
-                Write-Verbose "Successfully retrieved VHD's volume"
             }
             catch {
                 Write-Error $Error[0]
             }
             try {
-                Write-Verbose "Removing Drive Letter"
                 $Volume | Get-Partition | Remove-PartitionAccessPath -AccessPath $Driveletter
                 Write-Verbose "Successfully removed $Driveletter"
             }

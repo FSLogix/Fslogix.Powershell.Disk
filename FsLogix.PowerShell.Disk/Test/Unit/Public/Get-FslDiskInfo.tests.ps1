@@ -25,7 +25,11 @@ Describe $sut{
             {Get-fsldiskinfo} | should not throw
         }
         it 'Valid inputs'{
-            {Get-fsldiskinfo -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2' -csvfile 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should not throw
+            {Get-fsldiskinfo -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -csvfile 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should not throw
         }
+          it 'Asserts all verifiable mocks' {
+            Assert-VerifiableMocks
+        }
+        
     }
 }

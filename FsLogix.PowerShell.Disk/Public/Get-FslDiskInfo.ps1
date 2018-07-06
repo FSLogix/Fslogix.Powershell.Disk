@@ -10,7 +10,7 @@ function Get-FslDiskInfo {
     
     begin {
         ## Helper function to validate requirements ##
-        #Get-Requirements
+        set-strictmode -Version latest
     }
     
     process {

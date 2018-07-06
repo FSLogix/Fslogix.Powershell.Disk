@@ -1,4 +1,18 @@
 function Set-FslDriveLetter {
+    <#
+        .SYNOPSIS
+        Set's a user specified Drive Letter to a virtual disk
+
+        .PARAMETER VHDPath
+        Path to a specified virtual disk or directory containing virtual disks.
+
+        .PARAMETER Letter
+        User specified drive letter
+
+        .EXAMPLE
+        Set-FslDriveLetter -path C:\Users\danie\documents\test\test1.vhd -letter F
+        Script will set the drive letter attached to test1.vhd to letter, 'F'.
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
@@ -14,11 +28,14 @@ function Set-FslDriveLetter {
     }
     
     process {
+
+        if(-not(test-path -path $VHDPath)){
+            Write-Error "Could not find path: $VHDPath" -ErrorAction Stop
+        }
         
         $VHDs = Get-FslVHD -path $VHDPath
         if ($null -eq $VHDs) {
-            Write-Warning "Could not find any VHD's in path: $VHDPath"
-            exit
+            Write-Warning "Could not find any VHD's in path: $VHDPath" -WarningAction Stop
         }
         $Letters = [int]'A'[0]..[int]'Z'[0] | Foreach-Object {$([char]$_)}
         $Drives = Get-PSDrive | Where-Object {$_.Provider.Name -eq 'FileSystem'}
@@ -34,8 +51,7 @@ function Set-FslDriveLetter {
         }
 
         if($Available -eq $false){
-            Write-Warning "DriveLetter $Letter is not available. Please use a different letter."
-            exit
+            Write-Error "DriveLetter $Letter is not available. Please use a different letter." -ErrorAction Stop
         }
 
         foreach ($vhd in $VHDs) {
@@ -59,7 +75,6 @@ function Set-FslDriveLetter {
             }
             catch {
                 Write-Error $Error[0]
-                Write-Error "The Drive Letter: $Letter, might already be mapped and in use."
                 exit
             }
 

@@ -19,7 +19,8 @@ function get-driveletter {
     #>
 
     param(
-        [Parameter(Position = 0, Mandatory = $true)][Alias("path")]
+        [Parameter(Position = 0, Mandatory = $true)]
+        [Alias("path")]
         [string]$VHDPath
     )
     begin {
@@ -29,12 +30,8 @@ function get-driveletter {
     
         $Attached = $false
 
-        Write-Verbose "Validating path: $VHDPath"
-        if (test-path $VHDPath) {
-            Write-Verbose "$VHDPath is valid."
-        }else {
-            Write-Error "$VHDPath is invalid."
-            exit
+        if (-not(test-path $VHDPath)) {
+            Write-Error "$VHDPath is invalid." -ErrorAction Stop
         }
 
         ## Helper function ##
@@ -49,7 +46,6 @@ function get-driveletter {
             try {
                 ## Need to mount ##
                 $mount = Mount-VHD -path $VHDPath -Passthru -ErrorAction Stop
-                Write-Verbose "VHD succesfully mounted."
             }
             catch {
                 write-error $Error[0]
@@ -74,9 +70,7 @@ function get-driveletter {
         if ($driveLetter -like "*\\?\Volume{*") {
 
             Write-warning "Driveletter is invalid: $Driveletter. Reassigning Drive Letter."
-            
-            
-            
+        
             if ($Attached) {
                 $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
                 $driveLetter = $disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter
@@ -102,7 +96,6 @@ function get-driveletter {
                 }
                 try {
                     mount-vhd -path $VHDPath -ErrorAction stop
-                    Write-Verbose "Remounted VHD"
                 }
                 catch {
                     Write-Error "Could not remount VHD"
@@ -119,7 +112,6 @@ function get-driveletter {
             Write-Verbose "VHD mounted on drive letter [$DriveLetter]"
         }#end else
 
-        Write-Verbose "Outputting $driveletter"
         Write-Output $driveLetter
         #return $driveLetter
     }#end process

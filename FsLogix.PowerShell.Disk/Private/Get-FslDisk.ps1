@@ -16,7 +16,7 @@ function Get-FslDisk {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path
     )
     
@@ -26,26 +26,18 @@ function Get-FslDisk {
     
     process {
 
-        Write-Verbose "Confirming path..."
-        if (test-path -path $Path) {
-            write-verbose "Path confirmed."
-        }
-        else {
-            write-error $error[0]
-            exit
+       
+        if (-not(test-path -path $Path)) {
+            Write-Error "Cannot find path: $path" -ErrorAction Stop
         }
 
-        Write-Verbose "Confirming Extension..."
+
         if ($path -like "*.vhd*") {
-            write-verbose "Extension confirmed..."
-            $name = split-path -path $path -leaf
             try {
-                Write-Verbose "Obtaining VHD: $name's information"
                 $VHDInfo = $Path | get-vhd
             }
             catch {
                 Write-Error $Error[0]
-                exit
             }
             Write-Output $VHDInfo
         }

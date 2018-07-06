@@ -20,9 +20,13 @@ function dismount-FslDisk {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("Path")]
-        [System.String]$FullName
+        [System.String]$FullName,
+
+        # Parameter help description
+        [Parameter(Position = 1,ValueFromPipelineByPropertyName = $true)]
+        [Switch]$DismountAll
     )
     
     begin {
@@ -33,40 +37,35 @@ function dismount-FslDisk {
         if ($FullName -ne "") {
             $name = split-path -Path $FullName -Leaf
             try {
-                write-verbose "Dismounting $name"
                 Dismount-VHD -Path $FullName -ErrorAction Stop
                 Write-Verbose "Successfully dismounted $name"
             }catch {
                 write-error $Error[0]
                 exit
             }
-        }else {
+        }
+        if($DismountAll){
             
-            Write-Verbose "Getting all currently attached disks..."
             $Get_Attached_VHDs = Get-Disk | select-object -Property Model, Location
 
             if($null -eq $Get_Attached_VHDs){
                 Write-Warning "Could not find any attached VHD's. Exiting script..."
                 Exit
             }else{
-                Write-Verbose "Dismounting attached disks..."
                 foreach($vhd in $Get_Attached_VHDs){
                     if($vhd.Model -like "Virtual Disk*"){
                         $name = split-path -path $vhd.location -Leaf
                         try{
-                            Write-Verbose "Dismounting VHD: $name"
                             Dismount-VHD -path $vhd.location -ErrorAction Stop
                             Write-Verbose "Succesfully dismounted VHD: $name"
                         }catch{
                             Write-Error $Error[0]
                         }
                     }else{
-                        Write-Warning "$($vhd.Model) is not a virtual disk. Skipping"
+                        #Write-Warning "$($vhd.Model) is not a virtual disk. Skipping"
                     }
                 }
             }
-            Write-Verbose "Finishing script."
-            
         }
     }#process
 

@@ -5,12 +5,12 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
 Describe $sut {
-    Mock 'mount-vhd' -MockWith {$true}
-
+    Mock 'mount-vhd' -MockWith {} -Verifiable
+    Mock 'get-disk' -MockWith {$true}
     context -name 'Outputs that should throw'{
 
         it 'User entered wrong path'{
-            $invalid = {get-driveletter -path "C:\blah"} | Out-Null
+            $invalid = {get-driveletter -path "C:\blah"}
             $invalid | should throw
         }
         it 'Assert the mock is not called for wrong path'{
@@ -18,11 +18,11 @@ Describe $sut {
         }
     }
     Context -name 'Should not throw'{
-        if(-not(test-path -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd")){
-            new-fsldisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd"
+        if(-not(test-path -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx")){
+            new-fsldisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx"
         }
         it 'Run script with correct vhd path'{
-            {get-driveletter -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd"} | should not throw
+            {get-driveletter -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx"} | should not throw
         }
     }
 }

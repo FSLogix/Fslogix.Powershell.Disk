@@ -1,26 +1,60 @@
 function get-FslDuplicateFiles {
     [CmdletBinding()]
+    <#
+        .SYNOPSIS
+        Obtains all duplicate files per VHD within each directory.
+
+        .PARAMETER Path
+        User specified location to a virtual disk
+
+        .PARAMETER FolderPath
+        Optional user specificed folder within a virtual disk
+
+        .PARAMETER Csvpath
+        User option to either have duplicate data CSV file generated or not.
+        
+        .PARAMETER Remove
+        User option to delete duplicate files
+
+        .EXAMPLE
+        get-FslDuplicateFiles -path C:\Users\Danie\Documents\test\test1.vhd
+        Will find all the duplicate files in, test1.vhd, and output them via verbose
+
+        .EXAMPLE
+        get-FslDuplicateFiles -path C:\Users\Danie\Documents\test -CsvPath C:\Users\Danie\Documents\test\results.csv
+        Will obtain all the virtual disks within the path directory and output the data to a csv file named 'results.csv'
+
+        .EXAMPLE
+        get-FslDuplicateFiles -path C:\Users\Danie\Documents\test -CsvPath C:\Users\Danie\Documents\test\results.csv
+        Will obtain all the virtual disks within the path directory and output the data to a csv file named 'results.csv'.
+        Then the program will delete all the files labled as 'duplicate'.
+    #>
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$path,
 
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Folderpath,
 
-        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Csvpath,
 
-        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet("True", "False")]
-        [System.String]$Remove
+        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Switch]$Remove
     )
     
     begin {
+        ## Need to find a way to find all redundant files ##
+        ## 
         set-strictmode -Version latest
     }
     
     process {
         $name = split-path -path $path -leaf
+
+        if($Csvpath -ne "" -and $Csvpath -notlike "*.csv"){
+            Write-Error "$CSVPath must have a .csv extension" -ErrorAction Stop
+        }
 
         ## Helper functions built in will help with error checking ##
         $DriveLetter = get-Driveletter -path $path
@@ -28,24 +62,18 @@ function get-FslDuplicateFiles {
         Write-Verbose "Searching for Duplicates in $path"
 
         if (-not(test-path -path $Path_To_Search)) {
-            Write-Warning "$name : Could not find path: $Path_To_Search"
+            Write-Error "$name : Could not find path: $Path_To_Search" -ErrorAction Stop
         }
 
         ## Need a better way to do this.                              ##
         ## Trying to store $Path_To_Search and $Directories together. ##
         $dirlist = New-Object System.Collections.Queue
-        $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } | Select-Object FullName
-
-        foreach ($dir in $Directories) {
+        $dirlist.Enqueue($Path_To_Search) ## Start with the root value
+  
+        $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } -ErrorAction Stop | Select-Object FullName 
+ 
+        foreach ($dir in $Directories) { ## Add each directory
             $dirlist.Enqueue($dir.FullName)
-        }
-
-        ## Probably don't need this if statements, and keep it single ##
-        if ($null -eq $Directories) {
-            $dirlist.Enqueue($Path_To_Search)
-        }
-        else {
-            $dirlist.Enqueue($Path_To_Search)
         }
         
         ## Find Duplicate Algorithm ##
@@ -66,16 +94,15 @@ function get-FslDuplicateFiles {
                     ## Get File's hash value, skipping if folder ##
                     $get_FileHash = Get-FileHash -path $file.fullname
                     $FileHash = $get_FileHash.hash
-                    Write-Verbose "Obtained $file's hash value."
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
-                    Write-Warning "'$file' is a directory... Skipping."
+                    Write-Warning "'$file' is a not a file... Skipping."
                     continue
                 }
 
                 ## Hashtable will have unique values of hashcode ##
                 if ($HashArray.ContainsValue($FileHash)) {
-                    Write-Verbose "Duplicate found!"
+                    Write-Verbose "Duplicate found in Directory: $($dir) | File: $($file.name) "
                     $Duplicates.add($DupCounter++, $file.fullname)
                     if ($csvLineNumber++ -eq 0) {
                         $file | Add-Member @{VHD = $name}
@@ -100,8 +127,15 @@ function get-FslDuplicateFiles {
                     $HashArray.Add($HashCounter++, $FileHash) 
                 }
             }#foreach file
+
+            if($Duplicates.Count -eq 0){
+                Write-Verbose "No duplicates found in $dir"
+            }else{
+                Write-Verbose "Found $($duplicates.Count) duplicates in $dir"
+            }
+            
             ## User wants to delete duplicate files ##
-            if ($remove -eq "true") {
+            if ($remove) {
                 foreach ($fp in $Duplicates.Values) {
                     $filename = split-path -path $fp -leaf
                     try {
@@ -113,11 +147,7 @@ function get-FslDuplicateFiles {
                     }
                 }
             }
-            if($Duplicates.Count -eq 0){
-                Write-Verbose "No duplicates found in $dir"
-            }else{
-                Write-Verbose "Found $($duplicates.Count) duplicates in $dir"
-            }
+           
         
         }#foreach dir
     

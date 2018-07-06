@@ -21,13 +21,12 @@ function Get-FslVHD {
     process {
 
         if(-not(test-path -path $path)){
-            write-error "Path: $path is invalid."
-            exit
+            write-error "Path: $path is invalid." -ErrorAction Stop
         }
         
         $VHDs = get-childitem -path $path -filter "*.vhd*" -Recurse
         if($null -eq $VHDs){
-            write-error "Could not find any VHDs in path: $path"
+            Write-Warning "Could not find any VHDs in path: $path"
             exit
         }
 

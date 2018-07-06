@@ -25,27 +25,22 @@ function convertTo-VHD {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path,
 
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet("True", "False")]
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
         [Alias("confirm")]
-        [System.string]$Remove_Old = "False",
+        [Switch]$Remove_Old,
 
-        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet("True", "False")]
+        [Parameter(Position = 2, ValueFromPipelineByPropertyName = $true)]
         [Alias("overwrite")]
-        [System.string]$Remove_Existing = "False"
+        [Switch]$Remove_Existing
 
 
     )
     
     begin {
         set-strictmode -Version latest
-
-        $testforVHD = get-childitem -path $Path
-
         $Confirm_Delete = $false
         $Confirm_Overwrite = $false
     }
@@ -53,43 +48,22 @@ function convertTo-VHD {
     process {
 
         if(-not(test-path -path $Path)){
-            write-error "Path: $Path could not be found"
-            exit
+            write-error "Path: $Path could not be found" -ErrorAction Stop
         }
 
         if($Path -notlike "*.vhdx"){
-            Write-Error "Path must include .vhdx extension"
-            exit
+            Write-Error "Path must include .vhdx extension" -ErrorAction Stop
         }
     
-        if ($testforVHD.Extension -eq ".vhd") {
-            Write-Warning "$Path Already a .vhd. Exiting script..."
-            exit
-        }
-
-        if ($testforVHD.Extension -eq ".vhdx") {
-            Write-Verbose "Obtaining VHD from $path"
-            $VHD = get-fsldisk -path $path
-        }else{
-            write-error "Incorrect extension. Path must include .vhdx extension."
-            exit
-        }
-
-        if ($null -eq $VHD) {
-            Write-Warning "Could not find any VHDs."
-            exit
-        }
-
-        if ($Remove_Old -eq "true") { 
+        $VHD = Get-FslDisk -path $Path
+        
+        if ($Remove_Old) { 
             $Confirm_Delete = $true 
         }
 
-        if($Remove_Existing -eq "true"){
+        if($Remove_Existing){
             $Confirm_Overwrite = $true
         }
-
-        Write-Verbose "Obtained VHD."
-        Write-Verbose "Converting VHD to .vhd"
     
         $name = split-path -path $VHD.Path -leaf
         $Old_Path = $VHD.path
@@ -98,16 +72,13 @@ function convertTo-VHD {
         $AlreadyExists = get-childitem -path $New_Path -ErrorAction SilentlyContinue
         if($null -ne $AlreadyExists){
             if($Confirm_Overwrite){
-                Write-Warning "$New_Path already exists. User confirmed Overwrite."
                 try{
                     remove-item -Path $New_Path -Force 
                 }catch{
                     Write-Error $Error[0]
                 }
             }else{
-                Write-Warning "VHD: $New_Path already exists here." 
-                Write-warning "User denied overwrite. Exiting script..."
-                exit
+                Write-warning "User denied overwrite. Cancel conversion..."
             }
         }
     
@@ -117,20 +88,17 @@ function convertTo-VHD {
         }
 
         try {
-            Convert-VHD -path $Old_Path -DestinationPath $New_Path
+            Convert-VHD -path $Old_Path -DestinationPath $New_Path -ErrorAction Stop
         }
         catch {
             write-error $Error[0]
-            exit
         }
 
         Write-Verbose "$name succesfully converted to a .vhd"
 
         if ($Confirm_Delete) {
             try {
-                Write-Verbose "User confirmed deletion of old VHD"
-                remove-item -Path $Old_Path -Force 
-                Write-Verbose "Removed old VHD."
+                remove-item -Path $Old_Path -Force -ErrorAction Stop
             }
             catch {
                 Write-Error $Error[0]
@@ -140,6 +108,5 @@ function convertTo-VHD {
     }#process
     
     end {
-        Write-Verbose "Completed script.."
     }
 }

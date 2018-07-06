@@ -56,8 +56,7 @@ function ConvertTo-FslDisk {
     
     begin {
         ## Helper function to validate requirements
-        Get-Requirements
-        
+        set-strictmode -Version latest
         $Convert_To_VHD = $false
         $Convert_To_VHDx = $false
         $Delete_Existing_VHD = $false

@@ -21,16 +21,14 @@ function Get-FslDiskContents {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$VHDPath,
 
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true)]
-        [System.String]$path,
+        [Parameter(Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [System.String]$FolderPath,
 
-        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet($false,$true)]
-        [System.Boolean]$recurse = 0
-
+        [Parameter(Position = 2)]
+        [Switch]$recurse
     )
     
     begin {
@@ -38,35 +36,33 @@ function Get-FslDiskContents {
     }
     
     process {
+        
+        if(-not(test-path -path $VHDPath)){
+            Write-Error "Could not find path: $VHDPath" -ErrorAction Stop
+        }
 
-        Write-Verbose "Obtaining VHDs"
         ## Helper functions get-fslvhd and get-fsldisk will help with errors ##
         $VHDs = get-fslVHD -path $VHDPath
 
         ## Get contents ##
-        Write-Verbose "Obtaining items in VHD"
-        foreach($vhd in $VHDs){
+        foreach ($vhd in $VHDs) {
 
             ## Helper function get-driveletter will help with error handling ##
             $DriveLetter = get-driveletter -path $vhd.path
-            $FilePath = join-path ($DriveLetter)($path)
+            $FilePath = join-path ($DriveLetter)($Folderpath)
 
-            if(-not(test-path -path $FilePath)){
-                write-error "Path: $filepath is invalid."
+            if (-not(test-path -path $FilePath)) {
+                write-error "Path: $filepath is invalid." -ErrorAction Stop
             }
 
-            try{
-                Write-Verbose "Getting child items"
-                if($recurse){
-                    $contents = get-childitem -Path $FilePath -Recurse
-                }else{
-                    $contents = get-childitem -Path $FilePath
-                }
-            }catch{
-                Write-Error $Error[0]
+            if ($recurse) {
+                $contents = get-childitem -Path $FilePath -Recurse
             }
-            
-            if($null -eq $contents){
+            else {
+                $contents = get-childitem -Path $FilePath
+            }
+           
+            if ($null -eq $contents) {
                 Write-Warning "Could not find any contents."
             }
             Write-Output $contents

@@ -20,8 +20,7 @@ function Copy-FslDiskContent {
     
     begin {
         ## Helper function to validate requirements
-        Get-Requirements
-
+        set-strictmode -Version latest
         #If paths are invalid, get-driveletter script will handle it        
         $First_DL = get-driveletter -path $FirstVHDPath
         $Second_DL = get-driveletter -path $SecondVHDPath
