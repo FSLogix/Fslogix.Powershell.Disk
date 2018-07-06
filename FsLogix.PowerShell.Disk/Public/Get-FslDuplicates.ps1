@@ -26,7 +26,7 @@ function Get-FslDuplicates {
         Script will retrieve all VHDs and serach for duplicates in the 'Daniel\Kim\' directory within the VHD.
 
         .EXAMPLE
-        get-fslduplicates -vhdpath C:\Users\danie\documents\ODFC -csvpath $env:temp\test.csv -confirm true
+        get-fslduplicates -vhdpath C:\Users\danie\documents\ODFC -csvpath $env:temp\test.csv -confirm
         Script will retrieve all VHD's and search for duplicates. The duplicate files data will be exported to 
         a csv file and then the script will remove all the duplicates.
     #>
@@ -40,23 +40,18 @@ function Get-FslDuplicates {
         [System.String]$vhdPath,
 
         [Parameter(Position = 1, 
-            Mandatory = $false, 
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = 'Specific directory search within a VHD')]
         [System.String]$Path,
 
         [Parameter(Position = 2,
-            Mandatory = $false,
             HelpMessage = 'CSV output file detailing duplicate files')]
         [System.String]$Csvpath,
 
         [Parameter(Position = 3, Mandatory = $false)]
         [Alias("Confirm")]
-        [switch]$Remove,
-
-        [Parameter(Position = 4, Mandatory = $false)]
-        [System.String]$log
+        [switch]$Remove
     )
     
     begin {        
@@ -64,8 +59,7 @@ function Get-FslDuplicates {
         if ($path -ne "") {
             $check_If_Directory = [System.IO.Path]::GetExtension($path)
             if ($check_If_Directory -ne "") {
-                Write-Error "$Path must be a directory."
-                exit
+                Write-Error "$Path must be a directory." -ErrorAction Stop
             }
         }
 
@@ -78,11 +72,6 @@ function Get-FslDuplicates {
     process {
 
         set-strictmode -Version latest
-
-        $VerbosePreference = "continue"
-        if ($log -ne "") {
-            start-transcript -LiteralPath $log
-        }
         ## Get VHDs ##
         Write-Verbose "Retrieving VHD(s)"
         $VHDs = get-fslvhd -path $vhdpath
@@ -102,8 +91,6 @@ function Get-FslDuplicates {
     }#process
     
     end {
-        if ($log -ne "") {
-            stop-transcript
-        }
+
     }
 }

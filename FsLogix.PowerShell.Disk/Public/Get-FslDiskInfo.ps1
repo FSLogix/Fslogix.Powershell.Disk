@@ -1,10 +1,10 @@
 function Get-FslDiskInfo {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, ValueFromPipeline = $true)]
         [System.String]$Path,
         
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 1, ValueFromPipeline = $true)]
         [System.String]$Csvfile
     )
     
@@ -19,6 +19,9 @@ function Get-FslDiskInfo {
         $DiskInfo = $false
         $ExportCsv = $false
 
+        if($path -ne "" -and (-not(test-path -path $path))){
+            Write-Error "Could not find path: $path" -ErrorAction Stop
+        }
         if ($path -ne "") {
 
             ## Helper function to retrieve virtual disks
@@ -39,8 +42,7 @@ function Get-FslDiskInfo {
 
         if ($ExportCsv) {
             if ($Csvfile -notlike "*.csv") {
-                Write-Warning "CSV file path must include '.csv' extension."
-                $ExportCsv = $false
+                Write-Error "CSV file path must include '.csv' extension." -ErrorAction Stop
             }
         }
 

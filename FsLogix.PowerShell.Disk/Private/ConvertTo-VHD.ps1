@@ -29,7 +29,7 @@ function convertTo-VHD {
         [System.String]$Path,
 
         [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
-        [Alias("confirm")]
+        [Alias("RemoveOld")]
         [Switch]$Remove_Old,
 
         [Parameter(Position = 2, ValueFromPipelineByPropertyName = $true)]
@@ -79,6 +79,7 @@ function convertTo-VHD {
                 }
             }else{
                 Write-warning "User denied overwrite. Cancel conversion..."
+                break
             }
         }
     

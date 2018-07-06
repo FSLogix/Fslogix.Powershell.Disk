@@ -18,7 +18,7 @@ function convertTo-VHDx {
         [System.String]$Path,
 
         [Parameter(Position = 3, ValueFromPipelineByPropertyName = $true)]
-        [Alias("confirm")]
+        [Alias("RemoveOld")]
         [Switch]$Remove_Old,
 
         [Parameter(Position = 4, ValueFromPipelineByPropertyName = $true)]
