@@ -7,7 +7,7 @@
 $Public = @( Get-ChildItem -Path $PSScriptRoot\Public\*.ps1 -ErrorAction SilentlyContinue )
 $Private = @( Get-ChildItem -Path $PSScriptRoot\Private\*.ps1 -ErrorAction SilentlyContinue )
 
-#Dot source the files
+#Dot source the filesd
 Foreach ($import in @($Public + $Private)) {
     Try {
         Write-Verbose "Importing $($Import.FullName)"
