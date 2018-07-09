@@ -28,7 +28,7 @@ function Format-FslDriveLetter {
     
     process {
         ## Helper function to retrieve VHD's. Will handle errors ##
-        $VHDs = get-fsldisk -Path $VhdPath
+        $VHDs = get-fslvhd -Path $VhdPath
         
         switch ($Command) {
             'get' {
@@ -37,8 +37,7 @@ function Format-FslDriveLetter {
             'set' {
                 $SetDL = $true
                 if($null -eq $Letter){
-                    Write-Warning "Please enter a Drive Letter. Example: Format-FslDriveLetter -Command 'set' -Letter 'G'"
-                    exit
+                    Write-Warning "Please enter a Drive Letter. Example: Format-FslDriveLetter -Command 'set' -Letter 'G'" -WarningAction Stop
                 }
             }
             'remove' {
@@ -50,8 +49,7 @@ function Format-FslDriveLetter {
         ## Will validate error handling.
 
         foreach ($vhd in $VHDs) {
-            $name = split-path -Path $vhd.path
-            Write-Verbose "Processing VHD: $name"
+ 
             if ($GetDL) {
                 get-driveletter -VHDPath $vhd.path
                 dismount-FslDisk -path $vhd.path
@@ -62,7 +60,6 @@ function Format-FslDriveLetter {
             if ($RemoveDL) {
                 Remove-FslDriveLetter -Path $vhd.path
             }
-            Write-Verbose "Finished Processing VHD: $name"
         }
     }
     

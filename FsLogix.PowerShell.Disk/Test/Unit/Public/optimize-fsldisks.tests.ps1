@@ -5,7 +5,6 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
 Describe $sut{
-    mock -CommandName get-requirements -MockWith {$true}
     mock -CommandName get-FslDuplicateFiles -MockWith {$true}
     mock -CommandName optimize-vhd -MockWith {$true}
 
@@ -15,7 +14,7 @@ Describe $sut{
     }
 
     it 'Should Throw, using fixed vhd'{
-        $invalid_cmd = {Optimize-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\test.vhd' -mode 'quick'} | Out-Null
+        $invalid_cmd = {Optimize-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -mode 'quick'} | Out-Null
         $invalid_cmd | should throw 
     }
 
