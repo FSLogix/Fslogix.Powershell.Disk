@@ -1,10 +1,19 @@
-function Get-FslAvailableDriveLetter{
+function Get-FslAvailableDriveLetter {
 
+    Param(
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
+        [Switch]$NextAvailable
+    )
     ## Start at D rather than A since A-B are floppy drives and C is used by main operating system.
     $Letters = [char]'D'..[Char]'Z' | ForEach-Object { "$([char]$_)" } 
 
     ## This finds all available driveletters that are not mapped.
-    $AvailableLetters = $GetLetters | Where-Object { (new-object System.IO.DriveInfo $_).DriveType -eq 'noRootdirectory' }
+    $AvailableLetters = $Letters | Where-Object { (new-object System.IO.DriveInfo $_).DriveType -eq 'noRootdirectory' }
  
-    Write-Output $AvailableLetters
+    if ($NextAvailable) {
+        Write-Output $AvailableLetters | Select-Object -first 1
+    }
+    else {
+        Write-Output $AvailableLetters
+    }
 }
