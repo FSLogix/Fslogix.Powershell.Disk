@@ -34,7 +34,7 @@ function Get-FslDisk {
 
         if ($path -like "*.vhd*") {
             try {
-                $VHDInfo = $Path | get-vhd
+                $VHDInfo = $Path | get-vhd -ErrorAction Stop
             }
             catch {
                 Write-Error $Error[0]

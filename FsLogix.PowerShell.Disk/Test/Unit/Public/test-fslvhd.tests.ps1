@@ -6,9 +6,12 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 
 Describe $sut{
     it 'should throw'{
-        {Test-FslVHD -path 'C:\blah'} | out-null | should throw
+        {Test-FslVHD -path 'C:\blah'} | should throw
+    }
+    it 'If vhd is invalid or corrupted'{
+        {test-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Invalid.vhd'} | Out-Null | should throw
     }
     it 'should not throw'{
-        {Test-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.2.vhd'} | should not throw
+        {Test-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'} | should not throw
     }
 }

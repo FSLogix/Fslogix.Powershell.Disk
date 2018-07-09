@@ -52,14 +52,13 @@ function New-FslDisk {
         [Alias("Size")]
         [System.int64]$SizeInGB,
 
-        [Parameter(Position = 3, Mandatory = $false)]
+        [Parameter(Position = 3)]
         [ValidateSet("Dynamic", "Fixed")]
         [System.String]$Type = "Dynamic",
 
-        [Parameter(Position = 4, Mandatory = $false)]
-        [ValidateSet("True", "False")]
+        [Parameter(Position = 4)]
         [Alias("Overwrite")]
-        [System.String]$Confirm_Delete = "False",
+        [switch]$Confirm_Delete,
         
         [Parameter(Position = 5,ValuefromPipelineByPropertyName = $true, ValuefromPipeline = $true)]
         [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$"
@@ -67,11 +66,7 @@ function New-FslDisk {
     )#param
     
     begin {
-        ## Helper function to validate requirements
-        Get-Requirements
-
-
-        $VerbosePreference = "continue"
+        Set-strictmode -Version latest
         
         $Custom_VHD = $false
         $ParentPath_Found = $false
@@ -86,7 +81,7 @@ function New-FslDisk {
             $Fixed_Found = $true
         }
 
-        if ($Confirm_Delete -eq "True") {
+        if ($Confirm_Delete) {
             $Overwrite = $true
         }
 

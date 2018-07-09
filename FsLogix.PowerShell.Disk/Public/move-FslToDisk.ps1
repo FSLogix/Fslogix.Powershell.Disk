@@ -25,43 +25,36 @@ function move-FslToDisk {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
         [System.string]$VhdPath,
 
-        [Parameter(Position = 1, Mandatory = $true, ValueFromPipeline = $true)]
+        [Parameter(Position = 1, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.string]$FilePath,
 
-        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 2, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.string]$Destination,
 
-        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true)]
-        [ValidateSet("Yes", "No")]
-        [System.string]$Overwrite = "no"
+        [Parameter(Position = 3)]
+        [Switch]$Overwrite
     )
     
     begin {
-        ## Helper function to validate requirements
-        Get-Requirements
+        set-strictmode -Version latest
     }
     
     process {
 
         ## Test paths ##
         if (-not(test-path -path $VhdPath)) {
-            Write-Error "Could not validate: $vhdpath"
-            exit
+            Write-Error "Could not validate: $vhdpath" -ErrorAction stop
         }
 
         if (-not(test-path -path $FilePath)) {
-            Write-Error "Could not validate: $filepath"
-            exit
+            Write-Error "Could not validate: $filepath" -ErrorAction Stop
         }
 
-        Write-Verbose "Obtaining VHD's."
         $VhdDetails = get-fslvhd -path $vhdpath
-
-        Write-Verbose "Transfering files to VHD(s)"
         
         foreach ($vhd in $VhdDetails) {
 
@@ -69,29 +62,29 @@ function move-FslToDisk {
             $VHD_File_Location = join-path($DriveLetter) ($Destination)
 
             if (-not(test-path -path $VHD_File_Location)) {
-                Write-Error "Could not find path: $VHD_FILE_LOCATION"
-                dismount-FslDisk -path $vhd.path
-                break;
+                Write-Error "Could not find path: $VHD_FILE_LOCATION" -ErrorAction Stop
             }
 
-            Write-Verbose "Transfering file contents to $VHD_File_location"
-            
-            switch ($Overwrite) {
-                "Yes" {
-                    try{
-                        move-item -path $FilePath -Destination $VHD_File_Location -Recurse -Force
-                        Write-Verbose "Transfered file contents to $VHD_File_Location"
-                    }catch{
-                        Write-Error $Error[0]
-                    }
+            Write-Verbose "Moving file contents to $VHD_FILE_LOCATION"
+            if ($Overwrite) {
+               
+                try {
+                    move-item -path $FilePath -Destination $VHD_File_Location -Force
+                    Write-Verbose "Transfered file contents to $VHD_File_Location"
                 }
-                "No" {
-                    try{
-                        move-item -path $FilePath -Destination $VHD_File_Location -Recurse
-                    }catch{
-                        Write-Warning "Item already exists. User opted to not overwrite."
-                    }
+                catch {
+                    Write-Error $Error[0]
                 }
+            }else{
+              
+                try {
+                    #Don't need recurse parameter, is automatically recurses
+                    move-item -path $FilePath -Destination $VHD_File_Location
+                }
+                catch {
+                    Write-Error $Error[0]
+                }
+                
             }
            
             dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue

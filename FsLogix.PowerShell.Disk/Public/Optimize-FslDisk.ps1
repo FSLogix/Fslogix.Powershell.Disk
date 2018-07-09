@@ -10,8 +10,7 @@ function Optimize-FslDisk {
     )
     
     begin {
-        ## Fsl helper function ##
-        get-requirements
+       set-strictmode -Version latest
     }
     
 
