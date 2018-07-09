@@ -46,8 +46,7 @@ function Get-FslAvailableDriveLetter {
         [switch]$All
     )
     ## Start at D rather than A since A-B are floppy drives and C is used by main operating system.
-    ## For some reason, [char]'d'..[char]'z' returns ints rather than char variables. Have to convert.
-    $Letters = [char]'D'..[Char]'Z' | ForEach-Object { "$([char]$_)" } 
+    $Letters = [char[]](68..90)
 
     ## Finds all available driveletters that are mapped or unmapped
     if($all -or $NextAvailableAll){
