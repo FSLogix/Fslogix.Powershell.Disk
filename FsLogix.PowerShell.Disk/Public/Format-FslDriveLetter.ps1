@@ -67,7 +67,8 @@ function Format-FslDriveLetter {
             'set' {
                 $SetDL = $true
                 if($null -eq $Letter){
-                    Write-Warning "Please enter a Drive Letter. Example: Format-FslDriveLetter -Command 'set' -Letter 'G'" -WarningAction Stop
+                    Write-Warning "Please enter a Drive Letter. Example: Format-FslDriveLetter -Command 'set' -Letter 'G'"
+                    exit
                 }
             }
             'remove' {

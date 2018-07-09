@@ -24,7 +24,7 @@ function Test-FslVHD {
         }
 
         ## Helper function Get-FslVHD/Get-FslDisk will help handle error cases"
-       
+        
         $VHDs = Get-FslVHD -path $path
     
         foreach($vhd in $VHDs){

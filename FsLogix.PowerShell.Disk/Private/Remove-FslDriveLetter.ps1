@@ -25,7 +25,7 @@ function Remove-FslDriveLetter {
     }
     
     process {
-        $VHDs = Get-FslVHD -path $Path
+        $VHDs = Get-FslDisk -path $Path
         if ($null -eq $VHDs) {
             Write-Warning "Could not find VHD's in $path"
             exit

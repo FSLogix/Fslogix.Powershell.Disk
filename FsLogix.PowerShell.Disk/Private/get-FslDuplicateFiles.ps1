@@ -49,7 +49,6 @@ function get-FslDuplicateFiles {
     
     begin {
         ## Need to find a way to find all redundant files ##
-        ## 
         set-strictmode -Version latest
     }
     
@@ -63,7 +62,7 @@ function get-FslDuplicateFiles {
         ## Helper functions built in will help with error checking ##
         $DriveLetter = get-Driveletter -path $path
         $Path_To_Search = join-path ($DriveLetter)($folderpath)
-        Write-Verbose "Searching for Duplicates in $path"
+        Write-Verbose "Searching for Duplicates in $name"
 
         if (-not(test-path -path $Path_To_Search)) {
             Write-Error "$name : Could not find path: $Path_To_Search" -ErrorAction Stop

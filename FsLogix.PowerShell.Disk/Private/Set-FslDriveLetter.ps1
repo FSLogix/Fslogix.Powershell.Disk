@@ -37,7 +37,7 @@ function Set-FslDriveLetter {
             Write-Error "Could not find path: $VHDPath" -ErrorAction Stop
         }
         
-        $VHDs = Get-FslVHD -path $VHDPath
+        $VHDs = Get-FslDisk -path $VHDPath
         if ($null -eq $VHDs) {
             Write-Warning "Could not find any VHD's in path: $VHDPath" -WarningAction Stop
         }

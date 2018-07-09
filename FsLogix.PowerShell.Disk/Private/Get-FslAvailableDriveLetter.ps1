@@ -48,21 +48,21 @@ function Get-FslAvailableDriveLetter {
     ## Start at D rather than A since A-B are floppy drives and C is used by main operating system.
     $Letters = [char[]](68..90)
 
-    ## Finds all available driveletters that are mapped or unmapped
+    ## Finds all available driveletters that are mapped or unmapped, but not in use
     if($all -or $NextAvailableAll){
+
         $Drives = Get-PsDrive -PSProvider 'FileSystem'
         $AvailableLetters = $Letters | Where-Object {$_.name -notin $Drives.Name}
-    }else{ ## Finds all available driveletters that are unmapped
+
+    }else{ ## Finds all available driveletters that are unmapped 
+
         $UsedLetters = Get-Wmiobject -class win32_logicaldisk
-        $AvailableLetters = $Letters | Where-Object {$_ -notin $($UsedLetters.DeviceID.substring(0,1))}
+        $Mapped_Letters = $UsedLetters.DeviceID.substring(0,1)
+        $AvailableLetters = $Letters | Where-Object {$_ -notin $Mapped_Letters}
+
     }
 
-    ## Return output
-    if ($NextAvailable) {
-        Write-Output $AvailableLetters | Select-Object -first 1
-    }elseif($All){
-        Write-Output $AvailableLetters
-    }elseif($NextAvailableAll){
+    if ($NextAvailable -or $NextAvailableAll) {
         Write-Output $AvailableLetters | Select-Object -first 1
     }else{
         Write-Output $AvailableLetters
