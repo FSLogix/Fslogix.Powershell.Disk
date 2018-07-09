@@ -3,6 +3,10 @@ function Format-FslDriveLetter {
         .SYNOPSIS
         Function to either get, set, or remove a disk's driveletter.
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER VHDpath
         Path to a specificed VHD or directory of VHD's.
 

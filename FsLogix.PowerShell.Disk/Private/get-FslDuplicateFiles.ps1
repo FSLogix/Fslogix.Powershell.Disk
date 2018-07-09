@@ -4,6 +4,10 @@ function get-FslDuplicateFiles {
         .SYNOPSIS
         Obtains all duplicate files per VHD within each directory.
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER Path
         User specified location to a virtual disk
 

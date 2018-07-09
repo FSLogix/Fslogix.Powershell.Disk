@@ -1,7 +1,11 @@
 function Test-FslVHD {
     <#
         .SYNOPSIS 
-        Returns if VHD is valid or contains any problems. 
+        Returns if VHD is valid or contains any problems.
+        
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
     #>
     [CmdletBinding()]
     param (

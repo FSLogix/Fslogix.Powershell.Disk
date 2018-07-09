@@ -3,6 +3,10 @@ function move-FslToDisk {
         .SYNOPSIS
         Moves files/folders to a vhd.
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER VhdPath
         The user specified VHD path. Path can either be a folder containing VHD's
         or an individual disk. If user inputs a folder path, it'll transfer the files

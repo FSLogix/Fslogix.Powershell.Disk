@@ -1,4 +1,9 @@
 function Get-FslAvailableDriveLetter {
+    <#
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+    #>
 
     Param(
         [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]

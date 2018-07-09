@@ -1,11 +1,11 @@
 function dismount-FslDisk {
     <#
         .SYNOPSIS
-        Dismounts a VHD or dismounts currently existing attached VHDs.
+        Dismounts a VHD or dismounts all currently existing attached VHDs.
 
         .DESCRIPTION
-        This function can be added to any script that requires dismounting
-        a vhd.
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
 
         .PARAMETER VHDPath
         Optional target path for VHD location.

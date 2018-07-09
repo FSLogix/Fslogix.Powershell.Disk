@@ -4,6 +4,10 @@ function Remove-FslDriveLetter {
         .SYNOPSIS
         Removes a drive letter associated with a virtual disk.
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER Path
         Path to a either specified virtual disk or directory containing disks.
 

@@ -3,6 +3,10 @@ function Copy-FslDiskContent {
         .SYNOPSIS
         Copies contents of a VHD to another VHD
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER FirstVHDPath
         The path to the first VHD we are copying from
 

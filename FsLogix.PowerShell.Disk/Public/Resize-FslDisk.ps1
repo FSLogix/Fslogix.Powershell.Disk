@@ -1,4 +1,8 @@
 <#
+    .DESCRIPTION
+    Created by Jim Moyle @ FSLogix
+    Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+    
     .EXAMPLE
     Resize-FslDisk -SizeBytes 10gb -Path C:\Users\danie\
     Will retrieve all the VHD's in C:\Users\danie\ and resize them to 10gb.

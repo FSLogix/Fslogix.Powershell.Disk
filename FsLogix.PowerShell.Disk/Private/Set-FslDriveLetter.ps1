@@ -3,6 +3,10 @@ function Set-FslDriveLetter {
         .SYNOPSIS
         Set's a user specified Drive Letter to a virtual disk
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER VHDPath
         Path to a specified virtual disk or directory containing virtual disks.
 

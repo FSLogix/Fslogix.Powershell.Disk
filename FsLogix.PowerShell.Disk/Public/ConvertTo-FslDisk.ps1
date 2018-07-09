@@ -3,6 +3,10 @@ function ConvertTo-FslDisk {
         .SYNOPSIS
         Converts virtual hard disks into .vhd or .vhdx extensions.
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER path
         Path to the given VHD.
 

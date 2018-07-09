@@ -3,6 +3,10 @@ function New-FslDisk {
         .SYNOPSIS
         Creates a new VHD of .vhd or .vhdx extension
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER NewVHDPath
         Location for where the user wants to place the new VHD.
 

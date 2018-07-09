@@ -1,4 +1,9 @@
 function Rename-FslDisk {
+    <#
+        .DESCRIPTION
+        Created by Jim Moyle @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+    #>
     [CmdletBinding()]
 
     Param (

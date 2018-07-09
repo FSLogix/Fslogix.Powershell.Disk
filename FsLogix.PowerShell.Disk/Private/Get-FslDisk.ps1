@@ -4,6 +4,9 @@ function Get-FslDisk {
         Returns a VHD's properties and it's information/values.
 
         .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         Helper function for Get-FslVHD
         Obtains a single VHD.
         The script will return the respective VHD's properties and it's information/values.

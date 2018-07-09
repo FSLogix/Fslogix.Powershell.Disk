@@ -1,7 +1,11 @@
 function move-FslDisk {
     <#
         .SYNOPSIS
-        Migrates a vhd to another location.
+        Moves a vhd to another location.
+
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
 
         .PARAMETER Path
         Location for either all VHD's or a specific VHD

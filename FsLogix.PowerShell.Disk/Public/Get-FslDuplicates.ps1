@@ -4,6 +4,10 @@ function Get-FslDuplicates {
         Returns any duplicate files within disk into a comma separated excel file.
         User can opt to have duplicate files removed.
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER vhdPath
         Path to a specified VHD or directory containing VHD's.
 

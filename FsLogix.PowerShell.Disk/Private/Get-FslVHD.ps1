@@ -7,6 +7,9 @@ function Get-FslVHD {
         Searches in a given path for all VHD's. User can either input a directory path or
         a path to an indivudal VHD. Once all the VHD's are found, if found, return the amount
         found and then outputs the VHD's information. 
+    
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
     #>
     [CmdletBinding()]
     param (

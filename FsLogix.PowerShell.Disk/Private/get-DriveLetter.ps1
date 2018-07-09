@@ -4,6 +4,7 @@ function get-driveletter {
         Created on 6/6/18
         Created by Daniel Kim @ FSLogix    
         Created by Jim Moyle @ FSLogix
+        https://github.com/FSLogix/Fslogix.Powershell.Disk
         .SYNOPSIS
         Obtains a virtual disk and returns the Drive Letter associated with it.
         If either Drive Letter is null or invalid, the script will assign the
