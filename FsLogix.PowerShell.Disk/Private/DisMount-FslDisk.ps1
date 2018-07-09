@@ -15,7 +15,7 @@ function dismount-FslDisk {
         Will dismount vhd1.vhdx
 
         .EXAMPLE
-        dismount-fslDisk
+        dismount-fslDisk -dismountall
         Will dismount all currently attached VHD's.
     #>
     [CmdletBinding()]

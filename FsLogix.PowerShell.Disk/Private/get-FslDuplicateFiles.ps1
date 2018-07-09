@@ -25,7 +25,7 @@ function get-FslDuplicateFiles {
         Will obtain all the virtual disks within the path directory and output the data to a csv file named 'results.csv'
 
         .EXAMPLE
-        get-FslDuplicateFiles -path C:\Users\Danie\Documents\test -CsvPath C:\Users\Danie\Documents\test\results.csv
+        get-FslDuplicateFiles -path C:\Users\Danie\Documents\test -CsvPath C:\Users\Danie\Documents\test\results.csv -remove
         Will obtain all the virtual disks within the path directory and output the data to a csv file named 'results.csv'.
         Then the program will delete all the files labled as 'duplicate'.
     #>
@@ -87,7 +87,7 @@ function get-FslDuplicateFiles {
             $DupCounter = 1
             $csvLineNumber = 0
             
-            $files = get-childitem -path $dir | Sort-Object -Property LastWriteTime -Descending
+            $files = get-childitem -path $dir -file | Sort-Object -Property LastWriteTime -Descending
             
             foreach ($file in $files) {
                 try {
@@ -96,7 +96,7 @@ function get-FslDuplicateFiles {
                     $FileHash = $get_FileHash.hash
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
-                    Write-Warning "'$file' is a not a file... Skipping."
+                    Write-Error $Error[0]
                     continue
                 }
 

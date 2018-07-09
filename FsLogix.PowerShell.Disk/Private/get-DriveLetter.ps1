@@ -85,6 +85,7 @@ function get-driveletter {
                 ## Perhaps there is a way to prevent this and speed the script up.
 
                 ## Update 1 Tried using 'Update-disk', the function will then return wrong drive letter
+                ## Update 2 Tried using 'set-disk -isoffline $false', function will return wrong drive letter
 
                 try {
                     Write-Verbose "Remounting VHD."

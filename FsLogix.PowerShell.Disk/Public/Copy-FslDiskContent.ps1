@@ -1,4 +1,31 @@
 function Copy-FslDiskContent {
+    <#
+        .SYNOPSIS
+        Copies contents of a VHD to another VHD
+
+        .PARAMETER FirstVHDPath
+        The path to the first VHD we are copying from
+
+        .PARAMETER FirstFilePath
+        Optional file path within the first VHD
+
+        .PARAMETER SecondVHDPath
+        The path to the second VHD we are copying to
+
+        .PARAMETER Secondfilepath
+        Optional file path within second vhd
+
+        .PARAMETER Overwrite
+        Optional parameter to overwrite file contents if already existing in second VHD
+
+        .EXAMPLE
+        copy-fsldiskcontents -vhd1 C:\Users\danie\Documents\test1.vhd -Vhd2 C:\Users\Danie\Documents\test2.vhd -overwrite
+        Will copy all the contents in test1.vhd into test2.vhd and overwrite any pre-existing files.
+
+        .EXAMPLE
+        copy-fsldiskcontents -vhd1 C:\Users\danie\Documents\test1.vhd -file scripts\public -Vhd2 C:\Users\Danie\Documents\test2.vhd -file2 scripts\test\public -overwrite
+        Will copy all the contents in test1.vhd's path 'scripts\public' into the test2.vhd's path 'script\test\public'
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]

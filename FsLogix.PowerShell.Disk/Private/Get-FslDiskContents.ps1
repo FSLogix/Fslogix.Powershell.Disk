@@ -16,8 +16,13 @@ function Get-FslDiskContents {
         get-fsldiskcontents C:\users\danie\ODFC\test1.vhd
         returns all the folders in test1.vhd
 
+        .EXAMPLE
         get-fsldiskcontents C:\users\danie\ODFC\test1.vhd share\test
         returns all the contents in 'share\test' directory within test1.vhd
+
+        .EXAMPLE
+        get-fsldiskcontents C:\users\danie\ODFC\test1.vhd share\test -recurrse
+        returns all the contents in 'share\test' directory within test1.vhd and all it's subdirectories/files.
     #>
     [CmdletBinding()]
     param (
