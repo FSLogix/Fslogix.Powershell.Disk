@@ -60,19 +60,18 @@ function move-FslDiskContents {
             Write-Warning "Could not find any files in $VHD_FIle" -WarningAction Stop
         }
         else {
-            foreach($file in $Contents){
+            foreach ($file in $Contents) {
                 $check = get-childitem -path $Destination | Where-Object {$_.Name -eq $file.Name}
-                if($check){
-                    switch($Overwrite){
-                        "Yes"{
-                            move-item -path $file.fullname -Destination $Destination -Force
-                            Write-Verbose "Moved $($file.name) to $Destination"
-                        }
-                        "No"{
-                            Write-Warning "File: $($file.name) already exists here. Skipping..."
-                        }
+                if ($check) {
+                    if ($Overwrite) {
+                        move-item -path $file.fullname -Destination $Destination -Force
+                        Write-Verbose "Moved $($file.name) to $Destination"
                     }
-                }else{
+                    else {
+                        Write-Warning "File: $($file.name) already exists here. Skipping..."
+                    }
+                }
+                else {
                     move-item -path $file.fullname -Destination $Destination -Force
                     Write-Verbose "Moved $($file.name) to $Destination"
                 }
@@ -82,5 +81,6 @@ function move-FslDiskContents {
     }
     
     end {
+
     }
 }

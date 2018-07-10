@@ -43,7 +43,7 @@ function Get-FslCimInfo {
                 $out | Export-Csv -Path $csvpath -NoTypeInformation -Append -Force
             }
             else {
-                write-output $out | fl *
+                write-output $out | Format-List *
             }
 
             dismount-FslDisk -Path $vhd.path

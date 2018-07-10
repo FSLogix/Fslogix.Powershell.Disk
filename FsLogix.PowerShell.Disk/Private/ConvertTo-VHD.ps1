@@ -88,8 +88,7 @@ function convertTo-VHD {
         }
     
         if($VHD.attached -eq $true){
-            Write-Warning "VHD $name is currently in use. Cannot convert."
-            exit
+            Write-Warning "VHD $name is currently in use. Cannot convert." -ErrorAction Stop
         }
 
         try {

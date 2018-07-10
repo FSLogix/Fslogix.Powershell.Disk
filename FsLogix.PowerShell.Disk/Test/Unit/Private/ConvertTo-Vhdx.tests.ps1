@@ -49,7 +49,7 @@ Describe $sut {
             {convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhd" -overwrite } | should not throw
         }
         it 'Overwrite existing and delete old .vhd file, should not throw' {
-            {convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhd" -overwrite -confirm } | should not throw
+            {convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhd" -overwrite -RemoveOld } | should not throw
         }
     }
 }

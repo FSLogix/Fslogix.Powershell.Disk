@@ -38,6 +38,11 @@ Describe $sut {
             $Already_Exist = {convertTo-VHD -Path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx" -ErrorAction Stop} 
             $Already_Exist | should throw
         }
+        it 'VHD is attached'{
+            mount-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+            {convertTo-VHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'} | out-null | should throw
+            dismount-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+        }
     }
 
     Context -Name 'Test Remove-Item' {
@@ -53,7 +58,7 @@ Describe $sut {
             {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -overwrite} | should not throw
         }
         it 'Overwrite existing and delete old .vhdx file, should not throw' {
-            {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -overwrite -confirm} | should not throw
+            {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -overwrite -removeold} | should not throw
         }
     }
 }
