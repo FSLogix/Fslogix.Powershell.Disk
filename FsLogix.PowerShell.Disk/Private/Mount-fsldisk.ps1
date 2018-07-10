@@ -38,8 +38,10 @@ function Mount-FslDisk {
             $Count = 0
 
             if($VHD_Count -gt $Max_Mount_Count){
+
                 Write-Warning "The max number of virtual disks that can be mounted is $Max_Mount_Count"
                 Write-Warning "Only Mounting $Max_Mount_Count out of $VHD_Count Disk's."
+                
             }
 
             foreach($vhd in $VHDs){
