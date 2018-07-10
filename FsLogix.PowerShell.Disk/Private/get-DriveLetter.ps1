@@ -55,7 +55,7 @@ function get-driveletter {
         }
         $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         
-        ## This bug usually occurs because the Driveletter associated with the disk is already in use. ##
+        ## This bug usually occurs because the Driveletter associated with the disk is already in use ##
         if ($null -eq $driveLetter) {
             try {
                 $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}

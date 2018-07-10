@@ -3,6 +3,19 @@ function move-FslDiskContents {
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
+        .PARAMETER VHDPath
+        Path to a specified VHD
+
+        .PARAMETER FilePath
+        Optional file path within a VHD.
+
+        .PARAMETER Destination
+        Destination for file content transfer.
+
+        .PARAMETER Overwrite
+        Overwrite any pre-existing files in destination directory that are the same name
+        as the files from the VHD.
     #>
     [CmdletBinding()]
     param (
@@ -10,7 +23,7 @@ function move-FslDiskContents {
         [Alias("path")]
         [System.string]$VhdPath,
 
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$FilePath,
 
         [Parameter(Position = 2, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -56,7 +69,7 @@ function move-FslDiskContents {
                             Write-Verbose "Moved $($file.name) to $Destination"
                         }
                         "No"{
-                            Write-Warning "User opted to not overwrite. Sipping file."
+                            Write-Warning "File: $($file.name) already exists here. Skipping..."
                         }
                     }
                 }else{

@@ -48,11 +48,11 @@ function New-FslDisk {
         [Alias("path")]
         [System.string]$NewVHDPath,
 
-        [Parameter(Position = 1, Mandatory = $false)]
+        [Parameter(Position = 1)]
         [Alias("ParentPath")]
         [System.string]$VHDParentPath,
 
-        [Parameter(Position = 2, Mandatory = $false)]
+        [Parameter(Position = 2)]
         [Alias("Size")]
         [System.int64]$SizeInGB,
 

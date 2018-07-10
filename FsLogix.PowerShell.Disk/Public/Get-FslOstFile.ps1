@@ -4,7 +4,7 @@ function Get-FslOstFile {
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [System.string]$path,
 
-        [Parameter(Position = 0, Mandatory = $false, ValueFromPipeline = $false)]
+        [Parameter(Position = 0, ValueFromPipeline = $false)]
         [Switch]$Remove
     )
     

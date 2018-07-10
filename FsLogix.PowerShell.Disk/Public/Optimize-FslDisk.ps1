@@ -9,7 +9,7 @@ function Optimize-FslDisk {
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [System.string]$path,
 
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true)]
+        [Parameter(Position = 1, ValueFromPipeline = $true)]
         [Validateset('full','retrim','quick')]
         [System.String]$mode = 'quick'
     )

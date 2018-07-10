@@ -37,13 +37,13 @@ function get-FslDuplicateFiles {
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$path,
 
-        [Parameter(Position = 1, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Folderpath,
 
-        [Parameter(Position = 2, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 2,ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Csvpath,
 
-        [Parameter(Position = 3, Mandatory = $false, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 3)]
         [Switch]$Remove
     )
     
