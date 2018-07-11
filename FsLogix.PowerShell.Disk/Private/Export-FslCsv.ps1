@@ -9,6 +9,31 @@ function Export-FslCsv {
     )
 
     begin {
+        function Get-Delimiter($csv) {
+            $excluded = ([Int][Char]'0'..[Int][Char]'9') + ([Int][Char]'A'..[Int][Char]'Z') + ([Int][Char]'a'..[Int][Char]'z') + 32
+            $lines = get-content $csv | Select-Object -first 1
+
+            $DelimiterHash = @{}
+            [Bool]$Quotes = $false
+            foreach($char in $lines.ToCharArray()){
+                #Write-Verbose "$char"
+                if(-not($quotes) -and $char -eq '"'){
+                    $Quotes = $true
+                    continue
+                }
+                if($Quotes -and $char -eq '"'){
+                    $Quotes = $false
+                    continue
+                }
+                if(-not($Quotes)){
+                    if($excluded -notcontains $char){
+                        $DelimiterHash.$([Char]$char) ++
+                    }
+                }
+            }
+            $Delimiter = $DelimiterHash.GetEnumerator() | Sort-Object -Property value -Descending | select-object -first 1
+            return $Delimiter.key
+        }
     }
 
     process {
@@ -34,9 +59,22 @@ function Export-FslCsv {
         }
 
         foreach ($csv in $CSVFiles) {
-            $Excel = New-Object -ComObject excel.application
-            $Excel.visible = $false
-            $Excel.Workbooks.OpenText($csv.fullname, 437, 1, 1, 1, $True, $True, $False, $False, $False, $False)
+            $excel = New-Object -ComObject excel.application 
+            $workbook = $excel.Workbooks.Add(1)
+            $worksheet = $workbook.worksheets.Item(1)
+            $delimiter = Get-Delimiter($csv.fullname)
+
+            $TxtConnector = ("TEXT;" + $csv.fullname)
+            $Connector = $worksheet.QueryTables.add($TxtConnector, $worksheet.Range("A1"))
+
+            $query = $worksheet.QueryTables.item($Connector.name)
+            $query.TextFileOtherDelimiter = "$delimiter"
+            $query.TextFileParseType = 1
+            $query.TextFileColumnDataTypes = , 1 * $worksheet.Cells.Columns.Count
+            $query.AdjustColumnWidth = 1
+            $query.Refresh() | Out-Null
+            $query.Delete()
+
 
             if ($Destination -ne "") {
                 $ExcelDestination = $Destination + "\" + [System.String]$csv.basename + ".xlsx"
