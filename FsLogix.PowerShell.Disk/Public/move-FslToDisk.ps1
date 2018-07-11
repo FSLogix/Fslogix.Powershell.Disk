@@ -62,6 +62,7 @@ function move-FslToDisk {
         
         foreach ($vhd in $VhdDetails) {
 
+            ## FSL Drive Letter helper function
             $DriveLetter = get-driveletter -path $vhd.path
             $VHD_File_Location = join-path($DriveLetter) ($Destination)
 
