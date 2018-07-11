@@ -1,11 +1,22 @@
 function Export-FslCsv {
+    <#
+        .SYNOPSIS
+        Converts a csv file into a delimited excel sheet
+
+        .DESCRIPTION
+        Created by Daniel Kim @ FsLogix
+        https://github.com/FSLogix/Fslogix.Powershell.Disk
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$CsvLocation,
 
         [Parameter(Position = 1)]
-        [System.String]$Destination
+        [System.String]$Destination,
+
+        [Parameter(Position = 2)]
+        [Switch]$open
     )
 
     begin {
@@ -66,7 +77,12 @@ function Export-FslCsv {
 
             $Excel.ActiveWorkbook.SaveAs($ExcelDestination, 51)
             Write-Verbose "Sucessfully converted $($csv.name) to Excel format."
-            $Excel.Quit()
+
+            $excel.quit()
+
+            if($open){
+                start-process -FilePath $ExcelDestination
+            }
         }
     }
     end {

@@ -3,6 +3,10 @@ function Get-FslDelimiter {
         .SYNOPSIS
         Returns the delimiter of a csv file
 
+        .DESCRIPTION
+        Created by Daniel Kim @ FsLogix
+        https://github.com/FSLogix/Fslogix.Powershell.Disk
+
         .PARAMETER Csv
         Path to user specified csv file
 
@@ -53,5 +57,4 @@ function Get-FslDelimiter {
     }
     $Delimiter = $DelimiterHash.GetEnumerator() | Sort-Object -Property value -Descending | select-object -first 1
     Write-Output $Delimiter.Key
-
 }
