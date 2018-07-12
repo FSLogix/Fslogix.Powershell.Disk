@@ -1,9 +1,12 @@
 function convertTo-VHDx {
     <#
+        .SYNOPSIS
+        Converts a Virtual hard disk into a vhdx
+
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
-            
+
         .EXAMPLE
         convertTo-FslVHDx -path C:\Users\test.vhd
         Will convert the single vhd, test.vhd, into a vhdx.
@@ -65,7 +68,7 @@ function convertTo-VHDx {
         if (test-path -path $New_Path) {
             if ($Confirm_Overwrite) {
                 try {
-                    remove-item -Path $New_Path -Force 
+                    remove-item -Path $New_Path -Force
                 }
                 catch {
                     Write-Error $Error[0]
@@ -93,7 +96,7 @@ function convertTo-VHDx {
 
         if ($Confirm_Delete) {
             try {
-                remove-item -Path $Old_Path -Force 
+                remove-item -Path $Old_Path -Force
                 Write-Verbose "Removed old VHD."
             }
             catch {

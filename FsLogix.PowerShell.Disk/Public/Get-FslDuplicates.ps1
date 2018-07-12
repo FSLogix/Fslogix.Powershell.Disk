@@ -16,6 +16,7 @@ function Get-FslDuplicates {
 
         .PARAMETER CsvPath
         User specified destination for csv file output. Must have .csv extension.
+        User does not have to create csvfile, it will automatically be generated.
 
         .PARAMETER Remove_Duplicates
         Optional parameter if user wants to remove the duplicates.

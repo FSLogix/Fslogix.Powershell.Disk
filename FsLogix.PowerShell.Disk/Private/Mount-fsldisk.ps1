@@ -9,6 +9,14 @@ function Mount-FslDisk {
         .PARAMETER MountAll
         Option to mount all the VHD's within a directory
 
+        .EXAMPLE
+        Mount-FslDisk 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+        Mounts the virtual disk testvhd1.vhd
+
+        .EXAMPLE
+        Mount-FslDisk 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2' -mountall
+        Will mount all the VHD's within the directory, ODFCTest2.
+
     #>
     [CmdletBinding()]
     param (

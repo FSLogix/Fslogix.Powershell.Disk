@@ -1,23 +1,47 @@
 function Get-FslDiskInfo {
     <#
+        .SYNOPSIS
+        Retrieves the disk's information
+
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
+        .PARAMETER Path
+        Path to a directory of VHD's or user specified VHD
+        If Path is not specified, then currently attached disks will be used.
+
+        .PARAMETER CSVFile
+        Optional parameter to have disk information exported to a csv file.
+        User does not have to create csvfile, it will automatically be generated.
+
+        .EXAMPLE
+        Get-FslDiskInfo
+        Will output the user's currently attached disk information
+
+        .EXAMPLE
+        Get-FslDiskInfo -path 'C:\Users\Danie\VHD\Test1.vhd'
+        Will output the information about test1.vhd
+
+        .EXAMPLE
+        Get-FslDiskInfo -path 'C:\Users\Danie\VHD\Test1.vhd' -CSVFile 'C:\Users\Danie\Desktop\logging.csv'
+        Will output the information about test1.vhd into csv file logging.csv.
     #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [System.String]$Path,
-        
+
         [Parameter(Position = 1, ValueFromPipeline = $true)]
         [System.String]$Csvfile
+
     )
-    
+
     begin {
         ## Helper function to validate requirements ##
         set-strictmode -Version latest
     }
-    
+
     process {
 
         $VHDInfo = $false
@@ -67,7 +91,7 @@ function Get-FslDiskInfo {
                     $out | Export-Csv -Path $Csvfile -NoTypeInformation -Append -Force
                 }
                 else {
-                    write-output $out 
+                    write-output $out
                 }
             }
         }
@@ -79,7 +103,7 @@ function Get-FslDiskInfo {
                                             @{ N = 'Used(MB)'; E = {$_.Used / 1mb}},
                                             @{ N = 'Free(GB)'; E = {$_.Free / 1gb}},
                                             @{ N = 'Free(MB)'; E = {$_.Free / 1mb}}
-                                             
+
                 if ($ExportCsv) {
                     $out | Export-Csv -path $Csvfile -NoTypeInformation -Append -Force
                 }
@@ -90,7 +114,7 @@ function Get-FslDiskInfo {
         }
 
     }
-    
+
     end {
     }
 }

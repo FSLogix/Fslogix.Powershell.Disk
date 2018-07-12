@@ -6,6 +6,27 @@ function Export-FslCsv {
         .DESCRIPTION
         Created by Daniel Kim @ FsLogix
         https://github.com/FSLogix/Fslogix.Powershell.Disk
+
+        .PARAMETER Csvlocation
+        Location of the csv file
+
+        .PARAMETER Destination
+        Optional parameter to where the user would like the place the excel document.
+
+        .PARAMETER Open
+        If the user would like each converted csv file to open in excel.
+
+        .EXAMPLE
+        Export-FslCsv -csvlocation 'C:\Users\Danie\CSV\test.csv'
+        Will convert the csv file, 'test.csv' into an excel document.
+
+        .EXAMPLE
+        Export-FslCsv -csvlocation 'C:\Users\Danie\CSV\Test.csv' -Destination 'C:\Users\Danie\XLSX'
+        Will convert the csv file, 'test.csv' into an excel document and place them into the folder 'XLSX'
+
+        .EXAMPLE
+        Export-FslCsv -csvlocation 'C:\Users\Danie\CSV'
+        Will convert ALL the csv files in directory, 'CSV', into excel documents.
     #>
     [CmdletBinding()]
     param (
@@ -50,7 +71,7 @@ function Export-FslCsv {
             $workbook = $excel.Workbooks.Add(1)
             $worksheet = $workbook.worksheets.Item(1)
 
-            ## Get-Delimiter helper function
+            ## Get-FslDelimiter helper function
             $delimiter = Get-FslDelimiter -csv $csv.fullname
 
             $Txt = ("TEXT;" + $csv.fullname)

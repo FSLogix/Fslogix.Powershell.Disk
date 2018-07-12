@@ -16,6 +16,14 @@ function move-FslDiskContents {
         .PARAMETER Overwrite
         Overwrite any pre-existing files in destination directory that are the same name
         as the files from the VHD.
+
+        .EXAMPLE
+        Move-FslDiskContents -path 'C:\Users\Danie\VHD\Test1.vhd' -Destination 'C:\Users\Danie\Desktop\Contents'
+        Will transfer all the contenst in test1.vhd into desktop folder 'contents'.
+
+        .EXAMPLE
+        Move-FslDiskContents -path 'C:\Users\Danie\VHD\Test1.vhd' -filepath 'Favorites' -Destination 'C:\Users\Danie\Desktop\Contents'
+        Will transfer all the contenst in folder 'Favorites' within test1.vhd into desktop folder 'contents'.
     #>
     [CmdletBinding()]
     param (
@@ -32,10 +40,11 @@ function move-FslDiskContents {
         [Parameter(Position = 3)]
         [Switch]$Overwrite
     )
-    
+
     begin {
+        set-strictmode -Version latest
     }
-    
+
     process {
 
         if (-not(test-path -path $VhdPath)) {
@@ -44,7 +53,7 @@ function move-FslDiskContents {
         if (-not(test-path -path $Destination)) {
             write-error "Could not validate destination: $Destination" -ErrorAction Stop
         }
-        
+
         $VHD = get-fsldisk -path $VhdPath
 
         $DriveLetter = get-driveletter -path $VHD.path
@@ -55,7 +64,7 @@ function move-FslDiskContents {
         }
 
         $Contents = get-childitem -path $VHD_File
-        
+
         if ($null -eq $Contents) {
             Write-Warning "Could not find any files in $VHD_FIle" -WarningAction Stop
         }
@@ -79,7 +88,7 @@ function move-FslDiskContents {
         }
         dismount-FslDisk -path $VhdPath
     }
-    
+
     end {
 
     }
