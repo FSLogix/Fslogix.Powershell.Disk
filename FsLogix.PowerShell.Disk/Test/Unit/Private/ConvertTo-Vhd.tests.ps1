@@ -38,9 +38,9 @@ Describe $sut {
             $Already_Exist = {convertTo-VHD -Path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx" -ErrorAction Stop} 
             $Already_Exist | should throw
         }
-        it 'VHD is attached'{
+        it 'VHD is attached should give warning and stop'{
             mount-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
-            {convertTo-VHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'} | out-null | should throw
+            {convertTo-VHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -WarningAction Stop} | should throw
             dismount-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
         }
     }
@@ -51,6 +51,7 @@ Describe $sut {
         it 'Overwrite existing, Should throw' {
             {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -overwrite -ErrorAction Stop} | should throw
         }
+
     }
     Context -Name 'Test Convert to vhd' {
         

@@ -19,7 +19,7 @@ function Get-FslDuplicates {
 
         .PARAMETER Remove_Duplicates
         Optional parameter if user wants to remove the duplicates.
-        
+
         .EXAMPLE
         get-fslduplicates -vhdpath C:\Users\danie\Documents\ODFC -csvpath $env:temp\test.csv
         Script will retrieve all VHD's in C:\Users\Danie\Documents\ODFC and search for duplicates.
@@ -31,19 +31,19 @@ function Get-FslDuplicates {
 
         .EXAMPLE
         get-fslduplicates -vhdpath C:\Users\danie\documents\ODFC -csvpath $env:temp\test.csv -confirm
-        Script will retrieve all VHD's and search for duplicates. The duplicate files data will be exported to 
+        Script will retrieve all VHD's and search for duplicates. The duplicate files data will be exported to
         a csv file and then the script will remove all the duplicates.
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, 
-            Mandatory = $true, 
+        [Parameter(Position = 0,
+            Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = 'Path to specified VHD or directory containing VHDs' )]
         [System.String]$vhdPath,
 
-        [Parameter(Position = 1, 
+        [Parameter(Position = 1,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true,
             HelpMessage = 'Specific directory search within a VHD')]
@@ -57,8 +57,8 @@ function Get-FslDuplicates {
         [Alias("Confirm")]
         [switch]$Remove
     )
-    
-    begin {        
+
+    begin {
 
         if ($path -ne "") {
             $check_If_Directory = [System.IO.Path]::GetExtension($path)
@@ -72,7 +72,7 @@ function Get-FslDuplicates {
         }
 
     }#Begin
-    
+
     process {
 
         set-strictmode -Version latest
@@ -93,7 +93,7 @@ function Get-FslDuplicates {
             }
         }
     }#process
-    
+
     end {
 
     }

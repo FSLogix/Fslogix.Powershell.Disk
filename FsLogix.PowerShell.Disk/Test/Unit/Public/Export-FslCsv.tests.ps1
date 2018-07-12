@@ -3,7 +3,7 @@ $funcType = Split-Path $here -Leaf
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
-
+$excel = New-Object -ComObject Excel.Application
 Describe $sut {
     context -name 'should throw'{
         it 'Invalid destination'{
@@ -23,9 +23,14 @@ Describe $sut {
     context -name 'Should not throw'{
         BeforeEach{
             mock -CommandName test-path -MockWith{$true}
+            Mock New-Object {$excel} -ParameterFilter { $ComObject -eq 'excel.Application' }
         }
         it 'Valid paths'{
             {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should not throw
+        }
+        it 'Starting excel after conversion'{
+            mock -CommandName Start-Process -MockWith{$true}
+            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -open} | should not throw
         }
     }
 }

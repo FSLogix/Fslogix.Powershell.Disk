@@ -30,36 +30,36 @@ function Format-FslDriveLetter {
     #>
     [CmdletBinding()]
     param (
-        
-        [Parameter(Position = 0, Mandatory = $true, 
+
+        [Parameter(Position = 0, Mandatory = $true,
         ValueFromPipeline = $true)]
         [alias("path")]
         [System.String]$VhdPath,
-        
-        [Parameter(Position = 1, Mandatory = $true, 
+
+        [Parameter(Position = 1, Mandatory = $true,
         ValueFromPipeline = $true)]
         [ValidateSet('get','set','remove')]
         [System.String]$Command,
 
-        [Parameter(Position = 2, Mandatory = $false, 
+        [Parameter(Position = 2, Mandatory = $false,
         ValueFromPipeline = $true)]
         [ValidatePattern('^[a-zA-Z]')]
         [System.Char]$Letter
 
 
     )
-    
+
     begin {
         set-strictmode -Version latest
         $GetDL = $false
         $SetDL = $false
         $RemoveDL = $false
     }
-    
+
     process {
         ## Helper function to retrieve VHD's. Will handle errors ##
         $VHDs = get-fslvhd -Path $VhdPath
-        
+
         switch ($Command) {
             'get' {
                 $GetDL = $true
@@ -80,7 +80,7 @@ function Format-FslDriveLetter {
         ## Will validate error handling.
 
         foreach ($vhd in $VHDs) {
- 
+
             if ($GetDL) {
                 get-driveletter -VHDPath $vhd.path
                 dismount-FslDisk -path $vhd.path
@@ -93,7 +93,7 @@ function Format-FslDriveLetter {
             }
         }
     }
-    
+
     end {
     }
 }

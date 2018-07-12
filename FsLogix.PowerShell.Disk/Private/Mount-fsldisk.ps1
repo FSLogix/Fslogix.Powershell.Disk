@@ -12,23 +12,23 @@ function Mount-FslDisk {
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0, 
-            Mandatory = $true, 
-            ValueFromPipeline = $true, 
+        [Parameter(Position = 0,
+            Mandatory = $true,
+            ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path,
 
         [Parameter(Position = 1)]
         [switch]$MountAll
     )
-    
+
     begin {
         set-strictmode -Version latest
     }
-    
+
     process {
         if ($MountAll) {
-            
+
             $AvailableLetters = Get-FslAvailableDriveLetter
             $Max_Mount_Count = $AvailableLetters.count
 
@@ -41,7 +41,7 @@ function Mount-FslDisk {
 
                 Write-Warning "The max number of virtual disks that can be mounted is $Max_Mount_Count"
                 Write-Warning "Only Mounting $Max_Mount_Count out of $VHD_Count Disk's."
-                
+
             }
 
             foreach($vhd in $VHDs){
@@ -52,13 +52,15 @@ function Mount-FslDisk {
             }
         }
         else {
-            ## Helper function will handle errors         ##
-            ## Using Get-FslDisk since we only want 1 vhd ##
-            $VHD = Get-FslDisk -Path $Path
-            get-driveletter -VHDPath $Path | Out-Null
+            try{
+                mount-vhd -path $path
+                Write-Verbose "Sucessfully mounted: $path"
+            }catch{
+                Write-Error $Error[0]
+            }
         }
     }
-    
+
     end {
     }
 }

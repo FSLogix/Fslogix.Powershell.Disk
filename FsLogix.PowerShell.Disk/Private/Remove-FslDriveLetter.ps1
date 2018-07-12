@@ -19,11 +19,11 @@ function Remove-FslDriveLetter {
         [Parameter(Position = 0, Mandatory = $true,ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path
     )
-    
-    begin {
+
+    begin{
         set-strictmode -Version latest
     }
-    
+
     process {
         $VHDs = Get-FslDisk -path $Path
         if ($null -eq $VHDs) {
@@ -50,7 +50,7 @@ function Remove-FslDriveLetter {
                 break
             }
             $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
-            
+
             if ($driveLetter -like "*\\?\Volume{*" -or $null -eq $driveLetter) {
                 Write-Warning "Drive Letter is already removed for $($vhd.path)"
                 break
@@ -58,7 +58,7 @@ function Remove-FslDriveLetter {
 
             $Driveletter = get-driveletter -VHDPath $vhd.path
             $DL = $Driveletter.substring(0, 1)
-            
+
             try {
                 $Volume = Get-Volume | where-Object {$_.DriveLetter -eq $DL}
             }
@@ -75,10 +75,9 @@ function Remove-FslDriveLetter {
             }
             dismount-FslDisk -path $vhd.path
         }
-        
-        
+
     }
-    
+
     end {
     }
 }

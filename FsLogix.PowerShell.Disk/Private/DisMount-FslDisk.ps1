@@ -25,45 +25,45 @@ function dismount-FslDisk {
         [System.String]$FullName,
 
         # Parameter help description
-        [Parameter(Position = 1,ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName = $true)]
         [Switch]$DismountAll
     )
-    
+
     begin {
         set-strictmode -version latest
     }#begin
-    
+
     process {
         if ($FullName -ne "") {
             $name = split-path -Path $FullName -Leaf
             try {
                 Dismount-VHD -Path $FullName -ErrorAction Stop
                 Write-Verbose "Successfully dismounted $name"
-            }catch {
+            }
+            catch {
                 write-error $Error[0]
                 exit
             }
         }
-        if($DismountAll){
-            
-            $Get_Attached_VHDs = Get-Disk | select-object -Property Model, Location
+        if ($DismountAll) {
 
-            if($null -eq $Get_Attached_VHDs){
-                Write-Warning "Could not find any attached VHD's. Exiting script..."
-                Exit
-            }else{
-                foreach($vhd in $Get_Attached_VHDs){
-                    if($vhd.Model -like "Virtual Disk*"){
-                        $name = split-path -path $vhd.location -Leaf
-                        try{
-                            Dismount-VHD -path $vhd.location -ErrorAction Stop
-                            Write-Verbose "Succesfully dismounted VHD: $name"
-                        }catch{
-                            Write-Error $Error[0]
-                        }
-                    }else{
-                        #Write-Warning "$($vhd.Model) is not a virtual disk. Skipping"
+            $Get_Attached_VHDs = Get-Disk | select-object -Property Model, Location
+            $VHDs = $Get_Attached_VHDs | Where-Object {$_.Model -like "Virtual Disk*"}
+
+            if ($null -eq $VHDs) {
+                Write-Warning "Could not find any attached VHD's."
+            }
+            else {
+                foreach ($vhd in $VHDs) {
+                    $name = split-path -path $vhd.location -Leaf
+                    try {
+                        Dismount-VHD -path $vhd.location -ErrorAction Stop
+                        Write-Verbose "Succesfully dismounted VHD: $name"
                     }
+                    catch {
+                        Write-Error $Error[0]
+                    }
+
                 }
             }
         }

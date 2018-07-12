@@ -29,14 +29,14 @@ function convertTo-VHDx {
         [Alias("overwrite")]
         [Switch]$Remove_Existing
     )
-    
+
     begin {
         set-strictmode -Version latest
 
         $Confirm_Delete = $false
         $Confirm_Overwrite = $false
     }
-    
+
     process {
 
         if ($Remove_Old) {
@@ -55,17 +55,15 @@ function convertTo-VHDx {
         if ($Path -notlike "*.vhd") {
             Write-Error "Path must include .vhd extension" -ErrorAction Stop
         }
-        
+
         $VHD = Get-FslDisk -path $path
 
         $name = split-path -path $VHD.Path -leaf
         $Old_Path = $VHD.path
         $New_Path = $Old_path + "x"
 
-        $AlreadyExists = get-childitem -path $New_Path -ErrorAction SilentlyContinue
-        if ($null -ne $AlreadyExists) {
+        if (test-path -path $New_Path) {
             if ($Confirm_Overwrite) {
-                Write-Warning "$New_Path already exists. User confirmed Overwrite."
                 try {
                     remove-item -Path $New_Path -Force 
                 }
@@ -79,7 +77,7 @@ function convertTo-VHDx {
             }
         }
 
-        if ($VHD.attached -eq $true) {
+        if ($VHD.attached) {
             Write-Warning "VHD $name is currently in use. Cannot convert."
             exit
         }
@@ -104,7 +102,7 @@ function convertTo-VHDx {
             }
         }
     }#process
-    
+
     end {
     }
 }

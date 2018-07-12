@@ -53,10 +53,10 @@ function Export-FslCsv {
             ## Get-Delimiter helper function
             $delimiter = Get-FslDelimiter -csv $csv.fullname
 
-            $TxtConnector = ("TEXT;" + $csv.fullname)
-            $Connector = $worksheet.QueryTables.add($TxtConnector, $worksheet.Range("A1"))
+            $Txt = ("TEXT;" + $csv.fullname)
+            $QueryItems = $worksheet.QueryTables.add($Txt, $worksheet.Range("A1"))
 
-            $query = $worksheet.QueryTables.item($Connector.name)
+            $query = $worksheet.QueryTables.item($QueryItems.name)
             $query.TextFileOtherDelimiter = "$delimiter"
             $query.TextFileParseType = 1
             $query.TextFileColumnDataTypes = , 1 * $worksheet.Cells.Columns.Count

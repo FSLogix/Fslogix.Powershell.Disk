@@ -19,6 +19,9 @@ Describe $sut {
             $incorrect_path = {get-fslvhd -path "C:\blah"}
             $incorrect_path | should throw
         }
+        it 'No vhds in path should give warning'{
+            {get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public' -WarningAction stop} | should throw
+        }
     }
     context -name 'Test get-fslVHD'{
         it 'Correct vhd path'{

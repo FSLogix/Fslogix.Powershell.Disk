@@ -28,7 +28,7 @@ function get-driveletter {
         Set-StrictMode -Version Latest
     }
     process {
-    
+
         $Attached = $false
 
         if (-not(test-path $VHDPath)) {
@@ -38,7 +38,7 @@ function get-driveletter {
         ## Helper function ##
         $VHDProperties = get-fsldisk -path $VHDPath
 
-        if ($VHDProperties.Attached -eq $true) { $Attached = $true }
+        if ($VHDProperties.Attached) { $Attached = $true }
 
         if ($Attached) {
             ## If disk is already mounted, can skip mounting process. ##
@@ -54,7 +54,7 @@ function get-driveletter {
             }
         }
         $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
-        
+
         ## This bug usually occurs because the Driveletter associated with the disk is already in use ##
         if ($null -eq $driveLetter) {
             try {
@@ -66,12 +66,11 @@ function get-driveletter {
             }
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }
-        
+
         ## A drive letter was never initialized to the VHD ##
         if ($driveLetter -like "*\\?\Volume{*") {
 
             Write-warning "Driveletter is invalid: $Driveletter. Reassigning Drive Letter."
-        
             if ($Attached) {
                 $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
                 $driveLetter = $disk | Get-Partition | Add-PartitionAccessPath -AssignDriveLetter
@@ -103,7 +102,7 @@ function get-driveletter {
                     Write-Error "Could not remount VHD"
                     exit
                 }
-            
+
             }#end if(null) 
             remove-variable -Name driveletter -ErrorAction SilentlyContinue
             remove-variable -Name mount -ErrorAction SilentlyContinue

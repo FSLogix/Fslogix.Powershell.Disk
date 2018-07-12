@@ -28,7 +28,7 @@ function Get-FslDelimiter {
     }
 
     $excluded = ([Int][Char]'0'..[Int][Char]'9') + ([Int][Char]'A'..[Int][Char]'Z') + ([Int][Char]'a'..[Int][Char]'z') + 32
-    $lines = get-content $csv | Select-Object -first 1
+    $lines = get-content $csv | Select-Object -first 3
 
     $DelimiterHash = @{}
     [Bool]$Quotes = $false

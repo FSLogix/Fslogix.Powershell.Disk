@@ -26,17 +26,17 @@ function Set-FslDriveLetter {
         [ValidatePattern('^[a-zA-Z]')]
         [System.Char]$Letter
     )
-    
+
     begin {
         Set-StrictMode -Version latest
     }
-    
+
     process {
 
         if(-not(test-path -path $VHDPath)){
             Write-Error "Could not find path: $VHDPath" -ErrorAction Stop
         }
-        
+
         $VHDs = Get-FslDisk -path $VHDPath
         if ($null -eq $VHDs) {
             Write-Warning "Could not find any VHD's in path: $VHDPath" -WarningAction Stop
@@ -62,7 +62,7 @@ function Set-FslDriveLetter {
             $name = split-path -path $vhd.path -leaf
             $DL = Get-driveletter -VHDPath $vhd.path
             $subbedDL = $DL.substring(0,2)
-    
+
             try {
                 $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'"
             }
@@ -71,7 +71,7 @@ function Set-FslDriveLetter {
                 Write-Error $Error[0]
                 exit
             }
-                
+
             try {
                 $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter}
             }
@@ -83,7 +83,7 @@ function Set-FslDriveLetter {
             Write-Verbose "Succesfully changed $name's Driveletter to $letter."
             dismount-FslDisk -path $Vhd.path
         }
-    }  
+    }
     end {
     }
 }
