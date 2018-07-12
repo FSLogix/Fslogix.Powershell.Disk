@@ -171,8 +171,8 @@ function Rename-FslDisk {
             Folder {
                 $files = Get-ChildItem -Path $Folder -Recurse -File -Filter *.vhd*
                 if ($files.count -eq 0){
-                    Write-Error "No files found in location $Folder" 
-                    Write-Log -Level Error "No files found in location $Folder" 
+                    Write-Error "No files found in location $Folder"
+                    Write-Log -Level Error "No files found in location $Folder"
                 }
             }
             File {

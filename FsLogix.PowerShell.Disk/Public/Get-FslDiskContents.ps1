@@ -7,7 +7,7 @@ function Get-FslDiskContents {
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
         User can either get contents of a VHD, or get contents in a specified path in a VHD.
-        
+
         .PARAMETER VHDPath
         Path to the VHD. Cannot be a folder, must be a VHD and include .vhd/.vhdx extension.
 
@@ -40,13 +40,13 @@ function Get-FslDiskContents {
         [Parameter(Position = 3)]
         [switch]$dismount
     )
-    
+
     begin {
         set-strictmode -Version latest
     }
-    
+
     process {
-        
+
         if(-not(test-path -path $VHDPath)){
             Write-Error "Could not find path: $VHDPath" -ErrorAction Stop
         }
@@ -71,7 +71,7 @@ function Get-FslDiskContents {
             else {
                 $contents = get-childitem -Path $FilePath
             }
-           
+
             if ($null -eq $contents) {
                 Write-Warning "Could not find any contents."
             }
@@ -82,7 +82,7 @@ function Get-FslDiskContents {
             }
         }
     }
-    
+
     end {
     }
 }

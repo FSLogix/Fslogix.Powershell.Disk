@@ -2,7 +2,7 @@ function convertTo-VHD {
     <#
         .PARAMETER path
         Path to the given .vhd.
-        
+
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
@@ -61,8 +61,8 @@ function convertTo-VHD {
 
         $VHD = Get-FslDisk -path $Path
 
-        if ($Remove_Old) { 
-            $Confirm_Delete = $true 
+        if ($Remove_Old) {
+            $Confirm_Delete = $true
         }
 
         if($Remove_Existing){
@@ -76,7 +76,7 @@ function convertTo-VHD {
         if(test-path -path $New_Path){
             if($Confirm_Overwrite){
                 try{
-                    remove-item -Path $New_Path -Force 
+                    remove-item -Path $New_Path -Force
                 }catch{
                     Write-Error $Error[0]
                 }

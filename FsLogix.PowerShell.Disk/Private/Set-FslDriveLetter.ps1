@@ -47,15 +47,12 @@ function Set-FslDriveLetter {
         $NewLetter = "$Letter" + ":"
         $Available = $false
 
-        foreach ($curLetter in $AvailableLetters) {
-            if ($curLetter.ToString() -eq $letter) {
-                $Available = $true
-                break
-            }
+        if($AvailableLetters -contains $Letter){
+            $Available = $true
         }
 
         if($Available -eq $false){
-            Write-Error "DriveLetter $Letter is not available. For available driveletters, type cmdlet: Get-FslAvailableDriveLetter" -ErrorAction Stop
+            Write-Error "DriveLetter '$($Letter):\' is not available. For available driveletters, type cmdlet: Get-FslAvailableDriveLetter" -ErrorAction Stop
         }
 
         foreach ($vhd in $VHDs) {
@@ -67,7 +64,7 @@ function Set-FslDriveLetter {
                 $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'"
             }
             catch {
-                Write-Verbose "Could not chang $name's Driveletter to $letter."
+                Write-Verbose "Could not change $name's Driveletter to $letter."
                 Write-Error $Error[0]
                 exit
             }
@@ -76,7 +73,7 @@ function Set-FslDriveLetter {
                 $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter}
             }
             catch {
-                Write-Verbose "Could not chang $name's Driveletter to $letter."
+                Write-Verbose "Could not change $name's Driveletter to $letter."
                 Write-Error $Error[0]
             }
 

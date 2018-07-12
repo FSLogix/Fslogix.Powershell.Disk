@@ -16,7 +16,7 @@ function get-FslDuplicateFiles {
 
         .PARAMETER Csvpath
         User option to either have duplicate data CSV file generated or not.
-        
+
         .PARAMETER Remove
         User option to delete duplicate files
 
@@ -46,12 +46,12 @@ function get-FslDuplicateFiles {
         [Parameter(Position = 3)]
         [Switch]$Remove
     )
-    
+
     begin {
         ## Need to find a way to find all redundant files ##
         set-strictmode -Version latest
     }
-    
+
     process {
         $name = split-path -path $path -leaf
 
@@ -72,13 +72,13 @@ function get-FslDuplicateFiles {
         ## Trying to store $Path_To_Search and $Directories together. ##
         $dirlist = New-Object System.Collections.Queue
         $dirlist.Enqueue($Path_To_Search) ## Start with the root value
-  
-        $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } -ErrorAction Stop | Select-Object FullName 
- 
+
+        $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } -ErrorAction Stop | Select-Object FullName
+
         foreach ($dir in $Directories) { ## Add each directory
             $dirlist.Enqueue($dir.FullName)
         }
-        
+
         ## Find Duplicate Algorithm ##
         foreach ($dir in $DirList) {
 
@@ -89,9 +89,9 @@ function get-FslDuplicateFiles {
             $HashCounter = 1
             $DupCounter = 1
             $csvLineNumber = 0
-            
+
             $files = get-childitem -path $dir -file | Sort-Object -Property LastWriteTime -Descending
-            
+
             foreach ($file in $files) {
                 try {
                     ## Get File's hash value, skipping if folder ##
@@ -114,11 +114,11 @@ function get-FslDuplicateFiles {
                     else {
                         $file | Add-Member @{VHD = ' '}
                     }
-                
+
                     $file | Add-Member @{Folder = $dir}
                     $file | Add-Member @{Original = $HashInfo[$FileHash]}
                     $file | Add-Member @{Duplicate = $file.fullname}
-               
+
                     if ($Csvpath -ne "") {
                         $fileProperties = $file | Select-Object -Property VHD, Folder, Original, Duplicate
                         $fileProperties | export-Csv -path $Csvpath -NoTypeInformation -Append -Force
@@ -127,7 +127,7 @@ function get-FslDuplicateFiles {
                 else {
                     ## Add first occuring hash code of a file ##
                     $HashInfo.add($FileHash, $file.name) # Unique Hash Code identifer
-                    $HashArray.Add($HashCounter++, $FileHash) 
+                    $HashArray.Add($HashCounter++, $FileHash)
                 }
             }#foreach file
 
@@ -136,7 +136,7 @@ function get-FslDuplicateFiles {
             }else{
                 Write-Verbose "Found $($duplicates.Count) duplicates in $dir"
             }
-            
+
             ## User wants to delete duplicate files ##
             if ($remove) {
                 foreach ($fp in $Duplicates.Values) {
@@ -150,15 +150,17 @@ function get-FslDuplicateFiles {
                     }
                 }
             }
-           
-        
+
+
         }#foreach dir
-    
-        
+
+        $Dirlist.Clear()
+
+
         ## Finish process ##
         dismount-FslDisk -path $path
     }#process
-    
+
     end {
     }
 }

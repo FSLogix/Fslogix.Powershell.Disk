@@ -2,7 +2,7 @@ function get-driveletter {
     <#
         .NOTES
         Created on 6/6/18
-        Created by Daniel Kim @ FSLogix    
+        Created by Daniel Kim @ FSLogix
         Created by Jim Moyle @ FSLogix
         https://github.com/FSLogix/Fslogix.Powershell.Disk
         .SYNOPSIS
@@ -10,7 +10,7 @@ function get-driveletter {
         If either Drive Letter is null or invalid, the script will assign the
         next available drive letter.
         .DESCRIPTION
-        This function can be added to any script that requires mounting 
+        This function can be added to any script that requires mounting
         a vhd and accessing it's contents.
         .PARAMETER VHDPath
         The target path for VHD location.
@@ -42,7 +42,9 @@ function get-driveletter {
 
         if ($Attached) {
             ## If disk is already mounted, can skip mounting process. ##
+            ## Don't need to check if $mount will be $null since get-fsldisk and $attached validates it.
             $mount = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
+
         }else {
             try {
                 ## Need to mount ##
@@ -89,7 +91,7 @@ function get-driveletter {
 
                 try {
                     Write-Verbose "Remounting VHD."
-                    Dismount-VHD $VHDPath -ErrorAction Stop 
+                    Dismount-VHD $VHDPath -ErrorAction Stop
                 }
                 catch {
                     Write-Error $Error[0]
@@ -103,16 +105,14 @@ function get-driveletter {
                     exit
                 }
 
-            }#end if(null) 
+            }#end if(null)
             remove-variable -Name driveletter -ErrorAction SilentlyContinue
             remove-variable -Name mount -ErrorAction SilentlyContinue
             $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }#end if {volume}
-        else {
-            Write-Verbose "VHD mounted on drive letter [$DriveLetter]"
-        }#end else
 
+        Write-Verbose "VHD mounted on drive letter [$DriveLetter]"
         Write-Output $driveLetter
         #return $driveLetter
     }#end process

@@ -51,11 +51,11 @@ function Copy-FslDiskContent {
         [Parameter(Position = 4)]
         [Switch]$Overwrite
     )
-    
+
     begin {
         ## Helper function to validate requirements
         set-strictmode -Version latest
-        #If paths are invalid, get-driveletter script will handle it        
+        #If paths are invalid, get-driveletter script will handle it
         $First_DL = get-driveletter -path $FirstVHDPath
         $Second_DL = get-driveletter -path $SecondVHDPath
 
@@ -65,7 +65,7 @@ function Copy-FslDiskContent {
         $FirstFilePath = join-path($First_DL) ($FirstFilePath)
         $SecondFilePath = join-path($Second_DL) ($SecondFilePath)
     }
-    
+
     process {
         if (-not(test-path -path $FirstFilePath)) {
             write-error "Could not find path: $firstfilepath" -ErrorAction Stop
@@ -79,7 +79,7 @@ function Copy-FslDiskContent {
             Write-Error "No Files found in $FirstFilePath" -ErrorAction Stop
         }
 
-        $Contents | ForEach-Object { 
+        $Contents | ForEach-Object {
 
             if ($Overwrite) {
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force
@@ -88,14 +88,14 @@ function Copy-FslDiskContent {
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -ErrorAction Stop
                 Write-Verbose "Successfully Copied VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
             }
-           
+
         }#foreach
 
         $FirstVHDPath | dismount-FslDisk
         $SecondVHDPath | dismount-FslDisk
-      
+
     }
-    
+
     end {
     }
 }

@@ -1,8 +1,8 @@
 function Test-FslVHD {
     <#
-        .SYNOPSIS 
+        .SYNOPSIS
         Returns if VHD is valid or contains any problems.
-        
+
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
@@ -12,11 +12,11 @@ function Test-FslVHD {
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.string]$path
     )
-    
+
     begin {
         set-strictmode -Version latest
     }
-    
+
     process {
 
         if(-not(test-path -Path $path)){
@@ -24,9 +24,9 @@ function Test-FslVHD {
         }
 
         ## Helper function Get-FslVHD/Get-FslDisk will help handle error cases"
-        
+
         $VHDs = Get-FslVHD -path $path
-    
+
         foreach($vhd in $VHDs){
             $Name = split-path -path $vhd.path -leaf
             $output = Test-VHD -path $vhd.path
@@ -38,7 +38,7 @@ function Test-FslVHD {
             }
         }
     }
-    
+
     end {
     }
 }

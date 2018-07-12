@@ -13,13 +13,13 @@ function Optimize-FslDisk {
         [Validateset('full','retrim','quick')]
         [System.String]$mode = 'quick'
     )
-    
+
     begin {
        set-strictmode -Version latest
     }
-    
 
-    
+
+
     process {
         if(-not(test-path $path)){
             Write-Error "Could not find path: $path"
@@ -42,7 +42,7 @@ function Optimize-FslDisk {
             Write-Error $Error[0]
         }
     }
-    
+
     end {
     }
 }
