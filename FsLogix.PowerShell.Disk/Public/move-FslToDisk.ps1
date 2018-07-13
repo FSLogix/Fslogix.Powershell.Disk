@@ -19,7 +19,7 @@ function move-FslToDisk {
         User's file destination within VHD.
 
         .PARAMETER Overwrite
-        Validates if the user wants to ovewrrite pre-existing files within the disk 
+        Validates if the user wants to ovewrrite pre-existing files within the disk
         with the same name.
 
         .EXAMPLE
@@ -42,11 +42,11 @@ function move-FslToDisk {
         [Parameter(Position = 3)]
         [Switch]$Overwrite
     )
-    
+
     begin {
         set-strictmode -Version latest
     }
-    
+
     process {
 
         ## Test paths ##
@@ -59,7 +59,7 @@ function move-FslToDisk {
         }
 
         $VhdDetails = get-fslvhd -path $vhdpath
-        
+
         foreach ($vhd in $VhdDetails) {
 
             ## FSL Drive Letter helper function
@@ -72,7 +72,7 @@ function move-FslToDisk {
 
             Write-Verbose "Moving file contents to $VHD_FILE_LOCATION"
             if ($Overwrite) {
-               
+
                 try {
                     move-item -path $FilePath -Destination $VHD_File_Location -Force
                     Write-Verbose "Transfered file contents to $VHD_File_Location"
@@ -81,7 +81,7 @@ function move-FslToDisk {
                     Write-Error $Error[0]
                 }
             }else{
-              
+
                 try {
                     #Don't need recurse parameter, is automatically recurses
                     move-item -path $FilePath -Destination $VHD_File_Location
@@ -89,13 +89,13 @@ function move-FslToDisk {
                 catch {
                     Write-Error $Error[0]
                 }
-                
+
             }
-           
+
             dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
         }
     }
-    
+
     end {
     }
 }

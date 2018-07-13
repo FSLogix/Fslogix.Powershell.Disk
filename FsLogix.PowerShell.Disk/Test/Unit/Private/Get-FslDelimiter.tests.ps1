@@ -17,6 +17,9 @@ Describe $sut{
         BeforeEach{
             mock -CommandName Get-Content -MockWith {'"VHD","Name","Size"'}
         }
+        it 'should not throw'{
+            {get-fsldelimiter -csv 'C:\Users\danie\Documents\VHDModuleProject\test.csv' } | should not throw
+        }
         it 'output should be "," for {"VHD","Name","Size"}'{
             $output = Get-FslDelimiter -csv 'C:\Users\danie\Documents\VHDModuleProject\test.csv'
             $output | should be ','

@@ -1,4 +1,26 @@
 function Clear-FslDisk {
+    <#
+        .SYNOPSIS
+        Empties the contents of a disk
+
+        .PARAMETER Path
+        Path to an user specified disk or directory of disks
+
+        .PARAMETER Folder
+        Optional parameter to specified folder within a disk
+
+        .EXAMPLE
+        Clear-fsldisk -path 'C:\test1.vhd'
+        Clears out all the contents within test1.vhd
+
+        .EXAMPLE
+        Clear-fsldisk -path 'C:\test1.vhd' -folder 'public\tests'
+        Clears out all the contents in the folder 'Public\tests' within the VHD test1.vhd
+
+        .EXAMPLE
+        Clear-fsldisk -path 'C:\vhds'
+        Obtains all the VHD's within the directory 'C:\vhds' and clears their contents.
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]

@@ -44,7 +44,7 @@ function New-FslDisk {
     [CmdletBinding()]
     param (
         
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
         [System.string]$NewVHDPath,
 
@@ -125,7 +125,7 @@ function New-FslDisk {
         }#Test-path
 
         
-        if ($VHD_Name -match $OriginalMatch){
+        if ($VHD_Name.substring(0,$VHD_Name.Length-4) -match $OriginalMatch){
             Write-Verbose "Validated VHD's name: $VHD_Name"
         }else{
             Write-Warning "VHD: $VHD_Name does not match regex."

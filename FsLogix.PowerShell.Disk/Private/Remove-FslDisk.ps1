@@ -1,4 +1,19 @@
 function Remove-FslDisk {
+    <#
+        .SYNOPSIS
+        Deletes a virtual disk
+
+        .PARAMETER Path
+        Path to a disk or directory of disks
+
+        .EXAMPLE
+        Remove-FslDisk -path 'C:\Test1.vhd'
+        Deletes the vhd, test1.vhd
+
+        .EXAMPLE
+        Remove-FslDisk -path 'C:\VHD'
+        Deletes every virtaul disk within directory C:\VHD
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
