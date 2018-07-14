@@ -102,19 +102,16 @@ function ConvertTo-FslDisk {
 
             [System.String]$command = ""
 
+            ## ConvertTo-VHD & ConvertTo-VHDx are FsLogix's helper function ##
+            ## Will validate VHD and convert it based on user's input       ##
             if($Convert_To_VHD){
                 $command += "convertTo-VHD"
             }else{
                 $command += "convertTo-VHDx"
             }
 
-            if(test-path -path $vhd.path){
-                $path = $vhd.path
-                $command += " -path $path"
-            }else{
-                Write-Error "Could not find path: $($vhd.path)"
-                continue`
-            }
+            $path = $vhd.path
+            $command += " -path $path"
 
             if($Remove_Old){
                 $command += " -removeold"
