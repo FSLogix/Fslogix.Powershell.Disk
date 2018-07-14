@@ -44,4 +44,17 @@ Describe $sut {
             Assert-VerifiableMocks
         }
     }
+    Context -Name "Additional tests"{
+        mock -CommandName Convert-VHD -MockWith {$true}
+        mock -CommandName remove-item -MockWith {$true}
+
+        it 'Get-FslDisk vhd'{
+            Mock -CommandName Get-FslDisk -MockWith{return get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'}
+            { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd" -convertTo vhdx -overwrite -RemoveOld } | should not throw
+        }
+        it 'Get-FslDisk vhdx' {
+            Mock -CommandName Get-FslDisk -MockWith{return get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'}
+            Assert-VerifiableMocks
+        }
+    }
 }

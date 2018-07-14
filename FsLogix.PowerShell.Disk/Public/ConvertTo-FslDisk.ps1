@@ -100,37 +100,32 @@ function ConvertTo-FslDisk {
         ## Helper functions will handle errors ##
         foreach ($vhd in $VhdDetails) {
 
-            if ($Convert_To_VHD) {
-                if($Remove_Old){
-                    if($Remove_Existing){
-                        convertTo-VHD -path $vhd.path -removeold -overwrite
-                    }else{
-                        convertTo-VHD -path $vhd.path -removeold
-                    }
+            [System.String]$command = ""
 
-                }else{
-                    if($Remove_Existing){
-                        convertTo-VHD -path $vhd.path -overwrite
-                    }else{
-                        convertTo-VHD -path $vhd.path
-                    }
-
-                }
-            }else {
-                if($Remove_Old){
-                    if($Remove_Existing){
-                        convertTo-VHDx -path $vhd.path -removeold -overwrite
-                    }else{
-                        convertTo-VHDx -path $vhd.path -removeold
-                    }
-                }else{
-                    if($Remove_Existing){
-                        convertTo-VHDx -path $vhd.path -overwrite
-                    }else{
-                        convertTo-VHDx -path $vhd.path
-                    }
-                }
+            if($Convert_To_VHD){
+                $command += "convertTo-VHD"
+            }else{
+                $command += "convertTo-VHDx"
             }
+
+            if(test-path -path $vhd.path){
+                $path = $vhd.path
+                $command += " -path $path"
+            }else{
+                Write-Error "Could not find path: $($vhd.path)"
+                continue`
+            }
+
+            if($Remove_Old){
+                $command += " -removeold"
+            }
+
+            if($Remove_Existing){
+                $command += " -overwrite"
+            }
+
+            Invoke-Expression $command
+
         }
     }
     end {

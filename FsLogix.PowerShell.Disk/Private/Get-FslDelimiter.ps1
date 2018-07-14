@@ -32,7 +32,8 @@ function Get-FslDelimiter {
 
     $DelimiterHash = @{}
     [Bool]$Quotes = $false
-
+    #"VHD","Folder","Original","Duplicate"
+    #"test","C:\","hi.txt","hi2.txt"
     foreach ($char in $lines.ToCharArray()) {
         #Write-Verbose "$char"
         if (-not($quotes) -and $char -eq '"') {
