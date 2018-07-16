@@ -18,5 +18,10 @@ Describe $sut{
         it 'user wants next available unmapped drive letter'{
             {get-fslavailabledriveletter -NextUnmapped } | should not throw
         }
+        $Letter = get-fslavailabledriveletter -next
+        it 'Next available letter'{
+            $Letter = get-fslavailabledriveletter -next
+            $Letter | should be 'D'
+        }
     }
 }

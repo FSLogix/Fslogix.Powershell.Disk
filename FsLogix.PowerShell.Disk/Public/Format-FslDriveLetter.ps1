@@ -41,7 +41,7 @@ function Format-FslDriveLetter {
         [ValidateSet('get','set','remove')]
         [System.String]$Command,
 
-        [Parameter(Position = 2, Mandatory = $false,
+        [Parameter(Position = 2,
         ValueFromPipeline = $true)]
         [ValidatePattern('^[a-zA-Z]')]
         [System.Char]$Letter

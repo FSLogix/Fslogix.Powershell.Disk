@@ -21,7 +21,7 @@ function Get-FslAvailableDriveLetter {
         Returns all unmapped Drive Letters that are ready to use.
 
         .EXAMPLE
-        Get-FslAvailableDriveLetter -NextUnmapped 
+        Get-FslAvailableDriveLetter -NextUnmapped
         Returns the next available drive letter that's unmapped and ready to use
 
         .EXAMPLE
@@ -54,12 +54,17 @@ function Get-FslAvailableDriveLetter {
         $Drives = Get-PsDrive -PSProvider 'FileSystem'
         $AvailableLetters = $Letters | Where-Object {$_.name -notin $Drives.Name}
 
-    }else{ ## Finds all available driveletters that are unmapped 
+    }else{ ## Finds all available driveletters that are unmapped
 
         $UsedLetters = Get-Wmiobject -class win32_logicaldisk
         $Mapped_Letters = $UsedLetters.DeviceID.substring(0,1)
         $AvailableLetters = $Letters | Where-Object {$_ -notin $Mapped_Letters}
 
+    }
+
+    if($null -eq $AvailableLetters){
+        Write-Warning "There are no available driveletters."
+        exit
     }
 
     if ($NextAvailable -or $NextAvailableAll) {

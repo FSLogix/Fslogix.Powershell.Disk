@@ -75,7 +75,8 @@ function Copy-FslDiskContent {
         }
 
         $Contents = get-childitem -path $FirstFilePath
-        if ($null -eq $Contents)
+
+        if ($null -eq $Contents) {
             Write-Error "No Files found in $FirstFilePath" -ErrorAction Stop
         }
 

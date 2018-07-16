@@ -24,7 +24,15 @@ Describe $sut {
         }
 
         It 'Should not throw'{
-            $cmd = {Copy-FslDiskContent -VHD1 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\TestVHD2.vhd' -vhd2 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Overwrite}
-            $cmd | should not throw
+            {Copy-FslDiskContent -VHD1 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -vhd2 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Overwrite } | should not throw
+        }
+        it 'First file path was invalid'{
+            {Copy-FslDiskContent -VHD1 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -file 'blah' -vhd2 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'} | should throw
+        }
+        it 'Second file path was invalid'{
+            {Copy-FslDiskContent -VHD1 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -file2 'blah' -vhd2 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'} | should throw
+        }
+        It 'VHD contents are emtpy'{
+            {Copy-FslDiskContent -VHD1 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\empty.vhdx' -vhd2 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Overwrite } | should throw
         }
     }
