@@ -67,13 +67,23 @@ function Export-FslCsv {
         }
 
         foreach ($csv in $CSVFiles) {
+
             Write-Verbose "Creating excel document for csv file: $($csv.name)"
             $excel = New-Object -ComObject excel.application
+            if($null -eq $excel){
+                Write-Warning "Could not create excel document. You may have to repair excel installation."
+                exit
+            }
+
             $workbook = $excel.Workbooks.Add(1)
             $worksheet = $workbook.worksheets.Item(1)
 
             ## Get-FslDelimiter helper function
             $delimiter = Get-FslDelimiter -csv $csv.fullname
+            if($null -eq $delimiter){
+                Write-Warning "Could not retrieve delimiter. You may entered an incorrectly formatted csv file."
+                exit
+            }
 
             $Txt = ("TEXT;" + $csv.fullname)
             $QueryItems = $worksheet.QueryTables.add($Txt, $worksheet.Range("A1"))
