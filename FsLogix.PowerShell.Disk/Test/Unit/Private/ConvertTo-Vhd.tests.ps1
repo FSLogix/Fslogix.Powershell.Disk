@@ -45,12 +45,20 @@ Describe $sut {
         }
     }
 
-    Context -Name 'Test Remove-Item' {
+    Context -Name 'mock commands' {
         mock 'remove-item' -MockWith {$true}
 
         it 'Overwrite existing, Should throw' {
             {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -overwrite -ErrorAction Stop} | should throw
         }
+
+        mock -CommandName Remove-item -MockWith {Throw $Error[0]}
+
+        it 'Remove-Item fails should give error, because disk already exists'{
+            {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -ErrorVariable Error}
+            $Error.count -gt 0 | should be $true
+        }
+
 
     }
     Context -Name 'Test Convert to vhd' {

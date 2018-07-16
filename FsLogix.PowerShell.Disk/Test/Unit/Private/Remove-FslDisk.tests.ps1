@@ -18,8 +18,13 @@ Describe $sut{
             {Remove-fsldisk 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' } | should not throw
         }
         it 'Valid directory path'{
-            {Remove-fsldisk 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2'} | should not throw
+            {Remove-fsldisk 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'} | should not throw
         }
     }
-
+    Context -name 'Remove fails'{
+        mock -CommandName Remove-item -MockWith {throw $Error[0]}
+        it 'fails'{
+            {Remove-fsldisk 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -ErrorAction Stop } | should throw
+        }
+    }
 }

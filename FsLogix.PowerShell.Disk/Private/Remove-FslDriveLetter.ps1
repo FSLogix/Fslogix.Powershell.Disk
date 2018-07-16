@@ -25,15 +25,14 @@ function Remove-FslDriveLetter {
     }
 
     process {
-        $VHDs = Get-FslDisk -path $Path
-        if ($null -eq $VHDs) {
-            Write-Warning "Could not find VHD's in $path"
-            exit
-        }
+
         if(-not(test-path -path $path)){
-            Write-Error "Could not find path: $path"
-            exit
+            Write-Error "Could not find path: $path" -ErrorAction Stop
         }
+
+        $VHDs = Get-FslDisk -path $Path
+
+
         foreach ($vhd in $VHDs) {
             try {
                 ## Need to mount ##

@@ -6,20 +6,20 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 
 Describe $sut {
     BeforeAll{
-        Mock -CommandName Mount-VHD -MockWith {} -Verifiable
-        Mock -CommandName Get-Disk -MockWith {} -Verifiable
-        
+        Mock -CommandName Mount-VHD -MockWith {}
+        Mock -CommandName Get-Disk -MockWith {}
+        Mock -CommandName Get-Volume -MockWith {}
     }
 
     context -name 'Should throw'{
         it 'Invalid path'{
-            $ErrorMessage = {Remove-FslDriveLetter -path "C:\blah"}
-            $ErrorMessage | should Throw 'Path: C:\blah is invalid.'
+            {Remove-FslDriveLetter -path "C:\blah" } | should throw
         }
     }
     context -name 'Should not throw'{
         it 'Valid VHD'{
             {Remove-FslDriveLetter -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx'} | should not throw
         }
+        
     }
 }

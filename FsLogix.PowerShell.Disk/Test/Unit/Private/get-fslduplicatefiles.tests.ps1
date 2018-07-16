@@ -7,7 +7,7 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 Describe $sut{
     Context -name "Should throw"{
         Mock -CommandName Add-member -MockWith {$true}
-        mock -CommandName export-Csv -MockWith {} -Verifiable
+        mock -CommandName export-Csv -MockWith {$true}
         
         it 'Invalid vhd path'{
             $invalid = {get-fslduplicatefiles -path "avasdf" -Csvpath "C:\Users\danie\test.csv"} 

@@ -8,7 +8,7 @@ Describe $sut {
 
     Context -Name 'Outputs that should throw' {
         it 'Used incorrect extension path' {
-            $incorrect_path = { get-fsldisk -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public\set-FslPermission.ps1" } 
+            $incorrect_path = { get-fsldisk -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public\set-FslPermission.ps1" }
             $incorrect_path | Should throw
         }
         it 'Used folder path'{
@@ -16,13 +16,15 @@ Describe $sut {
             $incorrect_path | Should throw
         }
         it 'Used non-existing VHD'{
-            $incorrect_path = { get-fsldisk -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\test4.vhd" } 
-            $incorrect_path | Should throw
+            { get-fsldisk -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\test4.vhd" } | Should throw
+        }
+        it 'Invalid VHd should fail get-vhd'{
+            {get-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Invalid.vhd' -ErrorAction Stop} | should throw
         }
     }
     Context -name 'Test get-vhd'{
         Mock 'Get-VHD'
-        
+
         it 'Should have no verbose lines'{
             #-Verbose 4>&1 pipelines verbose 4 to 1
             $verboseLine = get-fsldisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx" -Verbose 4>&1

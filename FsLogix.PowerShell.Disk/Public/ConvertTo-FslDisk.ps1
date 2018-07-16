@@ -103,7 +103,6 @@ function ConvertTo-FslDisk {
             [System.String]$command = ""
 
             ## ConvertTo-VHD & ConvertTo-VHDx are FsLogix's helper function ##
-            ## Will validate VHD and convert it based on user's input       ##
             if($Convert_To_VHD){
                 $command += "convertTo-VHD"
             }else{

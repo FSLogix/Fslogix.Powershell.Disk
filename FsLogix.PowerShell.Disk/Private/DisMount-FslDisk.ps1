@@ -35,6 +35,9 @@ function dismount-FslDisk {
 
     process {
         if ($FullName -ne "") {
+            if($FullName -notlike "*.vhd*"){
+                Write-Error "Disk must include .vhd/.vhdx extension." -ErrorAction Stop
+            }
             $name = split-path -Path $FullName -Leaf
             try {
                 Dismount-VHD -Path $FullName -ErrorAction Stop
