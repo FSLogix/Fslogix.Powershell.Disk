@@ -70,12 +70,12 @@ function move-FslToDisk {
                 Write-Error "Could not find path: $VHD_FILE_LOCATION" -ErrorAction Stop
             }
 
-            Write-Verbose "Moving file contents to $VHD_FILE_LOCATION"
+            Write-Verbose "$(Get-Date): Moving file contents to $VHD_FILE_LOCATION"
             if ($Overwrite) {
 
                 try {
                     move-item -path $FilePath -Destination $VHD_File_Location -Force
-                    Write-Verbose "Transfered file contents to $VHD_File_Location"
+                    Write-Verbose "$(Get-Date): Transfered file contents to $VHD_File_Location"
                 }
                 catch {
                     Write-Error $Error[0]

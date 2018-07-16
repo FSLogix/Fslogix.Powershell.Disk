@@ -64,7 +64,7 @@ function Get-FslCimInfo {
             @{ N = 'CimSystemProperties'; E = {$_.CimSystemProperties}}
 
             if ($csvpath) {
-                Write-Verbose "Succesfully obtained $Disk_Name's Cim information."
+                Write-Verbose "$(Get-Date): Succesfully obtained $Disk_Name's Cim information."
                 $out | Export-Csv -Path $csvpath -NoTypeInformation -Append -Force
             }
             else {

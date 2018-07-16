@@ -64,7 +64,7 @@ function Set-FslDriveLetter {
                 $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'"
             }
             catch {
-                Write-Verbose "Could not change $name's Driveletter to $letter."
+                Write-Verbose "$(Get-Date): Could not change $name's Driveletter to $letter."
                 Write-Error $Error[0]
                 exit
             }
@@ -73,11 +73,11 @@ function Set-FslDriveLetter {
                 $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter}
             }
             catch {
-                Write-Verbose "Could not change $name's Driveletter to $letter."
+                Write-Verbose "$(Get-Date): Could not change $name's Driveletter to $letter."
                 Write-Error $Error[0]
             }
 
-            Write-Verbose "Succesfully changed $name's Driveletter to $letter."
+            Write-Verbose "$(Get-Date): Succesfully changed $name's Driveletter to $letter."
             dismount-FslDisk -path $Vhd.path
         }
     }

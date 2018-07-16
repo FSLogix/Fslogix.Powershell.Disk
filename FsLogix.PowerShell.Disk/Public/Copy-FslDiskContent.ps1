@@ -84,10 +84,10 @@ function Copy-FslDiskContent {
 
             if ($Overwrite) {
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force
-                Write-Verbose "Successfully copied and overwritten VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
+                Write-Verbose "$(Get-Date): Successfully copied and overwritten VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
             }else{
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -ErrorAction Stop
-                Write-Verbose "Successfully Copied VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
+                Write-Verbose "$(Get-Date): Successfully Copied VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
             }
 
         }#foreach

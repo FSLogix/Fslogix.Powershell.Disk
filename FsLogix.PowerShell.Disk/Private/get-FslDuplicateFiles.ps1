@@ -62,7 +62,7 @@ function get-FslDuplicateFiles {
         ## Helper functions built in will help with error checking ##
         $DriveLetter = get-Driveletter -path $path
         $Path_To_Search = join-path ($DriveLetter)($folderpath)
-        Write-Verbose "Searching for Duplicates in $name"
+        Write-Verbose "$(Get-Date): Searching for Duplicates in $name"
 
         if (-not(test-path -path $Path_To_Search)) {
             Write-Error "$name : Could not find path: $Path_To_Search" -ErrorAction Stop
@@ -82,7 +82,7 @@ function get-FslDuplicateFiles {
         ## Find Duplicate Algorithm ##
         foreach ($dir in $DirList) {
 
-            Write-Verbose "Checking directory: $dir"
+            Write-Verbose "$(Get-Date): Checking directory: $dir"
             $HashArray = @{}
             $HashInfo = @{}
             $Duplicates = @{}
@@ -105,7 +105,7 @@ function get-FslDuplicateFiles {
 
                 ## Hashtable will have unique values of hashcode ##
                 if ($HashArray.ContainsValue($FileHash)) {
-                    Write-Verbose "Duplicate found in Directory: $($dir) | File: $($file.name) "
+                    Write-Verbose "$(Get-Date): Duplicate found in Directory: $($dir) | File: $($file.name) "
                     $Duplicates.add($DupCounter++, $file.fullname)
                     if ($csvLineNumber++ -eq 0) {
                         $file | Add-Member @{VHD = $name}
@@ -132,9 +132,9 @@ function get-FslDuplicateFiles {
             }#foreach file
 
             if($Duplicates.Count -eq 0){
-                Write-Verbose "No duplicates found in $dir"
+                Write-Verbose "$(Get-Date): No duplicates found in $dir"
             }else{
-                Write-Verbose "Found $($duplicates.Count) duplicates in $dir"
+                Write-Verbose "$(Get-Date): Found $($duplicates.Count) duplicates in $dir"
             }
 
             ## User wants to delete duplicate files ##
@@ -142,7 +142,7 @@ function get-FslDuplicateFiles {
                 foreach ($fp in $Duplicates.Values) {
                     $filename = split-path -path $fp -leaf
                     try {
-                        Write-Verbose "Removing duplicate file: $filename"
+                        Write-Verbose "$(Get-Date): Removing duplicate file: $filename"
                         remove-item -path $fp -Force
                     }
                     catch {

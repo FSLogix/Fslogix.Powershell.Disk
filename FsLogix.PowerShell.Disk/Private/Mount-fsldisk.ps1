@@ -62,7 +62,7 @@ function Mount-FslDisk {
         else {
             try{
                 mount-vhd -path $path
-                Write-Verbose "Sucessfully mounted: $path"
+                Write-Verbose "$(Get-Date): Sucessfully mounted: $path"
             }catch{
                 Write-Error $Error[0]
             }

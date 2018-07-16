@@ -41,7 +41,7 @@ function Optimize-FslDisk {
         }## Removed Duplicates
 
         try {
-            Write-Verbose "Optimizing VHD: $path"
+            Write-Verbose "$(Get-Date): Optimizing VHD: $path"
             Optimize-VHD -Path $path -Mode $mode
         }
         catch {

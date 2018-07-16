@@ -76,7 +76,7 @@ function copy-FslToDisk {
                 Write-Error "Could not find path: $VHD_FILE_LOCATION" -ErrorAction Stop
             }
 
-            Write-Verbose "Copying file contents to $VHD_FILE_LOCATION"
+            Write-Verbose "$(Get-Date): Copying file contents to $VHD_FILE_LOCATION"
             if ($Overwrite) {
 
                 try {
@@ -87,7 +87,7 @@ function copy-FslToDisk {
                         copy-item -path $FilePath -Destination $VHD_File_Location -Force
                     }
 
-                    Write-Verbose "Copied file contents to $VHD_File_Location"
+                    Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
                 }
                 catch {
                     Write-Error $Error[0]
@@ -102,7 +102,7 @@ function copy-FslToDisk {
                     else {
                         copy-item -path $FilePath -Destination $VHD_File_Location
                     }
-                    Write-Verbose "Copied file contents to $VHD_File_Location"
+                    Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
                 }
                 catch {
                     Write-Error $Error[0]

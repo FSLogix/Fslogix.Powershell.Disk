@@ -90,7 +90,7 @@ function get-driveletter {
                 ## Update 2 Tried using 'set-disk -isoffline $false', function will return wrong drive letter
 
                 try {
-                    Write-Verbose "Remounting VHD."
+                    Write-Verbose "$(Get-Date): Remounting VHD."
                     Dismount-VHD $VHDPath -ErrorAction Stop
                 }
                 catch {
@@ -112,7 +112,7 @@ function get-driveletter {
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }#end if {volume}
 
-        Write-Verbose "VHD mounted on drive letter [$DriveLetter]"
+        Write-Verbose "$(Get-Date): VHD mounted on drive letter [$DriveLetter]"
         Write-Output $driveLetter
         #return $driveLetter
     }#end process

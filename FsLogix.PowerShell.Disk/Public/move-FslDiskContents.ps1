@@ -74,15 +74,15 @@ function move-FslDiskContents {
                 if ($check) {
                     if ($Overwrite) {
                         move-item -path $file.fullname -Destination $Destination -Force
-                        Write-Verbose "Moved $($file.name) to $Destination"
+                        Write-Verbose "$(Get-Date): Moved $($file.name) to $Destination"
                     }
                     else {
-                        Write-Warning "File: $($file.name) already exists here. Skipping..."
+                        Write-Warning "$(Get-Date): File: $($file.name) already exists here. Skipping..."
                     }
                 }
                 else {
                     move-item -path $file.fullname -Destination $Destination -Force
-                    Write-Verbose "Moved $($file.name) to $Destination"
+                    Write-Verbose "$(Get-Date): Moved $($file.name) to $Destination"
                 }
             }
         }

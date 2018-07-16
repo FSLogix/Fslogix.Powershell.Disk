@@ -42,7 +42,7 @@ function Get-FslOstFile {
                     # object, then it loses the count property, despite working on terminal.
                     $count = 1
                 }
-                Write-Verbose "Retrieved $count Osts in $($vhd.path)"
+                Write-Verbose "$(Get-Date): Retrieved $count Osts in $($vhd.path)"
             }
 
             if($output){
@@ -57,13 +57,13 @@ function Get-FslOstFile {
                     try {
                         $osts | Where-Object {$_.Name -ne $latestOst.Name} | Remove-Item -Force -ErrorAction Stop
                         $Totalremoved += $($count - 1)
-                        Write-Verbose "Successfully removed duplicate ost files"
+                        Write-Verbose "$(Get-Date): Successfully removed duplicate ost files"
                     }
                     catch {
                         Write-Error $Error[0]
                     }
 
-                    Write-Verbose "Removed $TotalRemoved OST's"
+                    Write-Verbose "$(Get-Date): Removed $TotalRemoved OST's"
                 }
 
             }

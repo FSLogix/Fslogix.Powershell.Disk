@@ -34,7 +34,7 @@ function Remove-FslDisk {
         foreach($vhd in $VHDs){
             try{
                 remove-item -path $vhd.path
-                Write-Verbose "Removed $(split-path -path $vhd.path -leaf)"
+                Write-Verbose "$(Get-Date): Removed $(split-path -path $vhd.path -leaf)"
             }catch{
                 Write-Error $Error[0]
             }

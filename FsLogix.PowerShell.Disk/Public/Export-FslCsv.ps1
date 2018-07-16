@@ -68,7 +68,7 @@ function Export-FslCsv {
 
         foreach ($csv in $CSVFiles) {
 
-            Write-Verbose "Creating excel document for csv file: $($csv.name)"
+            Write-Verbose "$(Get-Date): Creating excel document for csv file: $($csv.name)"
             $excel = New-Object -ComObject excel.application
             if($null -eq $excel){
                 Write-Warning "Could not create excel document. You may have to repair excel installation."
@@ -108,7 +108,7 @@ function Export-FslCsv {
             }
 
             $Excel.ActiveWorkbook.SaveAs($ExcelDestination, 51)
-            Write-Verbose "Sucessfully converted $($csv.name) to Excel format."
+            Write-Verbose "$(Get-Date): Sucessfully converted $($csv.name) to Excel format."
 
             $excel.quit()
 

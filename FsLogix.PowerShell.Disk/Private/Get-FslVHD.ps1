@@ -46,7 +46,7 @@ function Get-FslVHD {
             # object, then it loses the count property, despite working on terminal.
             $count = 1
         }
-        write-verbose "Retrieved $count VHD(s)."
+        write-verbose "$(Get-Date): Retrieved $count VHD(s)."
 
         Write-Output $VhdDetails
     }

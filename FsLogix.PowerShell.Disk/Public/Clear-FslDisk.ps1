@@ -46,7 +46,7 @@ function Clear-FslDisk {
 
             ## Helper function ##
             $contents = Get-fsldiskcontents -VHDPath $vhd.path
-            Write-Verbose "Retreived contents"
+            Write-Verbose "$(Get-Date): Retreived contents"
             if($null -eq $contents){
                 Write-Warning "$(split-path $vhd.path -leaf) is already cleared."
                 continue
@@ -58,7 +58,7 @@ function Clear-FslDisk {
                 Write-Error $Error[0]
             }
 
-            Write-Verbose "Succesfully cleared $(split-path $vhd.path -leaf)"
+            Write-Verbose "$(Get-Date): Succesfully cleared $(split-path $vhd.path -leaf)"
             dismount-FslDisk
 
         }#foreach

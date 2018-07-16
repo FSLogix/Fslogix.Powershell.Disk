@@ -70,7 +70,7 @@ function move-FslDisk {
                 if ($CheckIfAlreadyExists) {
                     if ($Overwrite) {
                         move-item -path $currVhd.path -Destination $Destination -Force
-                        Write-Verbose "Overwrited and moved $name to $Destination"
+                        Write-Verbose "$(Get-Date): Overwrited and moved $name to $Destination"
                     }
                     else {
                         Write-Error "$name already exists at $Destination" -ErrorAction Continue ## Continue to move other disks, but skip the one's we can't
@@ -79,7 +79,7 @@ function move-FslDisk {
                 else {
                     try {
                         move-item -path $currVhd.path -Destination $Destination -Force
-                        Write-Verbose "Moved $name to $Destination"
+                        Write-Verbose "$(Get-Date): Moved $name to $Destination"
                     }
                     catch {
                         Write-Error $error[0]

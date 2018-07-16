@@ -97,7 +97,7 @@ function convertTo-VHD {
             write-error $Error[0]
         }
 
-        Write-Verbose "$name succesfully converted to a .vhd"
+        Write-Verbose "$(Get-Date): $name succesfully converted to a .vhd"
 
         if ($Confirm_Delete) {
             try {

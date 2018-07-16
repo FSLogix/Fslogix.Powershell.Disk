@@ -32,9 +32,9 @@ function Test-FslVHD {
             $output = Test-VHD -path $vhd.path
             if($output){
                 Write-Output $output
-                Write-Verbose "$Name is healthy"
+                Write-Verbose "$(Get-Date): $Name is healthy"
             }else{
-                Write-Warning "$name is unhealthy"
+                Write-Warning "$(Get-Date): $name is unhealthy"
             }
         }
     }

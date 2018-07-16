@@ -78,7 +78,7 @@ function Get-FslDuplicates {
 
         set-strictmode -Version latest
         ## Get VHDs ##
-        Write-Verbose "Retrieving VHD(s)"
+        Write-Verbose "$(Get-Date): Retrieving VHD(s)"
         $VHDs = get-fslvhd -path $vhdpath
         if ($null -eq $VHDs) {
             Write-Warning "Could not find VHDs in $vhdpath"

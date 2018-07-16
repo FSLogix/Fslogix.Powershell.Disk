@@ -87,7 +87,7 @@ function convertTo-VHDx {
 
         try {
             Convert-VHD -path $Old_Path -DestinationPath $New_Path
-            Write-Verbose "$name succesfully converted to a .vhd"
+            Write-Verbose "$(Get-Date): $name succesfully converted to a .vhd"
         }
         catch {
             write-error $Error[0]
@@ -97,7 +97,7 @@ function convertTo-VHDx {
         if ($Confirm_Delete) {
             try {
                 remove-item -Path $Old_Path -Force
-                Write-Verbose "Removed old VHD."
+                Write-Verbose "$(Get-Date): Removed old VHD."
             }
             catch {
                 Write-Error $Error[0]

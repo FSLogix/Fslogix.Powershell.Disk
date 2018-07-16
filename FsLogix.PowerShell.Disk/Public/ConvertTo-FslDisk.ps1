@@ -88,7 +88,7 @@ function ConvertTo-FslDisk {
 
         }else {
 
-            write-verbose "Obtaining VHD(s) in $path"
+            write-verbose "$(Get-Date): Obtaining VHD(s) in $path"
             $VhdDetails = $VHDs.FullName | get-fsldisk | where-object {$_.vhdformat -eq "VHD"}
 
         }

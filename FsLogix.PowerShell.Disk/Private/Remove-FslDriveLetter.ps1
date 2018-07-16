@@ -66,7 +66,7 @@ function Remove-FslDriveLetter {
             }
             try {
                 $Volume | Get-Partition | Remove-PartitionAccessPath -AccessPath $Driveletter
-                Write-Verbose "Successfully removed $Driveletter"
+                Write-Verbose "$(Get-Date): Successfully removed $Driveletter"
             }
             catch {
                 Write-Error $Error[0]

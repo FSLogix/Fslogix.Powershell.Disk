@@ -100,7 +100,9 @@ function Move-FslOst {
             $FSLUser = $userData.SamAccountName
             $strSid = $userData.SID
 
-            write-verbose "$FslFullUser -|- $FSLUser -|- $strSId"
+            Write-Verbose "$(Get-Date): FSLFullUser: $FSLFullUser"
+            write-verbose "$(Get-Date): FSLuser: $FSLUser."
+            Write-Verbose "$(Get-Date): FSLSID: $strSId."
 
             ## Obtain user's information                              ##
             ## How are user's app data folder's generally named?      ##
@@ -115,11 +117,11 @@ function Move-FslOst {
             ## Validate that the paths exist and are valid ##
             if (-not(test-path -path $ost)) {
                 Write-Error "Could not retrieve OST's from path: $ost" -ErrorAction Stop
-            }else{ Write-Verbose "$FSLUser's OST is set."}
+            }else{ Write-Verbose "$(Get-Date):  $FSLUser's OST is set."}
 
             if (-not(test-path -path $Users_AppDataDir)) {
                 Write-Error "Could not retrieve AppData from path: $Users_AppDataDir" -ErrorAction Stop
-            }else{ Write-Verbose "$FSLUser's AppData is set"}
+            }else{ Write-Verbose "$(Get-Date):  $FSLUser's AppData is set"}
 
             ## Create new Migrated VHD ##
             [System.String]$Migrated_VHD = [System.String]$DiskDestination + "\" + [System.String]$Users_Migrated_VHD_Name
@@ -127,14 +129,15 @@ function Move-FslOst {
 
             if (-not(test-path -path $Migrated_VHD)){
                 Write-Error "Could not $Migrated_VHD" -ErrorAction Stop
-            }else{Write-Verbose "$FSLUser's Migrated VHD set."}
+            }else{Write-Verbose "$(Get-Date):   $FSLUser's Migrated VHD set."}
 
             ## Copy Appdata contents over ##
+            Write-Verbose "$(Get-Date): Copying AppData to $Migrated_VHD"
             copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
+            Write-Verbose "$(Get-Date): Copying OST to $Migrated_VHD"
             copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse
 
             $Migrated_VHD | dismount-fsldisk
-
 
         }#admember enumeration
     }#process

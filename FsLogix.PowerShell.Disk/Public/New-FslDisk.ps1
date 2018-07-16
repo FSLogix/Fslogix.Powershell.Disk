@@ -112,12 +112,12 @@ function New-FslDisk {
                 Write-Error "VHD already exists here! User confirmed false for overwrite."
                 exit
             }else {
-                Write-Verbose "Overwriting old VHD..."
+                Write-Verbose "$(Get-Date): Overwriting old VHD..."
                 try {
                     remove-item -path $NewVHDPath -ErrorAction stop -Force
                 }
                 catch {
-                    Write-Verbose "Could not delete old VHD."
+                    Write-Verbose "$(Get-Date): Could not delete old VHD."
                     Write-Error $Error[0]
                     exit
                 }
@@ -126,7 +126,7 @@ function New-FslDisk {
 
 
         if ($VHD_Name.substring(0,$VHD_Name.Length-4) -match $OriginalMatch){
-            Write-Verbose "Validated VHD's name: $VHD_Name"
+            Write-Verbose "$(Get-Date): Validated VHD's name: $VHD_Name"
         }else{
             Write-Warning "VHD: $VHD_Name does not match regex."
         }
@@ -135,22 +135,22 @@ function New-FslDisk {
         if ($ParentPath_Found) {
             $Fixed_Found = $false
             try {
-                Write-Verbose "Initializing VHD with Parent..."
+                Write-Verbose "$(Get-Date): Initializing VHD with Parent..."
                 $CreateVHD = New-VHD -path $NewVHDPath -ParentPath $VHDParentPath -SizeBytes $size -ErrorAction Stop
             }
             catch {
-                Write-Verbose "Could not initialize VHD."
+                Write-Verbose "$(Get-Date): Could not initialize VHD."
                 Write-Error $Error[0]
             }
         }#if parentpath_found
 
         if ($Fixed_Found) {
             try {
-                Write-Verbose "Initializing Fixed VHD..."
+                Write-Verbose "$(Get-Date): Initializing Fixed VHD..."
                 $CreateVHD = New-VHD -Path $NewVHDPath -Fixed -SizeBytes $SizeInGB -ErrorAction Stop
             }
             catch {
-                Write-Verbose "Could not Initialize VHD."
+                Write-Verbose "$(Get-Date): Could not Initialize VHD."
                 Write-Error $Error[0]
                 exit
             }
@@ -158,43 +158,43 @@ function New-FslDisk {
 
         if($Custom_VHD){#dynamic
             try {
-                Write-Verbose "Initializing Dynamic VHD..."
+                Write-Verbose "$(Get-Date): Initializing Dynamic VHD..."
                 $CreateVHD = New-VHD -Path $NewVHDPath -SizeBytes $SizeInGB -Dynamic -ErrorAction stop
             }
             catch {
-                Write-Verbose "Could not Initialize VHD."
+                Write-Verbose "$(Get-Date): Could not Initialize VHD."
                 Write-Error $Error[0]
                 exit
             }
         }#if Custom_VHD
 
         try {
-            Write-Verbose "Creating Partition..."
+            Write-Verbose "$(Get-Date): Creating Partition..."
             $CreatePartition = $CreateVHD | Mount-VHD -Passthru |Initialize-Disk -Passthru -ErrorAction SilentlyContinue |New-Partition -AssignDriveLetter -UseMaximumSize
         }
         catch {
-            Write-Verbose "Could not create partition"
+            Write-Verbose "$(Get-Date): Could not create partition"
             Write-Error $Error[0]
             exit
         }
 
 
         try {
-            Write-Verbose "Formatting Volume..."
+            Write-Verbose "$(Get-Date): Formatting Volume..."
             $CreatePartition | Format-Volume -FileSystem NTFS -Confirm:$false -Force
         }
         catch {
-            Write-Verbose "Could not format volume."
+            Write-Verbose "$(Get-Date): Could not format volume."
             Write-Error $Error[0]
             exit
         }
 
         try{
-            Write-Verbose "Validating VHD..."
+            Write-Verbose "$(Get-Date): Validating VHD..."
             if(test-fslvhd -path $NewVHDPath){
-                Write-Verbose "VHD succesfully created. Exiting script..."
+                Write-Verbose "$(Get-Date): VHD succesfully created. Exiting script..."
             }else{
-                Write-Warning "VHD was created but unable to be used."
+                Write-Warning "$(Get-Date): VHD was created but unable to be used."
             }
         }catch{
             Write-Error $Error[0]
