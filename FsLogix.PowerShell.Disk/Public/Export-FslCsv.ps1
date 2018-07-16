@@ -67,6 +67,7 @@ function Export-FslCsv {
         }
 
         foreach ($csv in $CSVFiles) {
+            Write-Verbose "Creating excel document for csv file: $($csv.name)"
             $excel = New-Object -ComObject excel.application
             $workbook = $excel.Workbooks.Add(1)
             $worksheet = $workbook.worksheets.Item(1)
@@ -86,7 +87,7 @@ function Export-FslCsv {
             $query.Delete()
 
 
-            if ($Destination -ne "") {
+            if (![System.String]::IsNullOrEmpty($Destination)) {
                 $ExcelDestination = $Destination + "\" + [System.String]$csv.basename + ".xlsx"
             }
             else {

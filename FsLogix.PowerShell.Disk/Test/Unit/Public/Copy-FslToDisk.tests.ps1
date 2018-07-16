@@ -5,7 +5,7 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
 describe $sut{
-   
+
     context -name "Output should throw"{
         it 'Invalid VHD path'{
             {copy-FslToDisk -path "C:\blah" -FilePath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Public"} | should throw

@@ -61,14 +61,14 @@ function Get-FslDuplicates {
 
     begin {
 
-        if ($path -ne "") {
+        if (![System.string]::IsNullOrEmpty($path)) {
             $check_If_Directory = [System.IO.Path]::GetExtension($path)
-            if ($check_If_Directory -ne "") {
+            if (![System.string]::IsNullOrEmpty($check_If_Directory)) {
                 Write-Error "$Path must be a directory." -ErrorAction Stop
             }
         }
 
-        if ($Csvpath -ne "") {
+        if (![System.string]::IsNullOrEmpty($Csvpath)) {
             remove-item -path $Csvpath -Force -ErrorAction SilentlyContinue
         }
 

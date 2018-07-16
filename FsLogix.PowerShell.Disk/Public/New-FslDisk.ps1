@@ -25,7 +25,7 @@ function New-FslDisk {
 
         .EXAMPLE
         New-FslVHD -path C:\Users\Desktop\ODFC\test1.vhdx
-        Creates a new VHD, test1.vhdx, in the ODFC folder with a default size 
+        Creates a new VHD, test1.vhdx, in the ODFC folder with a default size
         of 10gb and automatically formats a volume and drive letter.
 
         .EXAMPLE
@@ -43,7 +43,7 @@ function New-FslDisk {
     #>
     [CmdletBinding()]
     param (
-        
+
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
         [System.string]$NewVHDPath,
@@ -63,15 +63,15 @@ function New-FslDisk {
         [Parameter(Position = 4)]
         [Alias("Overwrite")]
         [switch]$Confirm_Delete,
-        
+
         [Parameter(Position = 5,ValuefromPipelineByPropertyName = $true, ValuefromPipeline = $true)]
         [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$"
 
     )#param
-    
+
     begin {
         Set-strictmode -Version latest
-        
+
         $Custom_VHD = $false
         $ParentPath_Found = $false
         $Fixed_Found = $false
@@ -97,7 +97,7 @@ function New-FslDisk {
         }
 
     }#Begin
-    
+
     process {
 
         if ($NewVHDPath -notlike "*.vhd*") {
@@ -106,7 +106,7 @@ function New-FslDisk {
         } else {
             $VHD_Name = split-path -path $NewVHDPath -Leaf
         }
-    
+
         if (test-path -path $NewVHDPath) {
             if ($Overwrite -eq $false) {
                 Write-Error "VHD already exists here! User confirmed false for overwrite."
@@ -124,14 +124,14 @@ function New-FslDisk {
             }
         }#Test-path
 
-        
+
         if ($VHD_Name.substring(0,$VHD_Name.Length-4) -match $OriginalMatch){
             Write-Verbose "Validated VHD's name: $VHD_Name"
         }else{
             Write-Warning "VHD: $VHD_Name does not match regex."
-            Write-Error "VHD: $VHD_Name does not match regex"
+            exit
         }
-        
+
 
         if ($ParentPath_Found) {
             $Fixed_Found = $false
@@ -156,7 +156,7 @@ function New-FslDisk {
                 exit
             }
         }#if fixed_found
-        
+
         if($Custom_VHD){#dynamic
             try {
                 Write-Verbose "Initializing Dynamic VHD..."
@@ -168,17 +168,17 @@ function New-FslDisk {
                 exit
             }
         }#if Custom_VHD
-        
+
         try {
             Write-Verbose "Creating Partition..."
-            $CreatePartition = $CreateVHD | Mount-VHD -Passthru |Initialize-Disk -Passthru -ErrorAction SilentlyContinue |New-Partition -AssignDriveLetter -UseMaximumSize 
+            $CreatePartition = $CreateVHD | Mount-VHD -Passthru |Initialize-Disk -Passthru -ErrorAction SilentlyContinue |New-Partition -AssignDriveLetter -UseMaximumSize
         }
         catch {
             Write-Verbose "Could not create partition"
             Write-Error $Error[0]
             exit
         }
-        
+
 
         try {
             Write-Verbose "Formatting Volume..."
@@ -202,8 +202,8 @@ function New-FslDisk {
         }
 
     } #process
-    
+
     end {
-        
+
     }
 }

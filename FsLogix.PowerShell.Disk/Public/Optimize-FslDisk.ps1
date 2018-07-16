@@ -10,35 +10,41 @@ function Optimize-FslDisk {
         [System.string]$path,
 
         [Parameter(Position = 1, ValueFromPipeline = $true)]
-        [Validateset('full','retrim','quick')]
-        [System.String]$mode = 'quick'
+        [Validateset('full', 'retrim', 'quick')]
+        [System.String]$mode = 'quick',
+
+        [Parameter(Position = 2)]
+        [Switch]$Delete
     )
 
     begin {
-       set-strictmode -Version latest
+        set-strictmode -Version latest
     }
 
 
 
     process {
-        if(-not(test-path $path)){
+        if (-not(test-path $path)) {
             Write-Error "Could not find path: $path"
-        }else{
+        }
+        else {
             $VHD = Get-FslDisk -path $path
         }
-        if($VHD.Vhdtype -eq 'fixed'){
+        if ($VHD.Vhdtype -eq 'fixed') {
             Write-Error "VHD cannot be of type: 'fixed'. Must be dynamic"
             exit
         }
 
         ## Remove Duplicates ##
-        get-FslDuplicateFiles -path $path -csvpath 'test.csv' -Remove 'true'
-        ## Removed Duplicates
+        if ($Delete) {
+            get-FslDuplicateFiles -path $path -csvpath 'test.csv' -Remove 'true'
+        }## Removed Duplicates
 
-        try{
+        try {
             Write-Verbose "Optimizing VHD: $path"
             Optimize-VHD -Path $path -Mode $mode
-        }catch{
+        }
+        catch {
             Write-Error $Error[0]
         }
     }

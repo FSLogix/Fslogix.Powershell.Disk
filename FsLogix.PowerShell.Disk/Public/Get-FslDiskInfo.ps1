@@ -48,10 +48,10 @@ function Get-FslDiskInfo {
         $DiskInfo = $false
         $ExportCsv = $false
 
-        if($path -ne "" -and (-not(test-path -path $path))){
+        if((![System.string]::IsNullOrEmpty($path)) -and (-not(test-path -path $path))){
             Write-Error "Could not find path: $path" -ErrorAction Stop
         }
-        if ($path -ne "") {
+        if (![System.string]::IsNullOrEmpty($path)) {
 
             ## Helper function to retrieve virtual disks
             $VHDs = get-fslVHD -path $Path

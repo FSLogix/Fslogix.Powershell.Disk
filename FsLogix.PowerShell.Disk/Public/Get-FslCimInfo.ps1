@@ -42,7 +42,7 @@ function Get-FslCimInfo {
 
         $VHDs = get-fslvhd -path $VHDpath
 
-        if(($csvpath -ne "") -and ($csvpath -notlike "*.csv")){
+        if((![System.String]::IsNullOrEmpty($csvpath)) -and ($csvpath -notlike "*.csv")){
             Write-Error "CSVpath: $csvpath must include .csv extension" -ErrorAction Stop
         }
 
