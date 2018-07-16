@@ -129,7 +129,6 @@ function New-FslDisk {
             Write-Verbose "Validated VHD's name: $VHD_Name"
         }else{
             Write-Warning "VHD: $VHD_Name does not match regex."
-            exit
         }
 
 

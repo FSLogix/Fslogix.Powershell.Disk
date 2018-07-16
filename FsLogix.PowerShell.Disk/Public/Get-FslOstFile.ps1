@@ -5,8 +5,11 @@ function Get-FslOstFile {
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [System.string]$path,
 
-        [Parameter(Position = 0, ValueFromPipeline = $false)]
-        [Switch]$Remove
+        [Parameter(Position = 1)]
+        [Switch]$Remove,
+
+        [Parameter(Position = 2)]
+        [Switch]$output
     )
 
     begin {
@@ -41,6 +44,11 @@ function Get-FslOstFile {
                 }
                 Write-Verbose "Retrieved $count Osts in $($vhd.path)"
             }
+
+            if($output){
+                Write-Output $osts
+            }
+
             ## If user wants to delete Osts ##
             if ($count -gt 1) {
                 if ($Remove) {
@@ -54,6 +62,8 @@ function Get-FslOstFile {
                     catch {
                         Write-Error $Error[0]
                     }
+
+                    Write-Verbose "Removed $TotalRemoved OST's"
                 }
 
             }
@@ -65,7 +75,7 @@ function Get-FslOstFile {
                 Write-Error $Error[0]
             }
         }#foreach
-        Write-Verbose "Removed $TotalRemoved OST's"
+        
     }
 
     end {
