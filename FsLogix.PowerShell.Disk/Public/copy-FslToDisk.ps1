@@ -40,7 +40,13 @@ function copy-FslToDisk {
         [System.string]$Destination,
 
         [Parameter(Position = 3)]
-        [Switch]$Overwrite
+        [Switch]$Overwrite,
+
+        [Parameter(Position = 4)]
+        [Switch]$dismount,
+
+        [Parameter(Position = 5)]
+        [switch]$recurse
     )
 
     begin {
@@ -74,17 +80,29 @@ function copy-FslToDisk {
             if ($Overwrite) {
 
                 try {
-                    copy-item -path $FilePath -Destination $VHD_File_Location -Force
+                    if ($recurse) {
+                        copy-item -path $FilePath -Destination $VHD_File_Location -Force -Recurse
+                    }
+                    else {
+                        copy-item -path $FilePath -Destination $VHD_File_Location -Force
+                    }
+
                     Write-Verbose "Copied file contents to $VHD_File_Location"
                 }
                 catch {
                     Write-Error $Error[0]
                 }
-            }else{
+            }
+            else {
 
                 try {
-                    #Don't need recurse parameter, is automatically recurses
-                    copy-item -path $FilePath -Destination $VHD_File_Location
+                    if ($recurse) {
+                        copy-item -path $FilePath -Destination $VHD_File_Location -Recurse
+                    }
+                    else {
+                        copy-item -path $FilePath -Destination $VHD_File_Location
+                    }
+                    Write-Verbose "Copied file contents to $VHD_File_Location"
                 }
                 catch {
                     Write-Error $Error[0]
@@ -92,7 +110,9 @@ function copy-FslToDisk {
 
             }
 
-            dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
+            if ($dismount) {
+                dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
+            }
         }
     }
 

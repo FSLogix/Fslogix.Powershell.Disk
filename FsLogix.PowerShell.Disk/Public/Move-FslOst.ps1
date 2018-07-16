@@ -15,6 +15,14 @@ Script on hold since I have no ability to test active directory functionalites o
 
 #>
 function Move-FslOst {
+    <#
+        .SYNOPSIS
+        Migrates an ad-user to a VHD with it's corresponding .OST and AppData.
+
+        .DESCRIPTION
+        Created by Daniel Kim @ FSLogix
+        https://github.com/FSLogix
+    #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0)]
@@ -31,9 +39,13 @@ function Move-FslOst {
 
         [Parameter(Position = 4)]
         [ValidateSet("VHD","VHDX")]
-        [System.String]$VHDtype = "VHD",
+        [System.String]$VHDformat = "VHD", #Defaulted to .vhd
 
-        [Parameter(Position = 5, Mandatory = $true)]
+        [Parameter(Position = 5)]
+        [ValidateSet("Dynamic", "Fixed")]
+        [System.String]$VHDtype = "Dynamic", #Defaulted to dynamic
+
+        [Parameter(Position = 6, Mandatory = $true)]
         [Alias("Size")]
         [System.int64]$SizeInGB
     )
@@ -50,7 +62,7 @@ function Move-FslOst {
             }
         }
 
-        if($VHDtype -eq 'VHD'){
+        if($VHDformat -eq 'VHD'){
             [System.String]$VHDExtension = '.vhd'
         }else{
             [System.String]$VHDExtension = '.vhdx'
@@ -95,6 +107,7 @@ function Move-FslOst {
             ## How are ost folder's named?                            ##
             ## Generic method to find the directories. Possibly wrong ##
             $ost = $ost.Replace('%username%', $FSlUser)
+            $Users_Ost = Get-childitem -path $ost
             $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
             [System.String]$Users_AppDataDir = [System.String]$Users_AppData.FullName
             [System.String]$Users_Migrated_VHD_Name = [System.String]$Users_AppData.Name + [System.String]$VHDExtension
@@ -110,15 +123,17 @@ function Move-FslOst {
 
             ## Create new Migrated VHD ##
             [System.String]$Migrated_VHD = [System.String]$DiskDestination + "\" + [System.String]$Users_Migrated_VHD_Name
-            New-FslDisk -NewVHDPath $Migrated_VHD -SizeInGB $SizeInGB -overwrite
+            New-FslDisk -NewVHDPath $Migrated_VHD -SizeInGB $SizeInGB -Type $VHDtype -overwrite
 
             if (-not(test-path -path $Migrated_VHD)){
                 Write-Error "Could not $Migrated_VHD" -ErrorAction Stop
             }else{Write-Verbose "$FSLUser's Migrated VHD set."}
 
             ## Copy Appdata contents over ##
-            copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_AppDataDir -Overwrite
-            copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $ost -Overwrite
+            copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
+            copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse
+
+            $Migrated_VHD | dismount-fsldisk
 
 
         }#admember enumeration
