@@ -33,4 +33,18 @@ Describe $sut {
             {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -open} | should not throw
         }
     }
+    Context -name 'Excel error'{
+        mock New-Object {$excel} -ParameterFilter {$null}
+
+        it 'Excel error'{
+            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should throw
+        }
+    }
+    Context -name 'Delimiter Error'{
+        mock get-fsldelimiter -MockWith {return $null}
+
+        it 'Delimiter is null'{
+            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should throw
+        }
+    }
 }
