@@ -70,6 +70,7 @@ function Move-FslOst {
 
         ## Assumption is after enumerating ad users, we will obtain the corresponding user's ##
         ## OST within %username% and the corresponding user's appdata within 'profiles'      ##
+        ## Will need to validate with David Young on exactly what he requires                ##
         if ([System.string]::IsNullOrEmpty($ost)) {
             $ost = '\\server\share\usersost\%username%'
         }
@@ -92,7 +93,7 @@ function Move-FslOst {
         $AppDataProfiles = get-childitem -path $AppData
 
         ## Enumerate Ad Group and obtain user information ##
-        ## What are these values?                         ##
+        ## How are these values outputted?                ##
         get-adgroupmember $AdGroup -Recursive | ForEach-Object {
             $userData = get-aduser $_
 
@@ -109,7 +110,7 @@ function Move-FslOst {
             ## How are ost folder's named?                            ##
             ## Generic method to find the directories. Possibly wrong ##
             $ost = $ost.Replace('%username%', $FSlUser)
-            $Users_Ost = Get-childitem -path $ost
+            $Users_Ost = Get-childitem -path $ost -Filter "*.ost" -Recurse
             $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
             [System.String]$Users_AppDataDir = [System.String]$Users_AppData.FullName
             [System.String]$Users_Migrated_VHD_Name = [System.String]$Users_AppData.Name + [System.String]$VHDExtension
