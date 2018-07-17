@@ -37,7 +37,16 @@ function Export-FslCsv {
         [System.String]$Destination,
 
         [Parameter(Position = 2)]
-        [Switch]$open
+        [Switch]$open,
+
+        [Parameter(Position = 3)]
+        [System.String]$email,
+
+        [Parameter(Position = 4)]
+        [System.String]$Username,
+
+        [Parameter(Position = 5)]
+        [System.String]$Password
     )
 
     begin {
@@ -70,7 +79,7 @@ function Export-FslCsv {
 
             Write-Verbose "$(Get-Date): Creating excel document for csv file: $($csv.name)"
             $excel = New-Object -ComObject excel.application
-            if($null -eq $excel){
+            if ($null -eq $excel) {
                 Write-Warning "Could not create excel document. You may have to repair excel installation."
                 exit
             }
@@ -80,7 +89,7 @@ function Export-FslCsv {
 
             ## Get-FslDelimiter helper function
             $delimiter = Get-FslDelimiter -csv $csv.fullname
-            if($null -eq $delimiter){
+            if ($null -eq $delimiter) {
                 Write-Warning "Could not retrieve delimiter. You may entered an incorrectly formatted csv file."
                 exit
             }
@@ -110,9 +119,39 @@ function Export-FslCsv {
             $Excel.ActiveWorkbook.SaveAs($ExcelDestination, 51)
             Write-Verbose "$(Get-Date): Sucessfully converted $($csv.name) to Excel format."
 
+            $Excel.Workbooks.close()
             $excel.quit()
 
-            if($open){
+            if (![System.String]::IsNullOrEmpty($email)) {
+                if ([System.String]::IsNullOrEmpty($Username)) {
+                    $Username = Read-Host "Username"
+                }
+                if ([System.String]::IsNullOrEmpty($Password)) {
+                    $Password = Read-Host "Password"
+                }
+                $mail = new-object Net.Mail.MailMessage
+                $mail.from = "DKim@Fslogix.com"
+                $mail.To.Add($email)
+
+                $mail.Subject = "FsLogix's xlsx document"
+                $attachment = New-Object Net.Mail.Attachment($ExcelDestination)
+                $mail.Attachments.add($attachment)
+
+                $smtp = new-object Net.Mail.SmtpClient("smtp-mail.outlook.com", "587")
+                $smtp.EnableSSL = $true;
+                $smtp.Credentials = New-Object System.Net.NetworkCredential($Username, $Password);
+
+                try {
+                    $smtp.send($mail)
+                    Write-Verbose "Mail sent to: $email"
+                }
+                catch {
+                    Write-Error $Error[0]
+                }
+                $attachment.Dispose()
+            }
+
+            if ($open) {
                 start-process -FilePath $ExcelDestination
             }
         }
