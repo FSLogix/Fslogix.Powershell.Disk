@@ -22,6 +22,36 @@ function Move-FslOst {
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         https://github.com/FSLogix
+        
+        .PARAMETER DiskDestination
+        The directory where the user wants the migrated VHD to be located.
+
+        .PARAMETER AdGroup
+        Active Directory group name
+
+        .PARAMETER OST
+        Ost directory location, user must use %username% at the end.
+        If OST is not specified, defaulted to: \\server\share\usersost\%username%
+
+        .PARAMETER APPDATA
+        AppData directory location. If AppData is not specified, 
+        directory defaulted to: \\server\share\users\profiles
+
+        .PARAMETER VHDFormat
+        User's option whether the migrated VHD is a vhd or vhdx.
+        Defaulted to vhd.
+
+        .PARAMETER VHDType
+        User's option whether the migrated VHD is dynamic or fixed.
+        Defaulted to dynamic.
+
+        .PARAMETER SizeInGB
+        User's input for the migrated disk's size in gigabytes.
+
+        .EXAMPLE
+        Move-FslOst -diskdestination 'C:\Users\Daniel\ODFC' -AdGroup 'FsLogix'
+        Will migrate all the active directory user's in AdGroup FsLogix to C:\Users\Daniel\ODFC.
+
     #>
     [CmdletBinding()]
     param (
@@ -114,6 +144,16 @@ function Move-FslOst {
             $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
             [System.String]$Users_AppDataDir = [System.String]$Users_AppData.FullName
             [System.String]$Users_Migrated_VHD_Name = [System.String]$Users_AppData.Name + [System.String]$VHDExtension
+
+            if($null -eq $Users_AppData)
+            {
+                Write-Warning "Could not find $FslUser's AppData profile."
+                continue
+            }else{Write-Verbose "$(Get-Date):   Found $FslUser's AppData Profile"}
+            if($null -eq $Users_Ost){
+                Write-Warning "Could not find $FslUser's Ost file."
+                continue
+            }else{Write-Verbose "$(Get-Date):   Found $FslUser's OST file"}
 
             ## Validate that the paths exist and are valid ##
             if (-not(test-path -path $ost)) {
