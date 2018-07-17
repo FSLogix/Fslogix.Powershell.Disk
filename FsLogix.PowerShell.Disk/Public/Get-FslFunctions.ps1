@@ -31,12 +31,15 @@ function Get-FslFunctions {
 
         if($Private){ $ParentPath = $ParentPath.Replace("Public", "Private") }
 
+        $Type = split-path -path $ParentPath -leaf
+
         $Functions = get-childitem -path $ParentPath
         $output = @{}
 
         foreach($path in $Functions){
-            $output.add($path.Basename, $path.Basename)
+            $output.add($path.Basename, (GET-Command $path.Basename).parameters.Keys)
         }
+        $output = $output.GetEnumerator() | Select-Object @{Label="$type Functions";Expression={$_.Key}},@{Label='Parameters';Expression={$_.Value}}
 
         Write-Output $output
     }

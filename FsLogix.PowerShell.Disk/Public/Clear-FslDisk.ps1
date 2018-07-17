@@ -59,7 +59,7 @@ function Clear-FslDisk {
             }
 
             Write-Verbose "$(Get-Date): Succesfully cleared $(split-path $vhd.path -leaf)"
-            dismount-FslDisk
+            dismount-FslDisk -path $vhd.path
 
         }#foreach
     }

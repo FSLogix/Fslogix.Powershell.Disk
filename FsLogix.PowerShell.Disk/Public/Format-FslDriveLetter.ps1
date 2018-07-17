@@ -76,8 +76,8 @@ function Format-FslDriveLetter {
             }
         }
 
-        ## Helper functions, Get-DriveLetter, Set-FslDriveletters, remove-fslDriveletter, and dismount-fsldisk
-        ## Will validate error handling.
+        ## Helper FsLogix functions, Get-DriveLetter, Set-FslDriveletters, remove-fslDriveletter, and dismount-fsldisk ##
+        ## Will validate error handling.                                                                               ##
 
         foreach ($vhd in $VHDs) {
 

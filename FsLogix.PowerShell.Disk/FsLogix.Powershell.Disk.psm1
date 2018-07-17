@@ -1,5 +1,7 @@
 #Requires -Modules "Hyper-V"
+#Requires -Modules "ActiveDirectory"
 #Requires -RunAsAdministrator
+
 <# INSERT HEADER ABOVE #>
 
 #Get public and private function definition files.

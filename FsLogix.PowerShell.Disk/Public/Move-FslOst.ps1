@@ -1,17 +1,17 @@
 <#
-Daniel, answers below.
+    Daniel, answers below.
 
-Ulitmately I want to be able to take a path based on updating the scripts.
+    Ulitmately I want to be able to take a path based on updating the scripts.
 
-So for example
+    So for example
 
-OST’s reside in \\server\share\usersost\%username%
-Appdata is in \\server\share\users\profiles
-Enumeration for migration will be an AD group called something like FSLogix.ODFC.Migrate
-Vhd’s will be placed in \\server\share\ODFC
-I would also like to add an option that makes the Copied files Read Denied after the copy is completed.
+    OST’s reside in \\server\share\usersost\%username%
+    Appdata is in \\server\share\users\profiles
+    Enumeration for migration will be an AD group called something like FSLogix.ODFC.Migrate
+    Vhd’s will be placed in \\server\share\ODFC
+    I would also like to add an option that makes the Copied files Read Denied after the copy is completed.
 
-Script on hold since I have no ability to test active directory functionalites or use active directory cmdlets.
+    Script on hold since I have no ability to test active directory functionalites or use active directory cmdlets.
 
 #>
 function Move-FslOst {
@@ -22,7 +22,7 @@ function Move-FslOst {
         .DESCRIPTION
         Created by Daniel Kim @ FSLogix
         https://github.com/FSLogix
-        
+
         .PARAMETER DiskDestination
         The directory where the user wants the migrated VHD to be located.
 
@@ -34,7 +34,7 @@ function Move-FslOst {
         If OST is not specified, defaulted to: \\server\share\usersost\%username%
 
         .PARAMETER APPDATA
-        AppData directory location. If AppData is not specified, 
+        AppData directory location. If AppData is not specified,
         directory defaulted to: \\server\share\users\profiles
 
         .PARAMETER VHDFormat
@@ -127,42 +127,43 @@ function Move-FslOst {
         get-adgroupmember $AdGroup -Recursive | ForEach-Object {
             $userData = get-aduser $_
 
-            $FSLFullUser = $userData.Name
-            $FSLUser = $userData.SamAccountName
-            $strSid = $userData.SID
+            [System.String]$FSLFullUser = $userData.Name
+            [System.String]$FSLUser = $userData.SamAccountName
+            [System.String]$strSid = $userData.SID
 
-            Write-Verbose "$(Get-Date): FSLFullUser: $FSLFullUser"
-            write-verbose "$(Get-Date): FSLuser: $FSLUser."
-            Write-Verbose "$(Get-Date): FSLSID: $strSId."
+            Write-Verbose "$(Get-Date): FslFullUser: $FSLFullUser"
+            write-verbose "$(Get-Date): FslUser: $FSLUser."
+            Write-Verbose "$(Get-Date): FslSID: $strSId."
 
             ## Obtain user's information                              ##
             ## How are user's app data folder's generally named?      ##
             ## How are ost folder's named?                            ##
             ## Generic method to find the directories. Possibly wrong ##
             $ost = $ost.Replace('%username%', $FSlUser)
-            $Users_Ost = Get-childitem -path $ost -Filter "*.ost" -Recurse
+            $Users_Ost = Get-childitem -path $ost
             $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
             [System.String]$Users_AppDataDir = [System.String]$Users_AppData.FullName
-            [System.String]$Users_Migrated_VHD_Name = [System.String]$Users_AppData.Name + [System.String]$VHDExtension
+            #[System.String]$Users_Migrated_VHD_Name = $FSLUser + "_" + $strSid + $VHDExtension
+            [System.String]$Users_Migrated_VHD_Name = $Users_AppData.Name + $VHDExtension
 
             if($null -eq $Users_AppData)
             {
                 Write-Warning "Could not find $FslUser's AppData profile."
                 continue
-            }else{Write-Verbose "$(Get-Date):   Found $FslUser's AppData Profile"}
+            }else{Write-Verbose "$(Get-Date): Found $FslUser's AppData files."}
             if($null -eq $Users_Ost){
                 Write-Warning "Could not find $FslUser's Ost file."
                 continue
-            }else{Write-Verbose "$(Get-Date):   Found $FslUser's OST file"}
+            }else{Write-Verbose "$(Get-Date): Found $FslUser's OST file."}
 
             ## Validate that the paths exist and are valid ##
             if (-not(test-path -path $ost)) {
                 Write-Error "Could not retrieve OST's from path: $ost" -ErrorAction Stop
-            }else{ Write-Verbose "$(Get-Date):  $FSLUser's OST is set."}
+            }else{ Write-Verbose "$(Get-Date): $FslUser's OST is set."}
 
             if (-not(test-path -path $Users_AppDataDir)) {
                 Write-Error "Could not retrieve AppData from path: $Users_AppDataDir" -ErrorAction Stop
-            }else{ Write-Verbose "$(Get-Date):  $FSLUser's AppData is set"}
+            }else{ Write-Verbose "$(Get-Date): $FslUser's AppData is set."}
 
             ## Create new Migrated VHD ##
             [System.String]$Migrated_VHD = [System.String]$DiskDestination + "\" + [System.String]$Users_Migrated_VHD_Name

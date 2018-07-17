@@ -40,10 +40,10 @@ function move-FslDisk {
         [Parameter(Position = 2)]
         [Switch]$Overwrite
     )
-    
+
     begin {
         set-strictmode -Version latest
-        
+
         if (-not(test-path -path $path)) {
             write-error "Path: $path is invalid." -ErrorAction Stop
         }
@@ -52,11 +52,11 @@ function move-FslDisk {
             write-error "Destination: $Destination is invalid." -ErrorAction Stop
         }
     }
-    
+
     process {
 
         $VhdDetails = get-fslvhd -path $path
-        
+
 
         foreach ($currVhd in $VhdDetails) {
 
@@ -66,7 +66,7 @@ function move-FslDisk {
             if ($currVhd.attached) {
                 Write-Error "VHD: $name is currently in use." -ErrorAction continue ## Continue to move other disks, but skip the one's we can't
             }
-            else { 
+            else {
                 if ($CheckIfAlreadyExists) {
                     if ($Overwrite) {
                         move-item -path $currVhd.path -Destination $Destination -Force
@@ -89,7 +89,7 @@ function move-FslDisk {
             }#else attached
         }#foreach
     }#process
-    
+
     end {
     }
 }

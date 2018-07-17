@@ -40,7 +40,10 @@ function move-FslToDisk {
         [System.string]$Destination,
 
         [Parameter(Position = 3)]
-        [Switch]$Overwrite
+        [Switch]$Overwrite,
+
+        [Parameter(Position = 4)]
+        [Switch]$dismount
     )
 
     begin {
@@ -71,6 +74,7 @@ function move-FslToDisk {
             }
 
             Write-Verbose "$(Get-Date): Moving file contents to $VHD_FILE_LOCATION"
+
             if ($Overwrite) {
 
                 try {
@@ -91,8 +95,9 @@ function move-FslToDisk {
                 }
 
             }
-
-            dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
+            if($dismount){
+                dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
+            }
         }
     }
 

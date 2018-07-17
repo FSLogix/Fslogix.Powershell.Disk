@@ -1,4 +1,34 @@
 function Get-FslOstFile {
+    <#
+        .SYNOPSIS
+        Returns the OST files within a disk
+
+        .PARAMETER Path
+        Path to a specified disk or directory.
+
+        .PARAMETER Remove
+        User's option to have duplicate ost's removed
+
+        .PARAMETER Output
+        User's option to have the ost's information outputted to pipeline
+
+        .PARAMETER Full
+        User's option to have OST's path outputted
+
+        .EXAMPLE
+        Get-FslOstFile -path 'C:\users\test.vhd'
+        Returns the ost's found in test.vhd
+
+        .EXAMPLE
+        Get-FslOstFile -path 'C:\users\test.vhd' -full
+        Returns the ost's found in test.vhd and their location
+
+        .EXAMPLE
+        Get-FslOstFile -path 'C:\users\test.vhd' -remove
+        Removes any duplicate osts found in test.vhd
+
+
+    #>
 
     [CmdletBinding()]
     param (
@@ -9,7 +39,10 @@ function Get-FslOstFile {
         [Switch]$Remove,
 
         [Parameter(Position = 2)]
-        [Switch]$output
+        [Switch]$output,
+
+        [Parameter(Position = 3)]
+        [Switch]$full
     )
 
     begin {
@@ -42,7 +75,13 @@ function Get-FslOstFile {
                     # object, then it loses the count property, despite working on terminal.
                     $count = 1
                 }
-                Write-Verbose "$(Get-Date): Retrieved $count Osts in $($vhd.path)"
+                Write-Verbose "$(Get-Date): Retrieved $count Ost(s) in $(split-path $vhd.path -leaf)"
+            }
+
+            if($full){
+                foreach($ost in $osts){
+                    Write-Verbose "$(Get-Date): OST located at: $ost"
+                }
             }
 
             if($output){
@@ -66,6 +105,8 @@ function Get-FslOstFile {
                     Write-Verbose "$(Get-Date): Removed $TotalRemoved OST's"
                 }
 
+            }else{
+                Write-Verbose "$(Get-Date): Only one OST found. SKipping deletion."
             }
             try {
                 ## Helper function dismount-fsldisk ##
@@ -75,7 +116,7 @@ function Get-FslOstFile {
                 Write-Error $Error[0]
             }
         }#foreach
-        
+
     }
 
     end {

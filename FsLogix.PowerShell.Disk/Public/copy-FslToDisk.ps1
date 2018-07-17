@@ -77,39 +77,19 @@ function copy-FslToDisk {
             }
 
             Write-Verbose "$(Get-Date): Copying file contents to $VHD_FILE_LOCATION"
-            if ($Overwrite) {
-
-                try {
-                    if ($recurse) {
-                        copy-item -path $FilePath -Destination $VHD_File_Location -Force -Recurse
-                    }
-                    else {
-                        copy-item -path $FilePath -Destination $VHD_File_Location -Force
-                    }
-
-                    Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
-                }
-                catch {
-                    Write-Error $Error[0]
-                }
+            $Command = "copy-item -path $FilePath -Destination $VHD_File_Location"
+            if($Overwrite){
+                $Command += " -force"
             }
-            else {
-
-                try {
-                    if ($recurse) {
-                        copy-item -path $FilePath -Destination $VHD_File_Location -Recurse
-                    }
-                    else {
-                        copy-item -path $FilePath -Destination $VHD_File_Location
-                    }
-                    Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
-                }
-                catch {
-                    Write-Error $Error[0]
-                }
-
+            if($recurse){
+                $Command += " -Recurse"
             }
-
+            try{
+                Invoke-Expression $Command
+                Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
+            }catch{
+                Write-Error $Error[0]
+            }
             if ($dismount) {
                 dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
             }
