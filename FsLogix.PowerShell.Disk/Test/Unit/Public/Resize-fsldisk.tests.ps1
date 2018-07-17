@@ -24,12 +24,12 @@ Describe 'Resize-FslDisk' {
     }
 
     It 'Does not write Errors' {
-        $errors = Resize-FslDisk -SizeBytes $size -Path $path 2>&1  
+        $errors = Resize-FslDisk -SizeBytes $size -Path $path 2>&1
         $errors.count | should Be 0
     }
 
     It 'Writes a Verbose line' {
-        $verbose = Resize-FslDisk -SizeBytes $size -Path $path -Verbose 4>&1  
+        $verbose = Resize-FslDisk -SizeBytes $size -Path $path -Verbose 4>&1
         $verbose.count | should Be 1
     }
 
@@ -38,6 +38,6 @@ Describe 'Resize-FslDisk' {
     }
 
     It 'Takes pipeline input'{
-        
+
     }
 }

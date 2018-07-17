@@ -68,7 +68,7 @@ function Move-FslOst {
         [System.String]$AppData,
 
         [Parameter(Position = 4)]
-        [ValidateSet("VHD","VHDX")]
+        [ValidateSet("VHD", "VHDX")]
         [System.String]$VHDformat = "VHD", #Defaulted to .vhd
 
         [Parameter(Position = 5)]
@@ -87,14 +87,15 @@ function Move-FslOst {
     process {
 
         if (![System.String]::IsNullOrEmpty($ost)) {
-            if ($ost -notcontains '%username%') {
+            if ((split-path -path $ost -leaf) -ne '%username%') {
                 Write-Error "OST Path: $ost must end with %username%." -ErrorAction stop
             }
         }
 
-        if($VHDformat -eq 'VHD'){
+        if ($VHDformat -eq 'VHD') {
             [System.String]$VHDExtension = '.vhd'
-        }else{
+        }
+        else {
             [System.String]$VHDExtension = '.vhdx'
         }
 
@@ -113,7 +114,7 @@ function Move-FslOst {
             $DiskDestination = '\\server\share\ODFC'
         }
 
-        if(-not(test-path $AppData)){
+        if (-not(test-path $AppData)) {
             Write-Error "Could not find AppData Directory: $appdata" -ErrorAction Stop
         }
         if (-not(test-path -path $DiskDestination)) {
@@ -146,41 +147,47 @@ function Move-FslOst {
             #[System.String]$Users_Migrated_VHD_Name = $FSLUser + "_" + $strSid + $VHDExtension
             [System.String]$Users_Migrated_VHD_Name = $Users_AppData.Name + $VHDExtension
 
-            if($null -eq $Users_AppData)
-            {
-                Write-Warning "Could not find $FslUser's AppData profile."
-                continue
-            }else{Write-Verbose "$(Get-Date): Found $FslUser's AppData files."}
-            if($null -eq $Users_Ost){
-                Write-Warning "Could not find $FslUser's Ost file."
-                continue
-            }else{Write-Verbose "$(Get-Date): Found $FslUser's OST file."}
-
             ## Validate that the paths exist and are valid ##
             if (-not(test-path -path $ost)) {
                 Write-Error "Could not retrieve OST's from path: $ost" -ErrorAction Stop
-            }else{ Write-Verbose "$(Get-Date): $FslUser's OST is set."}
+            }
+            else { Write-Verbose "$(Get-Date): $FslUser's OST is set."}
 
             if (-not(test-path -path $Users_AppDataDir)) {
                 Write-Error "Could not retrieve AppData from path: $Users_AppDataDir" -ErrorAction Stop
-            }else{ Write-Verbose "$(Get-Date): $FslUser's AppData is set."}
+            }
+            else { Write-Verbose "$(Get-Date): $FslUser's AppData is set."}
 
             ## Create new Migrated VHD ##
             [System.String]$Migrated_VHD = [System.String]$DiskDestination + "\" + [System.String]$Users_Migrated_VHD_Name
             New-FslDisk -NewVHDPath $Migrated_VHD -SizeInGB $SizeInGB -Type $VHDtype -overwrite
 
-            if (-not(test-path -path $Migrated_VHD)){
-                Write-Error "Could not $Migrated_VHD" -ErrorAction Stop
-            }else{Write-Verbose "$(Get-Date):   $FSLUser's Migrated VHD set."}
+            if (-not(test-path -path $Migrated_VHD)) {
+                Write-Error "Could not find: $Migrated_VHD" -ErrorAction Stop
+            }
+            else {Write-Verbose "$(Get-Date): $FslUser's AppData is set."}
 
             ## Copy Appdata contents over ##
-            Write-Verbose "$(Get-Date): Copying AppData to $Migrated_VHD"
-            copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
-            Write-Verbose "$(Get-Date): Copying OST to $Migrated_VHD"
-            copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse
+            if ($null -eq $Users_AppData) {
+                Write-Warning "Could not find $FslUser's AppData profile."
+                continue
+            }
+            else {
+                Write-Verbose "$(Get-Date): Found $FslUser's AppData files."
+                Write-Verbose "$(Get-Date): Copying AppData to $Migrated_VHD"
+                copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
+            }
+            if ($null -eq $Users_Ost) {
+                Write-Warning "Could not find $FslUser's Ost file."
+                continue
+            }
+            else {
+                Write-Verbose "$(Get-Date): Found $FslUser's OST file."
+                Write-Verbose "$(Get-Date): Copying OST to $Migrated_VHD"
+                copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse
+            }
 
             $Migrated_VHD | dismount-fsldisk
-
         }#admember enumeration
     }#process
 
