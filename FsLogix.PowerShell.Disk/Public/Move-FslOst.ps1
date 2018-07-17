@@ -134,7 +134,7 @@ function Move-FslOst {
 
             Write-Verbose "$(Get-Date): FslFullUser: $FSLFullUser"
             write-verbose "$(Get-Date): FslUser: $FSLUser."
-            Write-Verbose "$(Get-Date): FslSID: $strSId."
+            Write-Verbose "$(Get-Date): FslSID: $strSid."
 
             ## Obtain user's information                              ##
             ## How are user's app data folder's generally named?      ##

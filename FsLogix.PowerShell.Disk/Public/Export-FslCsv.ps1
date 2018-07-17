@@ -28,7 +28,7 @@ function Export-FslCsv {
         Export-FslCsv -csvlocation 'C:\Users\Danie\CSV'
         Will convert ALL the csv files in directory, 'CSV', into excel documents.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName='None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$CsvLocation,
@@ -39,15 +39,16 @@ function Export-FslCsv {
         [Parameter(Position = 2)]
         [Switch]$open,
 
-        [Parameter(Position = 3)]
+        [Parameter(Position = 3, ParameterSetName = 'mail', Mandatory = $true)]
         [System.String]$email,
 
-        [Parameter(Position = 4)]
+        [Parameter(Position = 4, ParameterSetName = 'mail', Mandatory = $true)]
         [System.String]$Username,
 
-        [Parameter(Position = 5)]
-        [System.String]$Password
+        [Parameter(Position = 5, ParameterSetName = 'mail', Mandatory = $true)]
+        [Security.SecureString]$Password
     )
+    
 
     begin {
         set-strictmode -Version latest
@@ -127,10 +128,10 @@ function Export-FslCsv {
                     $Username = Read-Host "Username"
                 }
                 if ([System.String]::IsNullOrEmpty($Password)) {
-                    $Password = Read-Host "Password"
+                    $Password = Read-Host "Password" -AsSecureString
                 }
                 $mail = new-object Net.Mail.MailMessage
-                $mail.from = "DKim@Fslogix.com"
+                $mail.from = "Automated@Fslogix.com"
                 $mail.To.Add($email)
 
                 $mail.Subject = "FsLogix's xlsx document"
@@ -139,7 +140,7 @@ function Export-FslCsv {
 
                 $smtp = new-object Net.Mail.SmtpClient("smtp-mail.outlook.com", "587")
                 $smtp.EnableSSL = $true;
-                $smtp.Credentials = New-Object System.Net.NetworkCredential($Username, $Password);
+                $smtp.Credentials = New-Object System.Net.NetworkCredential($Username,$Password);
 
                 try {
                     $smtp.send($mail)
