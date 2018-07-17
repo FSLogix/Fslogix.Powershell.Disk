@@ -48,7 +48,7 @@ function Export-FslCsv {
         [Parameter(Position = 5, ParameterSetName = 'mail', Mandatory = $true)]
         [Security.SecureString]$Password
     )
-    
+
 
     begin {
         set-strictmode -Version latest
@@ -124,12 +124,7 @@ function Export-FslCsv {
             $excel.quit()
 
             if (![System.String]::IsNullOrEmpty($email)) {
-                if ([System.String]::IsNullOrEmpty($Username)) {
-                    $Username = Read-Host "Username"
-                }
-                if ([System.String]::IsNullOrEmpty($Password)) {
-                    $Password = Read-Host "Password" -AsSecureString
-                }
+
                 $mail = new-object Net.Mail.MailMessage
                 $mail.from = "Automated@Fslogix.com"
                 $mail.To.Add($email)
