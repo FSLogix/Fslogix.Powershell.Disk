@@ -28,7 +28,7 @@ function Export-FslCsv {
         Export-FslCsv -csvlocation 'C:\Users\Danie\CSV'
         Will convert ALL the csv files in directory, 'CSV', into excel documents.
     #>
-    [CmdletBinding(DefaultParametersetName='None')]
+    [CmdletBinding(DefaultParametersetName = 'None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$CsvLocation,
@@ -43,10 +43,10 @@ function Export-FslCsv {
         [System.String]$email,
 
         [Parameter(Position = 4, ParameterSetName = 'mail', Mandatory = $true)]
-        [System.String]$Username,
+        [System.String]$OutlookUsername,
 
         [Parameter(Position = 5, ParameterSetName = 'mail', Mandatory = $true)]
-        [Security.SecureString]$Password
+        [SecureString]$Password
     )
 
 
@@ -126,16 +126,20 @@ function Export-FslCsv {
             if (![System.String]::IsNullOrEmpty($email)) {
 
                 $mail = new-object Net.Mail.MailMessage
-                $mail.from = "Automated@Fslogix.com"
+                $mail.from = $OutLookUserName
                 $mail.To.Add($email)
 
                 $mail.Subject = "FsLogix's xlsx document"
                 $attachment = New-Object Net.Mail.Attachment($ExcelDestination)
                 $mail.Attachments.add($attachment)
 
+                $Ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($password)
+                $UnsecurePassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni($Ptr)
+                [System.Runtime.InteropServices.Marshal]::ZeroFreeCoTaskMemUnicode($Ptr)
+
                 $smtp = new-object Net.Mail.SmtpClient("smtp-mail.outlook.com", "587")
                 $smtp.EnableSSL = $true;
-                $smtp.Credentials = New-Object System.Net.NetworkCredential($Username,$Password);
+                $smtp.Credentials = New-Object System.Net.NetworkCredential($OutLookUsername, $UnsecurePassword)
 
                 try {
                     $smtp.send($mail)
