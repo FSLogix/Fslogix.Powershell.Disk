@@ -61,7 +61,7 @@ function Set-FslDriveLetter {
             $subbedDL = $DL.substring(0,2)
 
             try {
-                $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'"
+                $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'" | out-null
             }
             catch {
                 Write-Verbose "$(Get-Date): Could not change $name's Driveletter to $letter."
@@ -70,7 +70,7 @@ function Set-FslDriveLetter {
             }
 
             try {
-                $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter}
+                $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter} | Out-Null
             }
             catch {
                 Write-Verbose "$(Get-Date): Could not change $name's Driveletter to $letter."

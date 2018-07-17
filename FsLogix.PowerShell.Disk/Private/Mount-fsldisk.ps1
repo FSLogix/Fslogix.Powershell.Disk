@@ -45,25 +45,37 @@ function Mount-FslDisk {
 
             $Count = 0
 
-            if($VHD_Count -gt $Max_Mount_Count){
+            if ($VHD_Count -gt $Max_Mount_Count) {
 
                 Write-Warning "The max number of virtual disks that can be mounted is $Max_Mount_Count"
                 Write-Warning "Only Mounting $Max_Mount_Count out of $VHD_Count Disk's."
 
             }
 
-            foreach($vhd in $VHDs){
-                get-driveletter -VHDPath $vhd.path
-                if($count++ -eq $Max_Mount_Count){
-                    break
+            foreach ($vhd in $VHDs) {
+                if ($vhd.attached) {
+                    Write-Warning "$(split-path $vhd.path -leaf) is already mounted."
+                }
+                else {
+                    try {
+                        mount-vhd -path $vhd.path
+                        Write-Verbose "Succesfully mounted $(split-path $vhd.path -leaf)."
+                    }
+                    catch {
+                        Write-Error "Failed to mount $(split-path $vhd.path -leaf). Will need to be manually mounted."
+                    }
+                    if ($count++ -eq $Max_Mount_Count) {
+                        break
+                    }
                 }
             }
         }
         else {
-            try{
+            try {
                 mount-vhd -path $path
                 Write-Verbose "$(Get-Date): Sucessfully mounted: $path"
-            }catch{
+            }
+            catch {
                 Write-Error $Error[0]
             }
         }

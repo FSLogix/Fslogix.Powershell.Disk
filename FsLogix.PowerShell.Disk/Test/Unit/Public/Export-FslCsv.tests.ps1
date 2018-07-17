@@ -4,6 +4,7 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 $excel = New-Object -ComObject Excel.Application
+
 Describe $sut {
     context -name 'should throw'{
         it 'Invalid destination'{
@@ -33,18 +34,14 @@ Describe $sut {
             {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -open} | should not throw
         }
     }
-    Context -name 'Excel error'{
-        mock New-Object {$excel} -ParameterFilter {$null}
-
-        it 'Excel error'{
-            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should throw
-        }
-    }
     Context -name 'Delimiter Error'{
         mock get-fsldelimiter -MockWith {return $null}
 
         it 'Delimiter is null'{
-            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv'} | should throw
+            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -WarningAction Stop} | should throw
         }
+    }
+    context -name 'Mail'{
+        {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -email 'dkim@fslogix.com' -OutlookUsername 'Dkim@fslogix.com' -Password 'ullneverknow'} | should not throw
     }
 }
