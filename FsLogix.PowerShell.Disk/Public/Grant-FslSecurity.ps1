@@ -1,4 +1,8 @@
 function Grant-FslSecurity {
+    <#
+        .SYNOPSIS
+        Edit's a file's permissions or unblocks a file.
+    #>
     [CmdletBinding(DefaultParametersetName = 'None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
