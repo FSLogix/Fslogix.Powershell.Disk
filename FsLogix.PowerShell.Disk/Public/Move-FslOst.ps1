@@ -30,7 +30,7 @@ function Move-FslOst {
         Active Directory group name
 
         .PARAMETER OST
-        Ost directory location, user must use %username% at the end.
+        Ost directory location, user must should %username% at the end.
         If OST is not specified, defaulted to: \\server\share\usersost\%username%
 
         .PARAMETER APPDATA
@@ -86,12 +86,6 @@ function Move-FslOst {
 
     process {
 
-        if (![System.String]::IsNullOrEmpty($ost)) {
-            if ((split-path -path $ost -leaf) -ne '%username%') {
-                Write-Error "OST Path: $ost must end with %username%." -ErrorAction stop
-            }
-        }
-
         if ($VHDformat -eq 'VHD') {
             [System.String]$VHDExtension = '.vhd'
         }
@@ -140,12 +134,21 @@ function Move-FslOst {
             ## How are user's app data folder's generally named?      ##
             ## How are ost folder's named?                            ##
             ## Generic method to find the directories. Possibly wrong ##
-            $ost = $ost.Replace('%username%', $FSlUser)
-            $Users_Ost = Get-childitem -path $ost
             $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
             [System.String]$Users_AppDataDir = [System.String]$Users_AppData.FullName
             #[System.String]$Users_Migrated_VHD_Name = $FSLUser + "_" + $strSid + $VHDExtension
             [System.String]$Users_Migrated_VHD_Name = $Users_AppData.Name + $VHDExtension
+
+            if (![System.String]::IsNullOrEmpty($ost)) {
+                if ((split-path -path $ost -leaf) -ne '%username%') {
+                    $ost = $ost + "\" + [System.String]$FSLUser
+                }
+                else {
+                    $ost = $ost.Replace('%username%', $FSlUser)
+                }
+            }
+            
+            $Users_Ost = Get-childitem -path $ost -Filter "*.ost"
 
             ## Validate that the paths exist and are valid ##
             if (-not(test-path -path $ost)) {
