@@ -51,17 +51,13 @@ function Grant-FslSecurity {
             if ($permissions) {
 
                 $user = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name #User account to grant permisions too.
-                $acl = Get-Acl $path
+                $acl = Get-Acl $vhd.path
 
                 try {
-                    ## 6/18 testing
-                    ## Script works fine when granting allow or deny permissions   ##
-                    ## HOWEVER, once granted deny permissions, than the file's ACL ##
-                    ## Won't get changed. Is there a way to fix this?              ##
-                    write-verbose "Assigning Permissions to $path"
+                    write-verbose "Assigning Permissions: $PERMISSION_TYPE - $PERMISSION to $($vhd.path)"
                     $Access = New-Object System.Security.AccessControl.FileSystemAccessRule($user, $PERMISSION_TYPE, $PERMISSION)
                     $acl.SetAccessRule($Access)
-                    $acl | Set-Acl -Path $path
+                    $acl | Set-Acl -Path $vhd.path
                     write-verbose "Successfully assigned permissions."
                 }
                 catch {
