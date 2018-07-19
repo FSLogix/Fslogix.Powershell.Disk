@@ -1,24 +1,23 @@
 function Get-FslFunctions {
     <#
         .SYNOPSIS
-        Returns list of public/private functions.
-        Script defaulted to public functions
+        Returns a list of public functions and their parameters.
 
-        .PARAMETER Private
-        User can opt to return private functions
+        .PARAMETER Path
+        If User wants to specify a function
 
         .EXAMPLE
         Get-FslFunctions
         Returns all public functions
 
         .EXAMPLE
-        Get-FslFunctions -private
-        Returns all private functions
+        Get-FslFunctions -path 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public\Get-FslFunctions.ps1'
+        Returns the function name and parameter for this path.
     #>
     [CmdletBinding()]
     param (
         [Parameter(Position = 0)]
-        [switch]$Private
+        [System.String]$path
     )
 
     begin {
@@ -27,19 +26,36 @@ function Get-FslFunctions {
 
     process {
 
-        $ParentPath = $PSScriptRoot
+        if($path){
+            $ParentPath = $path
+        }else{ $ParentPath = $PSScriptRoot }
 
-        if($Private){ $ParentPath = $ParentPath.Replace("Public", "Private") }
+        if($null -eq $ParentPath){
+            Write-Error "Could not find path: $ParentPath" -ErrorAction Stop
+        }
 
         $Type = split-path -path $ParentPath -leaf
 
         $Functions = get-childitem -path $ParentPath
+
+        if($null -eq $Functions){
+            Write-Warning "Could not find any functions within: $ParentPath"
+            exit
+        }
+
         $output = @{}
 
-        foreach($path in $Functions){
-            $output.add($path.Basename, (GET-Command $path.Basename).parameters.Keys)
+        foreach($func in $Functions){
+            $output.add($func.Basename, (GET-Command $func.Basename).parameters.Keys)
         }
-        $output = $output.GetEnumerator() | Select-Object @{Label="$type Functions";Expression={$_.Key}},@{Label='Parameters';Expression={$_.Value}}
+
+        if($path){
+            $label = "Function"
+        }else{
+            $label = "$type Functions"
+        }
+
+        $output = $output.GetEnumerator() | Select-Object @{Label=$label ;Expression={$_.Key}},@{Label='Parameters';Expression={$_.Value}}
 
         Write-Output $output
     }

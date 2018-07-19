@@ -103,10 +103,9 @@ function Get-FslOstFile {
                     }
 
                     Write-Verbose "$(Get-Date): Removed $TotalRemoved OST's"
+                }else{
+                    Write-Verbose "$(Get-Date): Only one OST found. Skipping deletion."
                 }
-
-            }else{
-                Write-Verbose "$(Get-Date): Only one OST found. SKipping deletion."
             }
             try {
                 ## Helper function dismount-fsldisk ##
