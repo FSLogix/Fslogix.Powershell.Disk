@@ -62,7 +62,7 @@ function Copy-FslDiskToDisk {
         $First_DL = get-driveletter -path $FirstVHDPath
         $Second_DL = get-driveletter -path $SecondVHDPath
 
-        $FirstVHD = split-path $FirstVHDPath -Leaf
+        #$FirstVHD = split-path $FirstVHDPath -Leaf
         $SecondVHD = split-path $SecondVHDPath -leaf
 
         $FirstFilePath = join-path($First_DL) ($FirstFilePath)
@@ -85,10 +85,10 @@ function Copy-FslDiskToDisk {
 
             if ($Overwrite) {
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force -ErrorAction SilentlyContinue
-                Write-Verbose "$(Get-Date): Successfully copied and overwritten VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
+                Write-Verbose "$(Get-Date): Successfully copied $($_.fullname) to VHD: $secondVHD"
             }else{
                 Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -ErrorAction Stop
-                Write-Verbose "$(Get-Date): Successfully Copied VHD:$firstVHD $($_.fullname) to VHD: $secondVHD $secondfilepath"
+                Write-Verbose "$(Get-Date): Successfully Copied $($_.fullname) to VHD: $secondVHD"
             }
 
         }#foreach

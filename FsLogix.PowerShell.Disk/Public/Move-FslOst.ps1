@@ -147,7 +147,7 @@ function Move-FslOst {
                     $ost = $ost.Replace('%username%', $FSlUser)
                 }
             }
-            
+
             $Users_Ost = Get-childitem -path $ost -Filter "*.ost"
 
             ## Validate that the paths exist and are valid ##

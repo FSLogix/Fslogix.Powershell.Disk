@@ -31,11 +31,11 @@ function Test-FslVHD {
             $Name = split-path -path $vhd.path -leaf
             $output = Test-VHD -path $vhd.path
             if($output){
-                Write-Output $output
                 Write-Verbose "$(Get-Date): $Name is healthy"
             }else{
                 Write-Warning "$(Get-Date): $name is unhealthy"
             }
+            Write-Output $output
         }
     }
 
