@@ -9,6 +9,9 @@ function Clear-FslDisk {
         .PARAMETER Folder
         Optional parameter to specified folder within a disk
 
+        .PARAMETER Force
+        Force deletion of disk contents, even if in use.
+
         .EXAMPLE
         Clear-fsldisk -path 'C:\test1.vhd'
         Clears out all the contents within test1.vhd
@@ -27,7 +30,10 @@ function Clear-FslDisk {
         [System.String]$path,
 
         [Parameter(Position = 1)]
-        [System.String]$folder
+        [System.String]$folder,
+
+        [Parameter(Position = 2)]
+        [Switch]$force
     )
 
     begin {
@@ -35,30 +41,36 @@ function Clear-FslDisk {
     }
 
     process {
-        if(-not(test-path $path)){
+        if (-not(test-path $path)) {
             Write-Error "Could not find path: $Path" -ErrorAction Stop
         }
 
         ## Helper function ##
         $VHDs = get-fslvhd -path $path
 
-        foreach($vhd in $VHDs){
+        foreach ($vhd in $VHDs) {
 
             ## Helper function ##
-            $contents = Get-fsldiskcontents -VHDPath $vhd.path
-            Write-Verbose "$(Get-Date): Retreived contents"
-            if($null -eq $contents){
-                Write-Warning "$(split-path $vhd.path -leaf) is already cleared."
+            $contents = Get-fsldiskcontents -VHDPath $vhd.path -FolderPath $folder
+            $folderpath = Join-Path (Split-Path $vhd.path -leaf) ($folder)
+
+            if ($null -eq $contents) {
+                Write-Warning "$folderpath is already cleared or empty."
                 continue
+            }else{ Write-Verbose "$(Get-Date): Retreived contents"}
+
+            if ($force) {
+                $contents | remove-item -Recurse -Force
+            }else {
+                try {
+                    $contents | remove-item -Recurse
+                }
+                catch {
+                    Write-Error $Error[0]
+                }
             }
 
-            try{
-                $contents | remove-item -Recurse
-            }catch{
-                Write-Error $Error[0]
-            }
-
-            Write-Verbose "$(Get-Date): Succesfully cleared $(split-path $vhd.path -leaf)"
+            Write-Verbose "$(Get-Date): Succesfully cleared $folderpath"
             dismount-FslDisk -path $vhd.path
 
         }#foreach

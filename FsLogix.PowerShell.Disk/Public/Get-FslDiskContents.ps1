@@ -11,7 +11,7 @@ function Get-FslDiskContents {
         .PARAMETER VHDPath
         Path to the VHD. Cannot be a folder, must be a VHD and include .vhd/.vhdx extension.
 
-        .PARAMETER path
+        .PARAMETER folderpath
         An optional folder path within the VHD
 
         .EXAMPLE
