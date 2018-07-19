@@ -124,8 +124,8 @@ function New-FslDisk {
             }
         }#Test-path
 
-
-        if ($VHD_Name.substring(0,$VHD_Name.Length-4) -match $OriginalMatch){
+        $index = $vhd1.IndexOf('.vhd')
+        if ($VHD_Name.substring(0,$index) -match $OriginalMatch){
             Write-Verbose "$(Get-Date): Validated VHD's name: $VHD_Name"
         }else{
             Write-Warning "VHD: $VHD_Name does not match regex."
