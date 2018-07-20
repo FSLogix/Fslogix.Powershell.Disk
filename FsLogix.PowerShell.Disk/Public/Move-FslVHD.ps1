@@ -43,22 +43,17 @@ function Move-FslVhd {
             Write-Warning "Could not find Destination directory. Make sure you are using a directory."
             Write-Error "Could not find destination directory: $Destination" -ErrorAction Stop
         }
-
         $DiskPath = get-item $VHD
         $DestinationPath = get-item $Destination
         if ($DiskPath.PSIsContainer) {
-            Write-Error "Path: $VHD must be a virtual disk. Not a directory."
+            Write-Error "Path: $VHD must be a virtual disk. Not a directory." -ErrorAction Stop
         }
         if(!$DestinationPath.PSIsContainer){
             Write-Error "Destination must be a directory." -ErrorAction Stop
         }
 
         else {
-            try{
-                $VHD | get-vhd | out-null
-            }catch{
-                Write-Error $Error[06]
-            }
+            $VHD | get-vhd -ErrorAction Stop | out-null
         }
 
         $name = split-path -path $VHD -leaf
