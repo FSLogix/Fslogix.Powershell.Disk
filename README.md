@@ -1,5 +1,5 @@
+https://ci.appveyor.com/api/projects/status/3qvdttdt33wgt5mk?svg=true
 Module to manipulate virtual hard disks.
-
 
 How to import module: 
 1) Download the zip folder for the Disk Module 
