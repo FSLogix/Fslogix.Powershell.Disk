@@ -24,6 +24,11 @@ Describe $sut {
         }
     }
     context -name 'Test get-fslVHD'{
+        BeforeEach{
+            mock -CommandName Get-FslDisk -MockWith {
+                return get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+            }
+        }
         it 'Correct vhd path'{
             {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx'} | should not throw
         }
@@ -41,6 +46,15 @@ Describe $sut {
         it 'Index 1 to 1 should return 1 disk'{
             $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
             $vhd.count | should be 1
+        }
+        it 'End index is greater than total count, should just return all vhds'{
+            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
+            $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
+            $vhd2.count | should be $vhd.count
+        }
+        it 'If start or end index is 0, should ignore and return all vhds'{
+            $vhd = get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 0 -end 10
+            $vhd.count | should be 13
         }
     }
 }
