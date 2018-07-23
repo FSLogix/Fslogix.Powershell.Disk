@@ -50,9 +50,8 @@ function Clear-FslDisk {
         if (-not(test-path $path)) {
             Write-Error "Could not find path: $Path" -ErrorAction Stop
         }
-
         ## Helper function ##
-        $VHDs = get-fslvhd -path $path
+        $VHDs = get-fslvhd -path $path -start $Start -end $End
 
         foreach ($vhd in $VHDs) {
 

@@ -18,15 +18,15 @@ function move-FslDisk {
         user can determine to overwrite.
 
         .EXAMPLE
-        move-fslvhd -path C:\Users\danie\ODFC\test1.vhdx -Destination C:\Users\danie\FSLOGIX\test1.vhdx
+        move-fsldisk -path C:\Users\danie\ODFC\test1.vhdx -Destination C:\Users\danie\FSLOGIX\test1.vhdx
         Migrates test1.vhdx in ODFC, to FSLOGIX.
 
         .EXAMPLE
-        move-fslvhd -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX
+        move-fsldisk -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX
         Migrates all the VHD's in ODFC to FSLOGIX.
 
         .EXAMPLE
-        move-fslvhd -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX -overwrite Yes
+        move-fsldisk -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX -overwrite Yes
         Migrates all the VHD's in ODFC to FSLOGIX and overwrites if the VHD already exists.
     #>
     [CmdletBinding()]

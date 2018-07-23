@@ -24,20 +24,20 @@ function New-FslDisk {
         given path.
 
         .EXAMPLE
-        New-FslVHD -path C:\Users\Desktop\ODFC\test1.vhdx
+        New-Fsldisk -path C:\Users\Desktop\ODFC\test1.vhdx
         Creates a new VHD, test1.vhdx, in the ODFC folder with a default size
         of 10gb and automatically formats a volume and drive letter.
 
         .EXAMPLE
-        New-FslVHD C:\Users\Desktop\ODFC\FSLOGIX\test1.vhdx -parentpath C:\users\Desktop\ODFC\test2.vhdx
+        New-Fsldisk C:\Users\Desktop\ODFC\FSLOGIX\test1.vhdx -parentpath C:\users\Desktop\ODFC\test2.vhdx
         Creates a new VHD, test1.vhdx with test2.vdhx as it's parent.
 
         .EXAMPLE
-        new-FslVHD C:\Users\Desktop\ODFC\test1.vhdx -Size 25gb -Type Dynamic
+        new-Fsldisk C:\Users\Desktop\ODFC\test1.vhdx -Size 25gb -Type Dynamic
         Creates a new dynamic VHD, test1.vhdx, of size 25gb.
 
         .EXAMPLE
-        new-FslVHD C:\Users\Desktop\ODFC\test1.vhdx -overwrite true
+        new-Fsldisk C:\Users\Desktop\ODFC\test1.vhdx -overwrite true
         Creates a new VHD, test1.vhdx, and overwrites the old test1.vhdx
         that existed in the given path.
     #>

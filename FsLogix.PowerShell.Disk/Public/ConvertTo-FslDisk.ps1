@@ -90,6 +90,7 @@ function ConvertTo-FslDisk {
         if ($null -eq $VhdDetails) {
             Write-Warning "VHD's in $path are already $ConvertTo type, cannot convert."
         }
+        
 
         ## Convert to VHD                      ##
         ## Helper functions will handle errors ##

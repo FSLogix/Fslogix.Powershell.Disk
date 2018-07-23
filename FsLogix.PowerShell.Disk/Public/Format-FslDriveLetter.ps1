@@ -17,15 +17,14 @@ function Format-FslDriveLetter {
         Letter to assign if user opts to set a drive letter
 
         .EXAMPLE
-        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -command get
-        Get's the associated driveletter on test1.vhd
+        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -get
 
         .EXAMPLE
-        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -command set -letter T
+        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -set -letter T
         Assigns drive letter 'T' to test1.vhd
 
         .EXAMPLE
-        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -command remove
+        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -remove
         Remove's the driveltter on test1.vhd
     #>
     [CmdletBinding(DefaultParametersetName='None')]

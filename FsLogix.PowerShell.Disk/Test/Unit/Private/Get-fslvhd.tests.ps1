@@ -31,5 +31,16 @@ Describe $sut {
             $vhd = get-childitem -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx"
             $vhd | get-fslvhd
         }
+        it 'start and end index'{
+            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx' -start 1 -end 2} | should not throw
+        }
+        it 'Index 1 to 3 should return 3 disks'{
+            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 3
+            $vhd.count | should be 3
+        }
+        it 'Index 1 to 1 should return 1 disk'{
+            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
+            $vhd.count | should be 1
+        }
     }
 }

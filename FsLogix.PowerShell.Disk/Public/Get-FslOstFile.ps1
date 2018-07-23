@@ -27,6 +27,13 @@ function Get-FslOstFile {
         Get-FslOstFile -path 'C:\users\test.vhd' -remove
         Removes any duplicate osts found in test.vhd
 
+        .EXAMPLE
+        Get-FslOstFile -path 'C:\users\test.vhd' -output
+        Outputs the duplicate osts in test.vhd
+
+        .EXAMPLE
+        Get-FslOstFile -path 'C:\users\test' -remove
+        Find's all the virtual disks in directory 'test' and removes the duplicate osts
 
     #>
 
