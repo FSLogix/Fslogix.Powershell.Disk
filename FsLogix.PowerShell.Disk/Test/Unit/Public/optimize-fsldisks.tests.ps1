@@ -15,7 +15,7 @@ Describe $sut{
 
     it 'Should Throw, using fixed vhd'{
         $invalid_cmd = {Optimize-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -mode 'quick'} | Out-Null
-        $invalid_cmd | should throw 
+        $invalid_cmd | should throw
     }
 
     it 'Assert mocks called'{

@@ -62,12 +62,7 @@ function Clear-FslDisk {
             if ($force) {
                 $contents | remove-item -Recurse -Force
             }else {
-                try {
-                    $contents | remove-item -Recurse
-                }
-                catch {
-                    Write-Error $Error[0]
-                }
+                $contents | remove-item -Recurse
             }
 
             Write-Verbose "$(Get-Date): Succesfully cleared $folderpath"

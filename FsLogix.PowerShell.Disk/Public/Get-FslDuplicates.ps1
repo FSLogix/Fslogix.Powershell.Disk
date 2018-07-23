@@ -54,7 +54,7 @@ function Get-FslDuplicates {
             HelpMessage = 'CSV output file detailing duplicate files')]
         [System.String]$Csvpath,
 
-        [Parameter(Position = 3, Mandatory = $false)]
+        [Parameter(Position = 3)]
         [Alias("Confirm")]
         [switch]$Remove
     )
