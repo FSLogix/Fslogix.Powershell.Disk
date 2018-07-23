@@ -37,7 +37,7 @@ function Get-FslOstFile {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [System.string]$path,
@@ -49,7 +49,13 @@ function Get-FslOstFile {
         [Switch]$output,
 
         [Parameter(Position = 3)]
-        [Switch]$full
+        [Switch]$full,
+
+        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 5,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
@@ -64,7 +70,7 @@ function Get-FslOstFile {
         }
 
         ## Helper function get-fslvhd ##
-        $VHDs = get-fslvhd -path $path
+        $VHDs = get-fslvhd -path $path -start $Start -end $End
 
         foreach ($vhd in $VHDs) {
             $DriveLetter = get-driveletter -path $vhd.path

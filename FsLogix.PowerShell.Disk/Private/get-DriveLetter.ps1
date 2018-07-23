@@ -111,8 +111,8 @@ function get-driveletter {
             $disk = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
             $driveLetter = $disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
         }#end if {volume}
-
-        Write-Verbose "$(Get-Date): VHD mounted on drive letter [$DriveLetter]"
+        $Name = split-path -path $VHDPath -leaf
+        Write-Verbose "$(Get-Date): $name mounted on drive letter [$DriveLetter]"
         Write-Output $driveLetter
         #return $driveLetter
     }#end process

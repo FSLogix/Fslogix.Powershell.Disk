@@ -35,6 +35,9 @@ Describe $sut {
         it 'Valid path -force'{
             {Clear-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -force} | should not throw
         }
+        it 'Used index range'{
+            {clear-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2' -start 1 -end 2} | should not throw
+        }
     }
 }
 

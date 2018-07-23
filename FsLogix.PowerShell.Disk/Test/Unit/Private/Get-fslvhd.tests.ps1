@@ -22,6 +22,12 @@ Describe $sut {
         it 'No vhds in path should give warning'{
             {get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public' -WarningAction stop} | should throw
         }
+        it 'If starting index is greater than count'{
+            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 999 -end 1000} | should throw
+        }
+        it 'If starting index is greater than ending index'{
+            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 2 -end 1} | should throw
+        }
     }
     context -name 'Test get-fslVHD'{
         BeforeEach{
@@ -37,7 +43,7 @@ Describe $sut {
             $vhd | get-fslvhd
         }
         it 'start and end index'{
-            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx' -start 1 -end 2} | should not throw
+            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx' -start 1 -end 1} | should not throw
         }
         it 'Index 1 to 3 should return 3 disks'{
             $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 3
@@ -53,8 +59,10 @@ Describe $sut {
             $vhd2.count | should be $vhd.count
         }
         it 'If start or end index is 0, should ignore and return all vhds'{
-            $vhd = get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 0 -end 10
-            $vhd.count | should be 13
+            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
+            $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
+            $vhd2.count | should be $vhd.count
         }
+       
     }
 }

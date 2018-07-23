@@ -35,7 +35,7 @@ function Get-FslDuplicates {
         Script will retrieve all VHD's and search for duplicates. The duplicate files data will be exported to
         a csv file and then the script will remove all the duplicates.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName='None')]
     param (
         [Parameter(Position = 0,
             Mandatory = $true,
@@ -56,7 +56,13 @@ function Get-FslDuplicates {
 
         [Parameter(Position = 3)]
         [Alias("Confirm")]
-        [switch]$Remove
+        [switch]$Remove,
+
+        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 5,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
@@ -79,7 +85,7 @@ function Get-FslDuplicates {
         set-strictmode -Version latest
         ## Get VHDs ##
         Write-Verbose "$(Get-Date): Retrieving VHD(s)"
-        $VHDs = get-fslvhd -path $vhdpath
+        $VHDs = get-fslvhd -path $vhdpath -start $start -end $end
         if ($null -eq $VHDs) {
             Write-Warning "Could not find VHDs in $vhdpath"
             exit

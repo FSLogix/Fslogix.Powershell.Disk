@@ -21,9 +21,11 @@ function Get-FslVHD {
         [System.String]$path,
 
         [Parameter(Position = 1, Mandatory = $true, ParameterSetName = 'index')]
+        [ValidateRange(0,10000)]
         [int]$start,
 
         [Parameter(Position = 2, Mandatory = $true, ParameterSetName = 'index')]
+        [ValidateRange(0,10000)]
         [int]$end
     )
 
@@ -40,9 +42,27 @@ function Get-FslVHD {
         if($null -eq $VHDs){
             Write-Warning "Could not find any VHDs in path: $path"
             exit
+        }else{
+            try {
+                $GC_count = $VHDs.count
+            }
+            catch [System.Management.Automation.PropertyNotFoundException] {
+                # When calling the get-childitem cmdlet, if the cmldet only returns one
+                # object, then it loses the count property, despite working on terminal.
+                $GC_count = 1
+            }
         }
 
         if ($Start -ne 0 -and $End -ne 0) {
+
+            if($start -gt $end){
+                Write-Error "Starting Index: $start cannot be greater than ending index: $end." -ErrorAction Stop
+            }
+
+            if($start -gt $GC_count){
+                Write-Error "Starting Index: $Start cannot be greater than to total count of disks: $GC_Count." -ErrorAction Stop
+            }
+
             $DiskHashTable = @{}
             $counter = 1
             foreach($vhd in $VHDs){

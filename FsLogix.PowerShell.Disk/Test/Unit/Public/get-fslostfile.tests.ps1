@@ -21,7 +21,7 @@ Describe $sut {
         }
     }
     Context -Name 'mock' {
-    
+
         Mock -CommandName get-driveletter -MockWith {$true}
         mock -CommandName dismount-FslDisk -MockWith {$true}
         mock -CommandName get-fslvhd -MockWith {$true}
@@ -35,5 +35,5 @@ Describe $sut {
             Assert-VerifiableMocks
         }
     }
-    
+
 }
