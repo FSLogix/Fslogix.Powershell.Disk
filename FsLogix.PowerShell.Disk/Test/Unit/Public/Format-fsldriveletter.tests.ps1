@@ -10,13 +10,10 @@ Describe $sut{
             {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public' -Command 'set'} | out-null | should throw
         }
         it 'Invalid Command name'{
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Command 'asdf'} | should throw
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -asdf} | should throw
         }
         it 'Invalid Letter for Set command'{
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Command 'set' -Letter 'af'} | should throw
-        }
-        it 'User did not enter a letter for set command'{
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Command 'set'} | should throw
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -set -Letter af} | should throw
         }
     }
     context -Name 'Should not throw'{
@@ -27,13 +24,13 @@ Describe $sut{
             mock -CommandName dismount-fsldisk -MockWith {} -Verifiable
         }
         it 'Valid get input'{
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Command 'get'} | should not throw
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -get} | should not throw
         }
         it 'Valid remove input'{
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Command 'remove'} | should not throw
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -remove} | should not throw
         }
         it 'Valid set inputs'{
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -Command 'set' -Letter 'D'} | should not throw
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -set -Letter 'D'} | should not throw
         }
     }
 }

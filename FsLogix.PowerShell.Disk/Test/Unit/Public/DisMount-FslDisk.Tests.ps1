@@ -37,5 +37,9 @@ Describe $sut {
         it 'User entered directory'{
             {dismount-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'} | should throw
         }
+        it 'User is trying to dismount non attached vhd'{
+            dismount-FslDisk -DismountAll
+            {dismount-FslDisk -FullName $path -ErrorAction Stop} | should throw
+        }
     }
 }

@@ -84,12 +84,10 @@ function copy-FslToDisk {
             if($recurse){
                 $Command += " -Recurse"
             }
-            try{
-                Invoke-Expression $Command
-                Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
-            }catch{
-                Write-Error $Error[0]
-            }
+
+            Invoke-Expression $Command
+            Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
+
             if ($dismount) {
                 dismount-fsldisk -path $vhd.path -ErrorAction SilentlyContinue
             }

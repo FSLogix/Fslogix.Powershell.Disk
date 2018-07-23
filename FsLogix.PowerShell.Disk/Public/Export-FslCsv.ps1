@@ -129,7 +129,7 @@ function Export-FslCsv {
                 $mail.from = $OutLookUserName
                 $mail.To.Add($email)
 
-                $mail.Subject = "FsLogix's xlsx document"
+                $mail.Subject = "FsLogix's $($csv.name) xlsx document"
                 $attachment = New-Object Net.Mail.Attachment($ExcelDestination)
                 $mail.Attachments.add($attachment)
 

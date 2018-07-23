@@ -41,7 +41,4 @@ Describe $sut {
             {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -WarningAction Stop} | should throw
         }
     }
-    context -name 'Mail'{
-        {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -email 'dkim@fslogix.com' -OutlookUsername 'Dkim@fslogix.com' -Password 'ullneverknow'} | should not throw
-    }
 }

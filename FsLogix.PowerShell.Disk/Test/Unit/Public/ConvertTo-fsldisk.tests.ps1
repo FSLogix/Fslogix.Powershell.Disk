@@ -16,9 +16,9 @@ Describe $sut {
             $Invalid_input = { ConvertTo-FslDisk -path "C:\User\dsfas" -convertTo vhd}
             $Invalid_input | should throw
         }
-        it 'Converting vhdx to vhdx'{
-            $Invalid_input = { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -convertTo vhdx}
-            $Invalid_input | should throw
+        it 'Converting vhdx to vhdx should give warning'{
+            ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -convertTo vhdx -WarningVariable Warn
+            $warn.count -gt 0 | should be $true
         }
         it 'Converting vhd to vhd without overwrite parameter'{
             $Invalid_input = { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\TestVHD2.vhd" -convertTo vhd}
@@ -33,21 +33,20 @@ Describe $sut {
             $Invalid_input | should throw
         }
     }
-    Context -Name "Should not throw"{
+    BeforeEach{
         mock -CommandName Convert-VHD -MockWith {$true}
         mock -CommandName remove-item -MockWith {$true}
-        it 'Valid path'{
+    }
+    Context -Name "Should not throw"{
+        it 'Convert to vhdx'{
             $Valid_input = { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd" -convertTo vhdx -overwrite -RemoveOld }
             $Valid_input | should not throw
         }
-        It 'Asserts all verifiable mocks' {
-            Assert-VerifiableMocks
+        it 'Convert to vhd'{
+            { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -convertTo vhd -overwrite -RemoveOld } | should not throw
         }
     }
     Context -Name "Additional tests"{
-        mock -CommandName Convert-VHD -MockWith {$true}
-        mock -CommandName remove-item -MockWith {$true}
-
         it 'Get-FslDisk vhd'{
             Mock -CommandName Get-FslDisk -MockWith{return get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'}
             { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd" -convertTo vhdx -overwrite -RemoveOld } | should not throw

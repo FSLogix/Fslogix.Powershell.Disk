@@ -24,7 +24,7 @@ function Clear-FslDisk {
         Clear-fsldisk -path 'C:\vhds'
         Obtains all the VHD's within the directory 'C:\vhds' and clears their contents.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName='None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$path,
@@ -33,7 +33,13 @@ function Clear-FslDisk {
         [System.String]$folder,
 
         [Parameter(Position = 2)]
-        [Switch]$force
+        [Switch]$force,
+
+        [Parameter(Position = 3,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
