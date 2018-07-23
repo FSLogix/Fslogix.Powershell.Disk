@@ -15,18 +15,16 @@ function Get-FslVHD {
         Get-FslVHD -path C:\Users\danie\Documents\VHDModuleProject\ODFCTest2
         Retreives all the VHD's within the folder 'ODFCTest2'
     #>
-    [CmdletBinding(DefaultParametersetName='None')]
+    [CmdletBinding(DefaultParametersetName='none')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [System.String]$path,
 
         [Parameter(Position = 1, Mandatory = $true, ParameterSetName = 'index')]
-        [ValidateRange(0,10000)]
-        [int]$start,
+        [uint16]$start,
 
         [Parameter(Position = 2, Mandatory = $true, ParameterSetName = 'index')]
-        [ValidateRange(0,10000)]
-        [int]$end
+        [uint16]$end
     )
 
     begin {
@@ -71,11 +69,15 @@ function Get-FslVHD {
                     break
                 }
             }
-            Write-Verbose "Obtaining VHD's from starting index: $Start to ending index: $End."
+            Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: $Start to ending index: $End."
             $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
             $VhdDetails = ($vhdlist | Where-Object {$_.value -ge $Start -and $_.Value -le $End}).Key | get-fsldisk
         }else{
             $VhdDetails = $VHDs.FullName | get-fsldisk
+        }
+        if($null -eq $VhdDetails){
+            Write-Warning "Could not retrieve any VHD's in $path"
+            exit
         }
         try {
             $count = $VhdDetails.count

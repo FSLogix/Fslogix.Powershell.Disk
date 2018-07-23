@@ -63,6 +63,5 @@ Describe $sut {
             $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
             $vhd2.count | should be $vhd.count
         }
-       
     }
 }

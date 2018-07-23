@@ -101,6 +101,12 @@ function Get-FslOstFile {
                 Write-Output $osts
             }
 
+            if ($count -eq 1){
+                if($Remove){
+                    Write-Verbose "$(Get-Date): Only 1 Ost, skipping deletion."
+                }
+            }
+
             ## If user wants to delete Osts ##
             if ($count -gt 1) {
                 if ($Remove) {
