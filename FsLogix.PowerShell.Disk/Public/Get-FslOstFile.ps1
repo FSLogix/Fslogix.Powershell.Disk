@@ -73,6 +73,7 @@ function Get-FslOstFile {
         $VHDs = get-fslvhd -path $path -start $Start -end $End
 
         foreach ($vhd in $VHDs) {
+            $removed = 0
             $DriveLetter = get-driveletter -path $vhd.path
             $osts = get-childitem -path (join-path $DriveLetter *.ost) -recurse
 
@@ -114,6 +115,7 @@ function Get-FslOstFile {
 
                     try {
                         $osts | Where-Object {$_.Name -ne $latestOst.Name} | Remove-Item -Force -ErrorAction Stop
+                        $removed += $($count-1)
                         $Totalremoved += $($count - 1)
                         Write-Verbose "$(Get-Date): Successfully removed duplicate ost files"
                     }
@@ -121,7 +123,7 @@ function Get-FslOstFile {
                         Write-Error $Error[0]
                     }
 
-                    Write-Verbose "$(Get-Date): Removed $TotalRemoved OST's"
+                    Write-Verbose "$(Get-Date): Removed $Removed OST's"
                 }else{
                     Write-Verbose "$(Get-Date): Only one OST found. Skipping deletion."
                 }
@@ -134,6 +136,7 @@ function Get-FslOstFile {
                 Write-Error $Error[0]
             }
         }#foreach
+        Write-Verbose "Removed a total of: $TotalRemoved OST files."
 
     }
 
