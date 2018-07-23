@@ -9,14 +9,19 @@ Describe $sut {
         mock -CommandName test-path -mockwith {$true}
         mock -CommandName dismount-FslDisk -MockWith {$true}
         mock -CommandName get-fslvhd -MockWith {
-            return get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            [PSCustomObject]@{
+                Name = 'test.vhd'
+                Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
+            }
         }
         mock -CommandName remove-item -MockWith {$true}
     }
     Context -name 'Does not throw' {
         BeforeEach {
             mock -CommandName get-childitem -MockWith {
-                return "hi.ost"
+                [PSCustomObject]@{
+                    Name = "hi.ost"
+                }
             }
         }
         It 'Does not throw' {
@@ -29,8 +34,8 @@ Describe $sut {
             {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -remove -start 1 -end 2} | should not throw
         }
         It 'output' {
-            $output = get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -output
-            $output.count -gt 0 | should be $true
+            $output = {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -output}
+            $output.Count | should be 1
         }
         It 'full' {
             {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -full} | should not throw
@@ -74,7 +79,7 @@ Describe $sut {
                 Name = "hi2.ost"
             }
         }
-        it 'Remove one duplicate from two ost'{
+        it 'Remove duplicate from duplicate ost'{
             {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -remove} | should not throw
         }
     }
