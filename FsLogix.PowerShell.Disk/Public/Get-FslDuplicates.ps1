@@ -86,10 +86,7 @@ function Get-FslDuplicates {
         ## Get VHDs ##
         Write-Verbose "$(Get-Date): Retrieving VHD(s)"
         $VHDs = get-fslvhd -path $vhdpath -start $start -end $end
-        if ($null -eq $VHDs) {
-            Write-Warning "Could not find VHDs in $vhdpath"
-            exit
-        }
+
         ## Search Duplicates ##
         foreach ($vhd in $VHDs) {
             if ($Remove) {

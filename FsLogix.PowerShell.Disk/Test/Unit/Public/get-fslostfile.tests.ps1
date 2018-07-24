@@ -8,13 +8,13 @@ Describe $sut {
         mock -CommandName get-driveletter -MockWith {$true}
         mock -CommandName test-path -mockwith {$true}
         mock -CommandName dismount-FslDisk -MockWith {$true}
+        mock -CommandName remove-item -MockWith {$true}
         mock -CommandName get-fslvhd -MockWith {
             [PSCustomObject]@{
                 Name = 'test.vhd'
                 Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
             }
         }
-        mock -CommandName remove-item -MockWith {$true}
     }
     Context -name 'Does not throw' {
         BeforeEach {
@@ -79,7 +79,7 @@ Describe $sut {
                 Name = "hi2.ost"
             }
         }
-        it 'Remove duplicate from duplicate ost'{
+        it 'Remove duplicates'{
             {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -remove} | should not throw
         }
     }
