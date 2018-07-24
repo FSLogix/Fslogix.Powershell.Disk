@@ -26,36 +26,37 @@ function Get-FslFunctions {
 
     process {
 
-        if($path){
-            $ParentPath = $path
-        }else{ $ParentPath = $PSScriptRoot }
-
-        if($null -eq $ParentPath){
-            Write-Error "Could not find path: $ParentPath" -ErrorAction Stop
+        if ($path) {
+            if (-not(test-path $path)) {
+                Write-Error "Could not find path: $path" -ErrorAction Stop
+            }
+            if($path -notlike "*.ps1") {
+                Write-Error "Path must be a powershell function." -ErrorAction Stop
+            }
+            else {
+                $ParentPath = $path
+            }
         }
+        else { $ParentPath = $PSScriptRoot }
 
         $Type = split-path -path $ParentPath -leaf
 
         $Functions = get-childitem -path $ParentPath
 
-        if($null -eq $Functions){
-            Write-Warning "Could not find any functions within: $ParentPath"
-            exit
-        }
-
         $output = @{}
 
-        foreach($func in $Functions){
+        foreach ($func in $Functions) {
             $output.add($func.Basename, (GET-Command $func.Basename).parameters.Keys)
         }
 
-        if($path){
+        if ($path) {
             $label = "Function"
-        }else{
+        }
+        else {
             $label = "$type Functions"
         }
 
-        $output = $output.GetEnumerator() | Select-Object @{Label=$label ;Expression={$_.Key}},@{Label='Parameters';Expression={$_.Value}}
+        $output = $output.GetEnumerator() | Select-Object @{Label = $label ; Expression = {$_.Key}}, @{Label = 'Parameters'; Expression = {$_.Value}}
 
         Write-Output $output
     }

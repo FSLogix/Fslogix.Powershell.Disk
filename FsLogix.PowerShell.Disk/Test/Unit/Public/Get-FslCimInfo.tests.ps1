@@ -20,7 +20,7 @@ Describe $sut{
                     Path = $VHD
                     Attached = $false
                 }
-            }
+            } -Verifiable
             mock -CommandName Get-Disk -MockWith{
                 [PSCustomObject]@{
                     VHD = 'Disk'
@@ -29,7 +29,7 @@ Describe $sut{
                     CimSystemProperties = 'NoneV2'
                     Location = "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd"
                 }
-            }
+            } -Verifiable
             Mock -CommandName Export-Csv -MockWith{$null}
             mock -CommandName Mount-VHD -MockWith {$null}
             mock -CommandName dismount-FslDisk -MockWith {$null}
@@ -71,6 +71,11 @@ Describe $sut{
                 }
             }
             {get-fslciminfo -path $vhd} | should not throw
+        }
+        it 'Asserts mock'{
+            {get-fslciminfo -path $vhd -csvpath $CSV}
+            Assert-MockCalled -CommandName Get-fslVhd -Times 1
+            Assert-MockCalled -CommandName Get-Disk -Times 1
         }
         it 'Calls remove item'{
             Mock -CommandName test-path -MockWith {$true}

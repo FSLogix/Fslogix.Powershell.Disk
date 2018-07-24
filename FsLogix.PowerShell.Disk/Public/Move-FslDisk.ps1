@@ -64,7 +64,7 @@ function move-FslDisk {
             $CheckIfAlreadyExists = Get-childitem -path $Destination | Where-Object {$_.Name -eq $name}
 
             if ($currVhd.attached) {
-                Write-Error "VHD: $name is currently in use." -ErrorAction continue ## Continue to move other disks, but skip the one's we can't
+                Write-Error "VHD: $name is currently in use." -ErrorAction Stop
             }
             else {
                 if ($CheckIfAlreadyExists) {
@@ -73,18 +73,12 @@ function move-FslDisk {
                         Write-Verbose "$(Get-Date): Overwrited and moved $name to $Destination"
                     }
                     else {
-                        Write-Error "$name already exists at $Destination" -ErrorAction Continue ## Continue to move other disks, but skip the one's we can't
+                        Write-Error "$name already exists at $Destination" -ErrorAction stop
                     }
                 }
                 else {
-                    try {
-                        move-item -path $currVhd.path -Destination $Destination -Force
-                        Write-Verbose "$(Get-Date): Moved $name to $Destination"
-                    }
-                    catch {
-                        Write-Error $error[0]
-                        continue
-                    }
+                    move-item -path $currVhd.path -Destination $Destination -Force
+                    Write-Verbose "$(Get-Date): Moved $name to $Destination"
                 }#else checkifalreadyexists
             }#else attached
         }#foreach
