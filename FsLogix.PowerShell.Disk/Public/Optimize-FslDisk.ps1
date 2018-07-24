@@ -25,14 +25,17 @@ function Optimize-FslDisk {
 
     process {
         if (-not(test-path $path)) {
-            Write-Error "Could not find path: $path"
+            Write-Error "Could not find path: $path" -ErrorAction Stop
         }
         else {
             $VHD = Get-FslDisk -path $path
         }
         if ($VHD.Vhdtype -eq 'fixed') {
-            Write-Error "VHD cannot be of type: 'fixed'. Must be dynamic"
-            exit
+            Write-Error "VHD cannot be of type: 'fixed'. Must be dynamic" -ErrorAction Stop
+        }
+
+        if($VHD.Attached){
+            Write-Error "VHD cannot be in use." -ErrorAction Stop
         }
 
         ## Remove Duplicates ##
@@ -40,13 +43,10 @@ function Optimize-FslDisk {
             get-FslDuplicateFiles -path $path -csvpath 'test.csv' -Remove 'true'
         }## Removed Duplicates
 
-        try {
-            Write-Verbose "$(Get-Date): Optimizing VHD: $path"
-            Optimize-VHD -Path $path -Mode $mode
-        }
-        catch {
-            Write-Error $Error[0]
-        }
+
+        Write-Verbose "$(Get-Date): Optimizing VHD: $path"
+        Optimize-VHD -Path $path -Mode $mode
+
     }
 
     end {

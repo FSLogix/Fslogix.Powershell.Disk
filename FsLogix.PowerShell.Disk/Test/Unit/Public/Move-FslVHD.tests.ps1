@@ -9,7 +9,7 @@ $VHD = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Daniel_S-0-2-26-1944
 $invalidvhd ='C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Invalid.vhd'
 $validname = 'Daniel2_S-0-2-26-1944519217-1788772061-1800150966-14811'
 $invalidname = 'hi'
-describe $sut{
+describe $sut{ # 100% pester
     BeforeAll{
         mock -CommandName New-FslDisk -MockWith {} -Verifiable
         mock -CommandName Copy-FslDiskToDisk -MockWith {} -Verifiable
@@ -22,7 +22,7 @@ describe $sut{
             {move-Fslvhd -VHD $VHD -Destination 'C:\Users\danie\Documents\VHDModuleProject\Old scripts\set-FslPermission.ps1'} | should throw
         }
         it 'Invalid destination path'{
-            {Move-FslVhd -VHD $VHD -Destination 'C:\blah' } | should throw 
+            {Move-FslVhd -VHD $VHD -Destination 'C:\blah' } | should throw
         }
         it 'VHD path is a directory'{
             {Move-FslVhd -VHD $Dest -Destination $Dest} | should throw
