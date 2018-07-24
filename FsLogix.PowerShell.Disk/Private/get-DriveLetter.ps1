@@ -15,8 +15,9 @@ function get-driveletter {
         .PARAMETER VHDPath
         The target path for VHD location.
         .EXAMPLE
-        mount-FSLVHD -path \\server\share\ODFC\vhd1.vhdx
-        Will return the drive letter
+        Get-Driveletter -path \\server\share\ODFC\vhd1.vhdx
+        Will return the drive letter associated with vhd1.vhdx
+        If none exists, then the script will assign the next available driveletter to the disk.
     #>
 
     param(
