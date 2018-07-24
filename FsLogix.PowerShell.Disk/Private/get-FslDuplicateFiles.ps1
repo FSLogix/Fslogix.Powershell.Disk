@@ -40,7 +40,7 @@ function get-FslDuplicateFiles {
         [Parameter(Position = 1, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Folderpath,
 
-        [Parameter(Position = 2,ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(Position = 2, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$Csvpath,
 
         [Parameter(Position = 3)]
@@ -49,13 +49,16 @@ function get-FslDuplicateFiles {
 
     begin {
         ## Need to find a way to find all redundant files ##
+        $opt = (Get-Host).PrivateData
+        $opt.WarningBackgroundColor = "DarkRed"
+        $opt.WarningForegroundColor = "White"
         set-strictmode -Version latest
     }
 
     process {
         $name = split-path -path $path -leaf
 
-        if($Csvpath -ne "" -and $Csvpath -notlike "*.csv"){
+        if ($Csvpath -ne "" -and $Csvpath -notlike "*.csv") {
             Write-Error "$CSVPath must have a .csv extension" -ErrorAction Stop
         }
 
@@ -75,7 +78,8 @@ function get-FslDuplicateFiles {
 
         $Directories = get-childitem -path $Path_To_Search -Recurse | Where-Object { $_.PSIsContainer } -ErrorAction Stop | Select-Object FullName
 
-        foreach ($dir in $Directories) { ## Add each directory
+        foreach ($dir in $Directories) {
+            ## Add each directory
             $dirlist.Enqueue($dir.FullName)
         }
 
@@ -93,16 +97,15 @@ function get-FslDuplicateFiles {
             $files = get-childitem -path $dir -file | Sort-Object -Property LastWriteTime -Descending
 
             foreach ($file in $files) {
+
+                $get_FileHash = Get-FileHash -path $file.fullname
                 try {
-                    ## Get File's hash value, skipping if folder ##
-                    $get_FileHash = Get-FileHash -path $file.fullname
                     $FileHash = $get_FileHash.hash
                 }
                 catch [System.Management.Automation.PropertyNotFoundException] {
-                    Write-Error $Error[0]
+                    Write-Warning "MINOR: No hash value on $($file.name)"
                     continue
                 }
-
                 ## Hashtable will have unique values of hashcode ##
                 if ($HashArray.ContainsValue($FileHash)) {
                     Write-Verbose "$(Get-Date): Duplicate found in Directory: $($dir) | File: $($file.name) "
@@ -131,9 +134,10 @@ function get-FslDuplicateFiles {
                 }
             }#foreach file
 
-            if($Duplicates.Count -eq 0){
+            if ($Duplicates.Count -eq 0) {
                 Write-Verbose "$(Get-Date): No duplicates found in $dir"
-            }else{
+            }
+            else {
                 Write-Verbose "$(Get-Date): Found $($duplicates.Count) duplicates in $dir"
             }
 
@@ -162,5 +166,7 @@ function get-FslDuplicateFiles {
     }#process
 
     end {
+        $opt.WarningBackgroundColor = "Black"
+        $opt.WarningForegroundColor = "Yellow"
     }
 }
