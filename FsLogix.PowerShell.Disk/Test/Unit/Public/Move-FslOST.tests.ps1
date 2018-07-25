@@ -39,17 +39,17 @@ Describe $sut {
         mock -CommandName copy-FslToDisk -MockWith {$true} -Verifiable
         mock -CommandName dismount-FslDisk -MockWith {$true} -Verifiable
         context -Name 'should throw' {
-            it 'Invalid Ost path, must end with %username%' {
-                {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\blah'} | should throw
-            }
             it 'Invalid AppDirectoryPath' {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\users\%username%' -AppData 'C:\blah'} | should throw
             }
             it 'Invalid DiskDestination' {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users\Daniel_S-0-2-26-1944519217-1788772061-1800150966-14811' -DiskDestination 'C:\blah'} | should throw
             }
-            it 'Invalid AppData and OST' {
+            it 'Invalid AppData' {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2'} | should throw
+            }
+            it 'invalid OST'{
+                {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
             }
             it 'App Data is not a folder' {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ODFC\Daniel_S-0-2-26-1944519217-1788772061-1800150966-14811.vhd' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
@@ -57,18 +57,24 @@ Describe $sut {
             it 'Could not get users in appdata folder' {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
             }
+            it 'No appdata in user profile'{
+                mock -CommandName get-childitem -MockWith {$false} -ParameterFilter{
+                    $path -eq 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users\Daniel_S-0-2-26-1944519217-1788772061-1800150966-14811'
+                }
+                {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
+            }
         }
         context -Name 'Should not throw' {
             BeforeEach{
-                Mock -CommandName test-path -MockWith{$true} 
+                Mock -CommandName test-path -MockWith{$true}
             }
-            it 'Valid Input' {
+            it 'Valid Input 2 ad users' {
                 {Move-FslOst -AdGroup 'all' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should not throw
             }
-            it 'Valid Input' {
+            it 'Valid Input ad daniel' {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should not throw
             }
-            it 'Valid Input' {
+            it 'Valid Input ad kim' {
                 {Move-FslOst -AdGroup 'Kim' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should not throw
             }
             it 'Valid vhdformat Input' {

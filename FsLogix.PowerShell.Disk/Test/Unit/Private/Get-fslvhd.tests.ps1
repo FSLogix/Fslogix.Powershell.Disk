@@ -30,10 +30,20 @@ Describe $sut {
         }
     }
     context -name 'Test get-fslVHD'{
+        it 'Index 1 to 1 should return 1 disk'{
+            mock -CommandName Get-Fsldisk -MockWith {
+                get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+            }
+            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
+            $vhd.count | should be 1
+        }
         BeforeEach{
             mock -CommandName Get-FslDisk -MockWith {
-                return get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
-            }
+                [PSCustomObject]@{
+                    Name = 'test.vhd'
+                    Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                }
+            } -Verifiable
         }
         it 'Correct vhd path'{
             {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx'} | should not throw
@@ -49,10 +59,6 @@ Describe $sut {
             $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 3
             $vhd.count | should be 3
         }
-        it 'Index 1 to 1 should return 1 disk'{
-            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
-            $vhd.count | should be 1
-        }
         it 'End index is greater than total count, should just return all vhds'{
             $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
             $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
@@ -62,6 +68,11 @@ Describe $sut {
             $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
             $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
             $vhd2.count | should be $vhd.count
+        }
+        it 'Start index is greater than 1'{
+            $vhd = Get-FslVhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 3 -end 5 
+            $fisrtvhd = $vhd | Select-Object -First 1 
+            $fisrtvhd.path | should be 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
         }
     }
 }

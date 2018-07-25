@@ -89,7 +89,7 @@ function Test-FslProfile {
                 Write-Verbose "$(get-date): $FslProfile found and validated."
             }
             else {
-                Write-Warning "MAJOR:   $FSLprofile is either corrupted or damaged."
+                Write-Warning "MAJOR:   $FSLprofile found, but is either corrupted or damaged."
             }
         }
         write-output ((test-path $FslFileName) -and (Test-VHD $FslFileName))

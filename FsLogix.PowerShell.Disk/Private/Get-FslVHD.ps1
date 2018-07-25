@@ -1,78 +1,97 @@
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$funcType = Split-Path $here -Leaf
-$sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
-$here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
-. "$here\$funcType\$sut"
+function Get-FslVHD {
+    <#
+        .SYNOPSIS
+        Retrives all VHD's within a path and returns their information.
 
-Describe $sut {
+        .DESCRIPTION
+        Searches in a given path for all VHD's. User can either input a directory path or
+        a path to an indivudal VHD. Once all the VHD's are found, if found, return the amount
+        found and then outputs the VHD's information.
 
-    Context -Name 'Outputs that should throw' {
-        it 'Used incorrect extension path' {
-            $incorrect_path = { get-fslvhd -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public\set-FslPermission.ps1" }
-            $incorrect_path | Should throw
-        }
-        it 'Used non-existing VHD'{
-            $incorrect_path = { get-fslvhd -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\test4.vhd" }
-            $incorrect_path | Should throw
-        }
-        it 'Used non-existing path'{
-            $incorrect_path = {get-fslvhd -path "C:\blah"}
-            $incorrect_path | should throw
-        }
-        it 'No vhds in path should give warning'{
-            {get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public' -WarningAction stop} | should throw
-        }
-        it 'If starting index is greater than count'{
-            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 999 -end 1000} | should throw
-        }
-        it 'If starting index is greater than ending index'{
-            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 2 -end 1} | should throw
-        }
+        Created by Daniel Kim @ FSLogix
+        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
+
+        .EXAMPLE
+        Get-FslVHD -path C:\Users\danie\Documents\VHDModuleProject\ODFCTest2
+        Retreives all the VHD's within the folder 'ODFCTest2'
+    #>
+    [CmdletBinding(DefaultParametersetName='none')]
+    param (
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
+        [System.String]$path,
+
+        [Parameter(Position = 1, Mandatory = $true, ParameterSetName = 'index')]
+        [uint16]$start,
+
+        [Parameter(Position = 2, Mandatory = $true, ParameterSetName = 'index')]
+        [uint16]$end
+    )
+
+    begin {
+        set-strictmode -Version latest
     }
-    context -name 'Test get-fslVHD'{
-        it 'Index 1 to 1 should return 1 disk'{
-            mock -CommandName Get-Fsldisk -MockWith {
-                get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+
+    process {
+
+        if(-not(test-path -path $path)){
+            write-error "Path: $path is invalid." -ErrorAction Stop
+        }
+        $VHDs = get-childitem -path $path -filter "*.vhd*" -Recurse
+        if($null -eq $VHDs){
+            Write-Warning "Could not find any VHDs in path: $path"
+            exit
+        }else{
+            try {
+                $GC_count = $VHDs.count
             }
-            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
-            $vhd.count | should be 1
+            catch [System.Management.Automation.PropertyNotFoundException] {
+                # When calling the get-childitem cmdlet, if the cmldet only returns one
+                # object, then it loses the count property, despite working on terminal.
+                $GC_count = 1
+            }
         }
-        BeforeEach{
-            mock -CommandName Get-FslDisk -MockWith {
-                [PSCustomObject]@{
-                    Name = 'test.vhd'
-                    Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+
+        if ($Start -ne 0 -and $End -ne 0) {
+
+            if($start -gt $end){
+                Write-Error "Starting Index: $start cannot be greater than ending index: $end." -ErrorAction Stop
+            }
+
+            if($start -gt $GC_count){
+                Write-Error "Starting Index: $Start cannot be greater than to total count of disks: $GC_Count." -ErrorAction Stop
+            }
+
+            $DiskHashTable = @{}
+            $counter = 1
+            foreach($vhd in $VHDs){
+                $DiskHashTable.add($vhd.fullname,$counter++)
+                if($counter -gt $End){
+                    break
                 }
-            } -Verifiable
+            }
+            Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: $Start to ending index: $End."
+            $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
+            $VhdDetails = ($vhdlist | Where-Object {$_.value -ge $Start -and $_.Value -le $End}).Key | get-fsldisk
+        }else{
+            $VhdDetails = $VHDs.FullName | get-fsldisk
         }
-        it 'Correct vhd path'{
-            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx'} | should not throw
+        if($null -eq $VhdDetails){
+            Write-Warning "Could not retrieve any VHD's in $path"
+            exit
         }
-        It 'Takes pipeline input'{
-            $vhd = get-childitem -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx"
-            $vhd | get-fslvhd
+        try {
+            $count = $VhdDetails.count
         }
-        it 'start and end index'{
-            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx' -start 1 -end 1} | should not throw
+        catch [System.Management.Automation.PropertyNotFoundException] {
+            # When calling the get-childitem cmdlet, if the cmldet only returns one
+            # object, then it loses the count property, despite working on terminal.
+            $count = 1
         }
-        it 'Index 1 to 3 should return 3 disks'{
-            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 3
-            $vhd.count | should be 3
-        }
-        it 'End index is greater than total count, should just return all vhds'{
-            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
-            $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
-            $vhd2.count | should be $vhd.count
-        }
-        it 'If start or end index is 0, should ignore and return all vhds'{
-            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'
-            $vhd2 = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 100
-            $vhd2.count | should be $vhd.count
-        }
-        it 'Start index is greater than 1'{
-            $vhd = Get-FslVhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 3 -end 5 
-            $fisrtvhd = $vhd | Select-Object -First 1 
-            $fisrtvhd.path | should be 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
-        }
+        write-verbose "$(Get-Date): Retrieved $count VHD(s)."
+
+        Write-Output $VhdDetails
+    }
+
+    end {
     }
 }

@@ -27,7 +27,8 @@ function Move-FslOst {
         Active Directory group name
 
         .PARAMETER OST
-        Ost directory location, user must should %username% at the end.
+        Ost directory location, user should use %username% at the end.
+        User profile will replace the %username%.
         If OST is not specified, defaulted to: \\server\share\usersost\%username%
 
         .PARAMETER APPDATA
@@ -165,7 +166,7 @@ function Move-FslOst {
             [System.String]$Migrated_VHD = [System.String]$DiskDestination
             New-FslDisk -NewVHDPath $Migrated_VHD -name $Users_Migrated_VHD_Name -SizeInGB $SizeInGB -Type $VHDtype -overwrite
             $New_Migrated_VHD = $Migrated_VHD + "\" + $Users_Migrated_VHD_Name
-            
+
             if (-not(test-path -path $New_Migrated_VHD)) {
                 Write-Error "Could not find: $New_Migrated_VHD" -ErrorAction Stop
             }

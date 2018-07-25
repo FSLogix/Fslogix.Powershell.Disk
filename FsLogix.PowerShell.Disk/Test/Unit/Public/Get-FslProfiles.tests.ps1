@@ -31,7 +31,7 @@ Describe $sut {
         }
         it 'confirm output count'{
             $output = get-fslprofiles -UserDirectory $Dir
-            $output.count | should be 3
+            $output.count | should be 2
         }
     }
 }
