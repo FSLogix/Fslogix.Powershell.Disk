@@ -8,7 +8,7 @@ $fakeADUser1 = [PSCustomObject] @{
     Name           = 'Daniel Kim'
     SamAccountName = 'Daniel'
     SID            = 'S-0-2-26-1944519217-1788772061-1800150966-14811'
-} 
+}
 $fakeADUser2 = [PSCustomObject] @{
     Name           = 'Daniel Kim'
     SamAccountName = 'Kim'
@@ -59,6 +59,9 @@ Describe $sut {
             }
         }
         context -Name 'Should not throw' {
+            BeforeEach{
+                Mock -CommandName test-path -MockWith{$true} 
+            }
             it 'Valid Input' {
                 {Move-FslOst -AdGroup 'all' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\Users' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should not throw
             }

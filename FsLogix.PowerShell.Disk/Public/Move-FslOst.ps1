@@ -10,9 +10,6 @@
     Enumeration for migration will be an AD group called something like FSLogix.ODFC.Migrate
     Vhd’s will be placed in \\server\share\ODFC
     I would also like to add an option that makes the Copied files Read Denied after the copy is completed.
-
-    Script on hold since I have no ability to test active directory functionalites or use active directory cmdlets.
-
 #>
 function Move-FslOst {
     <#
@@ -130,10 +127,10 @@ function Move-FslOst {
             [System.String]$FSLUser = $_.SamAccountName
             [System.String]$strSid = $_.SID
 
+            Write-Verbose "$(Get-Date): Beginning OST migration for $FSLUser."
             Write-Verbose "$(Get-Date): FslFullUser: $FSLFullUser"
             write-verbose "$(Get-Date): FslUser: $FSLUser."
             Write-Verbose "$(Get-Date): FslSID: $strSid."
-            Write-Verbose "$(Get-Date): Beginning OST migration for $FSLUser."
 
             $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
             if ($null -eq $Users_AppData) {
@@ -167,9 +164,10 @@ function Move-FslOst {
             ## Create new Migrated VHD ##
             [System.String]$Migrated_VHD = [System.String]$DiskDestination
             New-FslDisk -NewVHDPath $Migrated_VHD -name $Users_Migrated_VHD_Name -SizeInGB $SizeInGB -Type $VHDtype -overwrite
-
-            if (-not(test-path -path $Migrated_VHD)) {
-                Write-Error "Could not find: $Migrated_VHD" -ErrorAction Stop
+            $New_Migrated_VHD = $Migrated_VHD + "\" + $Users_Migrated_VHD_Name
+            
+            if (-not(test-path -path $New_Migrated_VHD)) {
+                Write-Error "Could not find: $New_Migrated_VHD" -ErrorAction Stop
             }
             else {Write-Verbose "$(Get-Date): $FslUser's migrated disk is set."}
 
@@ -180,8 +178,8 @@ function Move-FslOst {
             }
             else {
                 Write-Verbose "$(Get-Date): Found $FslUser's AppData files."
-                Write-Verbose "$(Get-Date): Copying AppData to $Migrated_VHD"
-                copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
+                Write-Verbose "$(Get-Date): Copying AppData to $New_Migrated_VHD"
+                copy-FslToDisk -VhdPath $New_Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
             }
             if ($null -eq $Users_Ost) {
                 Write-Warning "Could not find $FslUser's Ost file."
@@ -189,11 +187,11 @@ function Move-FslOst {
             }
             else {
                 Write-Verbose "$(Get-Date): Found $FslUser's OST file."
-                Write-Verbose "$(Get-Date): Copying OST to $Migrated_VHD"
-                copy-FslToDisk -VhdPath $Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse
+                Write-Verbose "$(Get-Date): Copying OST to $New_Migrated_VHD"
+                copy-FslToDisk -VhdPath $New_Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse
             }
             Write-Verbose "$(Get-Date): Finished OST Migration for: $FslUser."
-            $Migrated_VHD | dismount-fsldisk
+            $New_Migrated_VHD | dismount-fsldisk
             $ost = split-path -path $ost
         }#admember enumeration
     }#process
