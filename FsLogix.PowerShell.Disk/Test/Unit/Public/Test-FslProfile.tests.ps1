@@ -9,7 +9,7 @@ $ValidSID = 'S-0-2-26-1944519217-1788772061-1800150966-14812'
 $ValidName = 'Kim'
 
 Describe $sut {
-    Context -Name 'Should throw' {
+    Context -Name 'Should throw Warning Messages' {
         it 'Invalid folder' {
             {Test-FslProfile -VhdFolder 'C:\blah' -strSid $ValidSID -strUserName $ValidName -ErrorAction Stop} | should throw
         }
@@ -22,6 +22,10 @@ Describe $sut {
         it 'Invalid Directory name'{
             {Test-FslProfile -VhdFolder $ValidFolder -strSid $ValidSID -strUserName 'noooo' -WarningAction Stop} | should throw
         }
+        it 'VHD is corrupted'{
+            Mock -CommandName Test-VHD -MockWith {return $false}
+            {Test-FslProfile -VhdFolder $ValidFolder -strSid $ValidSID -strUserName $ValidName -WarningAction Stop} | should throw
+        }
         it 'could not find profile.vhd'{
             mock -CommandName Test-Path -MockWith {
                 $false
@@ -32,6 +36,7 @@ Describe $sut {
             $output = Test-FslProfile -VhdFolder $ValidFolder -strSid $ValidSID -strUserName $ValidName
             $output | should be $false
         }
+       
     }
     Context -Name "should not throw"{
         it 'Valid inputs'{

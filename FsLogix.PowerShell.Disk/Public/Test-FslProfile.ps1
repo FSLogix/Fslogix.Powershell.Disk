@@ -3,26 +3,26 @@ function Test-FslProfile {
     param (
 
         [Parameter( Position = 0,
-                    Mandatory = $true,
-                    ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
         )][System.String]$VhdFolder,
 
         [Parameter( Position = 1,
-                    Mandatory = $true,
-                    ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
         )][System.String]$strSid,
 
         [Parameter( Position = 2,
-                    Mandatory = $true,
-                    ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
         )][System.String]$strUserName,
 
         [Parameter( Position = 3,
-                    ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true
         )][regex]$SID_Regex = "S-\d-\d+-(\d+-){1,14}\d+$",
 
         [Parameter( Position = 4)]
@@ -41,47 +41,58 @@ function Test-FslProfile {
     process {
 
         #Kim_S-0-2-26-1944519217-1788772061-1800150966-14812.VHD
-        if(-not(test-path -path $vhdfolder)){
+        if (-not(test-path -path $vhdfolder)) {
             Write-Warning "Could not validate path: $vhdfolder" 
-        }else{Write-Verbose "$(get-date): Validated disk location."}
+        }
+        else {Write-Verbose "$(get-date): Disk location validated."}
 
         $Directory_Check = Get-Item $Vhdfolder
-        if($Directory_Check -is [System.IO.DirectoryInfo]){
+        if ($Directory_Check -is [System.IO.DirectoryInfo]) {
             $Directory = $Directory_Check.FullName
-        }else{ Write-Warning "MAJOR:    Vhd location must be a directory."}
+        }
+        else { Write-Warning "MAJOR:    Vhd location must be a directory."}
 
-        if(!($strSid -match $SID_Regex)){
+        if (!($strSid -match $SID_Regex)) {
             Write-Warning "MAJOR:   SID: $strsid does not match regex."
-        }else{ Write-Verbose "$(get-date): User's SID validated." }
+        }
+        else { Write-Verbose "$(get-date): User's SID validated." }
 
         $FslDirectory = $Directory + "\" + $strSid + "_" + $strUserName
-        if(-not(test-path $FslDirectory)){
+        if (-not(test-path $FslDirectory)) {
             Write-Verbose "$(get-date): Could not find Directory for: $FslDirectory."
             Write-Verbose "$(get-date): Attempting flip-flop."
             $FslDirectory = $Directory + "\" + $strUserName + "_" + $strSid
         }
-        if(-not(test-path $FslDirectory)){
+        if (-not(test-path $FslDirectory)) {
             Write-Warning "MAJOR:   Could not find Directory for: $FslDirectory"
-        }else {Write-Verbose "$(get-date): Directory found and validated."}
+        }
+        else {Write-Verbose "$(get-date): Directory found and validated."}
 
-        if($vhd){
+        if ($vhd) {
             $FSlProfile = "profile.vhd"
         }
-        if($vhdx){
+        if ($vhdx) {
             $FSlProfile = "profile.vhdx"
         }
-        if((-not $vhd) -and (-not $vhdx)){
+        if ((-not $vhd) -and (-not $vhdx)) {
+            Write-Verbose "$(get-date): User did not opt vhd format. Defaulted to .vhd."
             $FSlProfile = "profile.vhd"
         }
 
         $FslFileName = $FslDirectory + "\" + $FSlProfile
         $Fsl_Directory_name = split-path -Path $FslDirectory -leaf
-        if(-not(test-path $FslFileName)){
+        if (-not(test-path $FslFileName)) {
             Write-Warning "MINOR:   $Fsl_Directory_name does not contain a $FslProfile"
-        }else{
-            Write-Verbose "$(get-date): Found $FslProfile."
         }
-        write-output (test-path $FslFileName)
+        else {
+            if (test-vhd -Path $FslFileName) {
+                Write-Verbose "$(get-date): $FslProfile found and validated."
+            }
+            else {
+                Write-Warning "MAJOR:   $FSLprofile is either corrupted or damaged."
+            }
+        }
+        write-output ((test-path $FslFileName) -and (Test-VHD $FslFileName))
     }
 
     end {
