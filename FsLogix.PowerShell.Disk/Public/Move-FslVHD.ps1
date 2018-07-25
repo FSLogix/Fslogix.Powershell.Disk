@@ -63,15 +63,13 @@ function Move-FslVhd {
         }
         if ($NewName) {
             if($NewName -match $OriginalMatch){
-                $Migrated_VHD = "$Destination\$NewName.$VHDformat"
+                $name = "$NewName.$VHDformat"
             }else{
                 Write-Error "$NewName does not match regex." -ErrorAction Stop
             }
-        }else {
-            $Migrated_VHD = "$Destination\$name"
         }
-
-        New-FslDisk -NewVHDPath $Migrated_VHD -SizeInGB $SizeInGB -Type $VHDtype -overwrite
+        $Migrated_VHD = $Destination
+        New-FslDisk -NewVHDPath $Migrated_VHD -name $Name -SizeInGB $SizeInGB -Type $VHDtype -overwrite
 
         Copy-FslDiskToDisk -FirstVHDPath $VHD -SecondVHDPath $Migrated_VHD -Overwrite
     }
