@@ -71,7 +71,7 @@ function Get-FslVHD {
             }
             Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: $Start to ending index: $End."
             $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
-            $Vhd = ($vhdlist | Where-Object {$_.value -ge $Start -and $_.Value -le $End}).Key | get-fsldisk
+            $VhdDetails = ($vhdlist | Where-Object {$_.value -ge $Start -and $_.Value -le $End}).Key | get-fsldisk
         }else{
             $VhdDetails = $VHDs.FullName | get-fsldisk
         }
