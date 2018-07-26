@@ -1,7 +1,30 @@
 function Move-FslVhd {
     <#
         .SYNOPSIS
-        Migrates the contents of an existing VHD to a new one.
+        Migrates the contents of an existing VHD to a new VHD and renames
+        the old VHD with a -MIGRATES- flag.
+
+        .PARAMETER VHD
+        Location to a specific disk or directory of disks
+
+        .PARAMETER Destination
+        Destination directory path
+
+        .PARAMETER VHDFORMAT
+        Optional parameter for the new vhd to be a vhd or vhdx.
+
+        .PARAMETER VhdType
+        Optional parameter for the vhd type of dynamic or fixed
+
+        .PARAMETER SizeInGb
+        Optional parameter for the new vhd size
+        *NOTE* size is defaulted to 10gb. If the size is too small,
+        the script will not be able to transfer over all the contents.
+
+        .EXAMPLE
+        Move-FslVHD -VHD 'C:\users\disks\test.vhd -Destination 'C:\Users\disks\'
+        Will create a new virtual disk called test.vhd and rename the old one test-MIGRATED-.vhd.
+        All of the old contents will then be copied to the new VHD.
     #>
     [CmdletBinding()]
     param (

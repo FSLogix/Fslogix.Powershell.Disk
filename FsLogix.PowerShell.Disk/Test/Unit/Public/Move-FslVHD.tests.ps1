@@ -42,7 +42,7 @@ describe $sut{ # 100% pester
         it 'rename'{
             {Move-FslVhd -VHD $VHD -Destination $Dest} | should not throw
         }
-        it 'rename fliplflop'{
+        it 'rename flipflop'{
             {Move-FslVhd -VHD $VHDFlipFLop -Destination $Dest} | should not throw
         }
         it 'vhd directory'{
