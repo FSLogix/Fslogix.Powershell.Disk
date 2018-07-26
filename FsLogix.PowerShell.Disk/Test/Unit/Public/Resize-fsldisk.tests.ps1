@@ -1,16 +1,17 @@
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$here = Split-Path $here
+$funcType = Split-Path $here -Leaf
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
-. "$here\$sut"
+$here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
+. "$here\$funcType\$sut"
 
-Describe 'Resize-FslDisk' {
+Describe $sut {
 
     BeforeAll {
-        . ..\Write-Log.ps1
+        . 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Private\Write-log.ps1'
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
         $size = 1073741824
         [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
-        $path = 'testdrive:\test.vhd'
+        $path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd2.vhdx'
     }
 
     Mock -CommandName Resize-VHD -MockWith {} -Verifiable

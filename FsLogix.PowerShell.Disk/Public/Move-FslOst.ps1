@@ -96,14 +96,17 @@ function Move-FslOst {
         ## Will need to validate with David Young on exactly what he requires                ##
         if ([System.string]::IsNullOrEmpty($ost)) {
             $ost = '\\server\share\usersost\%username%'
+            Write-Verbose "$(get-date): User did not enter OST path: Defaulting to $ost."
         }
 
         if ([System.string]::IsNullOrEmpty($AppData)) {
             $appdata = '\\server\share\users\profiles'
+            Write-Verbose "$(get-date): User did not enter AppData profile directory. Defaulting to $appdata."
         }
 
         if ([System.string]::IsNullOrEmpty($DiskDestination)) {
             $DiskDestination = '\\server\share\ODFC'
+            Write-Verbose "$(get-date): User did not enter Destination director. Defaulted to $diskdestination."
         }
 
         if (-not(test-path $AppData)) {
@@ -122,7 +125,7 @@ function Move-FslOst {
 
         ## Enumerate Ad Group and obtain user information ##
         ## How are these values outputted?                ##
-        get-adgroupmember $AdGroup -Recursive | ForEach-Object {
+        get-adgroupmember $AdGroup -Recursive -ErrorAction Stop | ForEach-Object {
 
             [System.String]$FSLFullUser = $_.Name
             [System.String]$FSLUser = $_.SamAccountName

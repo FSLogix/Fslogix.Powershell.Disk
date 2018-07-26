@@ -6,13 +6,14 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 
 $Dest = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2'
 $VHD = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Daniel_S-0-2-26-1944519217-1788772061-1800150966-14811.vhd'
+$VHDFlipFLop = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\S-0-2-26-1944519217-1788772061-1800150966-14812_Daniel.vhd'
+$VHDDir = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest3'
 $invalidvhd ='C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Invalid.vhd'
-$validname = 'Daniel2_S-0-2-26-1944519217-1788772061-1800150966-14811'
-$invalidname = 'hi'
 describe $sut{ # 100% pester
     BeforeAll{
         mock -CommandName New-FslDisk -MockWith {} -Verifiable
         mock -CommandName Copy-FslDiskToDisk -MockWith {} -Verifiable
+        mock -CommandName rename-item -MockWith {}
     }
     Context -name 'Should throw'{
         it 'Invalid VHD path'{
@@ -24,14 +25,8 @@ describe $sut{ # 100% pester
         it 'Invalid destination path'{
             {Move-FslVhd -VHD $VHD -Destination 'C:\blah' } | should throw
         }
-        it 'VHD path is a directory'{
-            {Move-FslVhd -VHD $Dest -Destination $Dest} | should throw
-        }
         it 'Vhd is invalid'{
             {Move-FslVhd -VHD $invalidvhd -Destination $Dest} | should throw
-        }
-        it 'new name is invalid'{
-            {Move-FslVhd -VHD $VHD -Destination $Dest -NewName $invalidname} | should throw
         }
     }
     Context -Name 'Should not throw'{
@@ -39,10 +34,19 @@ describe $sut{ # 100% pester
             {Move-FslVhd -VHD $VHD -Destination $Dest} | should not throw
         }
         it 'NewName should match regex'{
-            {Move-FslVhd -VHD $VHD -Destination $Dest -NewName $validname} | should not throw
+            {Move-FslVhd -VHD $VHD -Destination $Dest } | should not throw
         }
         it 'vhdformat is vhdx'{
-            {Move-FslVhd -VHD $VHD -Destination $Dest -NewName $validname -VHDformat 'vhdx'} | should not throw
+            {Move-FslVhd -VHD $VHD -Destination $Dest -VHDformat 'vhdx'} | should not throw
+        }
+        it 'rename'{
+            {Move-FslVhd -VHD $VHD -Destination $Dest} | should not throw
+        }
+        it 'rename fliplflop'{
+            {Move-FslVhd -VHD $VHDFlipFLop -Destination $Dest} | should not throw
+        }
+        it 'vhd directory'{
+            {Move-FslVhd -VHD $VHDDir -Destination $Dest} | should not throw
         }
     }
 }

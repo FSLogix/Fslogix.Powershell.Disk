@@ -12,22 +12,23 @@ function Move-FslVhd {
         [System.String]$Destination,
 
         [Parameter(Position = 2)]
-        [System.String]$NewName,
-
-        [Parameter(Position = 3)]
         [ValidateSet("VHD", "VHDX")]
         [System.String]$VHDformat = "VHD", #Defaulted to .vhd
 
-        [Parameter(Position = 4)]
+        [Parameter(Position = 3)]
         [ValidateSet("Dynamic", "Fixed")]
         [System.String]$VHDtype = "Dynamic", #Defaulted to dynamic
 
-        [Parameter(Position = 5)]
+        [Parameter(Position = 4)]
         [Alias("Size")]
         [System.int64]$SizeInGB,
 
+        [Parameter(Position = 5, ValuefromPipelineByPropertyName = $true, ValuefromPipeline = $true)]
+        [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$",
+
         [Parameter(Position = 6, ValuefromPipelineByPropertyName = $true, ValuefromPipeline = $true)]
-        [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$"
+        [regex]$FlipFlopMatch = "S-\d-\d+-(\d+-){1,14}\d+\.*?"
+
     )
 
     begin {
@@ -43,36 +44,45 @@ function Move-FslVhd {
             Write-Warning "Could not find Destination directory. Make sure you are using a directory."
             Write-Error "Could not find destination directory: $Destination" -ErrorAction Stop
         }
-        $DiskPath = get-item $VHD
         $DestinationPath = get-item $Destination
-        if ($DiskPath.PSIsContainer) {
-            Write-Error "Path: $VHD must be a virtual disk. Not a directory." -ErrorAction Stop
-        }
-        if(!$DestinationPath.PSIsContainer){
+        if (!$DestinationPath.PSIsContainer) {
             Write-Error "Destination must be a directory." -ErrorAction Stop
         }
 
-        else {
-            $VHD | get-vhd -ErrorAction Stop | out-null
-        }
+        $VHDs = Get-FslVHD  -path $VHD -ErrorAction Stop
+        foreach ($disk in $VHDs) {
+            $name = split-path -path $disk.path -leaf
 
-        $name = split-path -path $VHD -leaf
-
-        if($VHDformat -eq 'vhdx'){
-            $name += 'x'
-        }
-        if ($NewName) {
-            if($NewName -match $OriginalMatch){
-                $name = "$NewName.$VHDformat"
-            }else{
-                Write-Error "$NewName does not match regex." -ErrorAction Stop
+            if ($VHDformat -eq 'vhdx') {
+                $name += 'x'
             }
-        }
-        $Migrated_VHD = $Destination
-        New-FslDisk -NewVHDPath $Migrated_VHD -name $Name -SizeInGB $SizeInGB -Type $VHDtype -overwrite
 
-        Copy-FslDiskToDisk -FirstVHDPath $VHD -SecondVHDPath $Migrated_VHD -Overwrite
-    }
+            $Old_VHD_MigratedName = [System.IO.Path]::GetFileNameWithoutExtension($disk.path)
+            $Old_VHD_MigratedName_Extension = [System.IO.Path]::GetExtension($disk.path)
+            $OLD_VHD_New_MigratedName = $Old_VHD_MigratedName.replace('.', "-MIGRATED-")
+            if ($OLD_VHD_New_MigratedName -eq $Old_VHD_MigratedName) {
+                if ($OLD_VHD_New_MigratedName[0] -ne 'S') {
+                    $OLD_VHD_New_MigratedName = "-MIGRATED-$OLD_VHD_New_MigratedName"
+                }
+                else {
+                    $OLD_VHD_New_MigratedName += "-MIGRATED-"
+                }
+            }
+            $OLD_VHD_New_MigratedName += $Old_VHD_MigratedName_Extension
+
+            $Migrated_VHD = (split-path $Disk.path) + "\" + $OLD_VHD_New_MigratedName
+
+            Write-Verbose "Renaming old VHD: $(split-path $disk.path -Leaf) to $Old_VHD_NEW_MigratedName"
+            Rename-Item -Path $disk.path -NewName $OLD_VHD_New_MigratedName -ErrorAction Stop
+
+            Write-Verbose "Creating New FslDisk at $Destination\$Name"
+            New-FslDisk -NewVHDPath $Destination -name $Name -SizeInGB $SizeInGB -Type $VHDtype -overwrite
+
+            Write-Verbose "Copying contents from $Migrated_VHD to $($Destination + "\" + $Name)"
+            Copy-FslDiskToDisk -FirstVHDPath $Migrated_VHD -SecondVHDPath $($Destination + "\" + $Name) -Overwrite
+
+        }#vhd
+    }#process
 
     end {
     }

@@ -38,6 +38,7 @@ function move-FslDiskContents {
         [System.String]$Destination,
 
         [Parameter(Position = 3)]
+        [alias("force")]
         [Switch]$Overwrite
     )
 
