@@ -42,7 +42,7 @@ function Test-FslProfile {
 
         #Kim_S-0-2-26-1944519217-1788772061-1800150966-14812.VHD
         if (-not(test-path -path $vhdfolder)) {
-            Write-Warning "Could not validate path: $vhdfolder" 
+            Write-Warning "Could not validate path: $vhdfolder"
         }
         else {Write-Verbose "$(get-date): Disk location validated."}
 

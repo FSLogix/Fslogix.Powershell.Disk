@@ -137,7 +137,7 @@ function New-FslDisk {
             Write-Warning "VHD: $VHD_Name does not match regex."
         }
 
-
+        Write-Verbose "'$NewVHDPath'"
         if ($ParentPath_Found) {
             $Fixed_Found = $false
             try {
