@@ -37,7 +37,7 @@ function copy-FslToDisk {
         files with the same name and dismount the virtual disk upon completion.
 
     #>
-    [CmdletBinding(DefaultParametersetName='None')]
+    [CmdletBinding(DefaultParametersetName = 'None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
@@ -50,7 +50,8 @@ function copy-FslToDisk {
         [System.string]$Destination,
 
         [Parameter(Position = 3)]
-        [Switch]$Overwrite,
+        [alias("overwrite")]
+        [Switch]$force,
 
         [Parameter(Position = 4)]
         [Switch]$dismount,
@@ -58,10 +59,10 @@ function copy-FslToDisk {
         [Parameter(Position = 5)]
         [switch]$recurse,
 
-        [Parameter(Position = 6,ParameterSetName = 'index', Mandatory = $true)]
+        [Parameter(Position = 6, ParameterSetName = 'index', Mandatory = $true)]
         [int]$Start,
 
-        [Parameter(Position = 7,ParameterSetName = 'index', Mandatory = $true)]
+        [Parameter(Position = 7, ParameterSetName = 'index', Mandatory = $true)]
         [int]$End
 
 
@@ -96,11 +97,11 @@ function copy-FslToDisk {
 
             Write-Verbose "$(Get-Date): Copying file contents to $VHD_FILE_LOCATION"
             $Command = "copy-item -path $FilePath -Destination $VHD_File_Location"
-            if($Overwrite){
-                $Command += " -force"
+            if ($recurse) {
+                $Command += " -Recurse -Erroraction Silentlycontinue"
             }
-            if($recurse){
-                $Command += " -Recurse"
+            if ($force) {
+                $Command = "(xcopy $Filepath $VHD_FILE_LOCation /E /C /H /K /O /B /I /Y)"
             }
 
             Invoke-Expression $Command

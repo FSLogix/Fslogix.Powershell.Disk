@@ -26,6 +26,9 @@ Describe $sut {
         }
     }
     context -name 'Should not throw'{
+        it 'No input, use defaults'{
+            {add-fslbackup} | should not throw
+        }
         it 'Valid input'{
             {Add-FslBackUp -Directory $DIR} | should not throw
         }
@@ -41,6 +44,6 @@ Describe $sut {
         it 'name'{
             {Add-FslBackUp -VHDName 'hi.vhd' -Directory $DIR} | should not throw
         }
-       
+
     }
 }
