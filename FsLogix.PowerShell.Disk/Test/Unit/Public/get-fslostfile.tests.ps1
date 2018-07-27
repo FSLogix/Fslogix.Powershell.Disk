@@ -37,6 +37,10 @@ Describe $sut {
             $output = {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -output}
             $output.Count | should be 1
         }
+        it 'output v2'{
+            $output = get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -output
+            $output | should not be $null
+        }
         It 'full' {
             {get-fslostfile -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - Copy (2).vhd' -full} | should not throw
         }

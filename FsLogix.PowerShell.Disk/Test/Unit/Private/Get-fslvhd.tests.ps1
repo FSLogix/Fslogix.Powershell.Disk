@@ -28,6 +28,10 @@ Describe $sut {
         it 'If starting index is greater than ending index'{
             {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 2 -end 1} | should throw
         }
+        it 'Get-Fsldisk returns nothing, give warning'{
+            mock -CommandName Get-FslDisk -MockWith {return $null}
+            {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx' -WarningAction Stop} | should throw
+        }
     }
     context -name 'Test get-fslVHD'{
         it 'Index 1 to 1 should return 1 disk'{
@@ -73,6 +77,14 @@ Describe $sut {
             $vhd = Get-FslVhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 3 -end 5 
             $fisrtvhd = $vhd | Select-Object -First 1 
             $fisrtvhd.path | should be 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+        }
+        it 'Each VHD should not be null'{
+            $vhd = get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 4
+            $vhd.count | should be 4
+            foreach($disk in $vhd){
+                $disk | should not be $Null
+                $disk.name | should be "test.vhd"
+            }
         }
     }
 }

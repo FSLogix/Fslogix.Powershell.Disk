@@ -6,6 +6,10 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 $excel = New-Object -ComObject Excel.Application
 
 Describe $sut {
+    BeforeAll{
+        mock -CommandName remove-item -MockWith {}
+        mock -CommandName Start-Process -MockWith {}
+    }
     context -name 'should throw'{
         it 'Invalid destination'{
             {export-fslcsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -Destination 'C:\blah'} | should throw
@@ -33,12 +37,23 @@ Describe $sut {
             mock -CommandName Start-Process -MockWith{$true}
             {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -open} | should not throw
         }
+        it 'Destination'{
+            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -Destination 'C:\Users\danie\Documents\VHDModuleProject'} | should not throw
+        }
+        it 'open'{
+            {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -Destination 'C:\Users\danie\Documents\VHDModuleProject' -open} | should not throw
+        }
     }
     Context -name 'Delimiter Error'{
         mock get-fsldelimiter -MockWith {return $null}
 
         it 'Delimiter is null'{
             {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -WarningAction Stop} | should throw
+        }
+    }
+    Context -name 'Excel errors'{
+        it 'Excel document was not created'{
+        {Export-FslCsv -CsvLocation 'C:\Users\danie\Documents\VHDModuleProject\test.csv' -WarningAction Stop} | should throw
         }
     }
 }

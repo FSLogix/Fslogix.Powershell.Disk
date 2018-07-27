@@ -117,7 +117,7 @@ function Add-FslBackUp {
         if ([System.String]::IsNullOrEmpty($VHDName)) {
             $VHDName = "BACKUP-$([datetime]::Today.ToString('yyyy-MM-dd'))"
         }
-  
+
         ## If User did not specify Destination ##
         if ([System.String]::IsNullOrEmpty($Destination)) {
             $Destination = [Environment]::GetFolderPath("Desktop")
@@ -127,7 +127,9 @@ function Add-FslBackUp {
         if([System.String]::IsNullOrEmpty($Directory)){
             $Directory = @()
             $Directory += $env:APPDATA
+            #$Romaings = split-path $env:APPDATA -Leaf
             $Directory += $env:USERPROFILE
+            #$User = split-path $env:USERPROFILE -Leaf
         }
 
         ## User specified they want vhd ##
@@ -152,7 +154,6 @@ function Add-FslBackUp {
         }
 
         $New_VHD_Path = $Destination + "\" + $VHDName
-
         foreach($dir in $Directory){
             if(-not(test-path $dir)){
                 Write-Error "Could not find directory path: $dir" -ErrorAction Continue

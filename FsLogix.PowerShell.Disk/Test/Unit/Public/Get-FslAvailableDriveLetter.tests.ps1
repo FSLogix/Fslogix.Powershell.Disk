@@ -24,4 +24,10 @@ Describe $sut{
             $Letter | should be 'D'
         }
     }
+    context -name 'should throw'{
+        it 'no letters should give warning'{
+            mock -CommandName Get-PSDrive -MockWith {return $Null}
+            {Get-FslAvailableDriveLetter -all -WarningAction stop } | should throw
+        }
+    }
 }
