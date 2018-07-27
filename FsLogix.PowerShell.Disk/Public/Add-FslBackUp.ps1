@@ -42,7 +42,7 @@ function Add-FslBackUp {
         if($VHDName.Contains(".vhd") -or $VHDName.Contains(".vhdx")){
             $VHDName = [io.path]::GetFileNameWithoutExtension($VHDName)
         }
-    
+
         ## If User did not specify VHD Name ##
         if ([System.String]::IsNullOrEmpty($VHDName)) {
             $VHDName = "BACKUP-$([datetime]::Today.ToString('MM-dd-yyyy'))"
@@ -59,12 +59,7 @@ function Add-FslBackUp {
         }
         ## User specified they want vhdx
         if ($VHDx) {
-            if ($VHDName.Contains(".vhd")) {
-                $VHDName += "x"
-            }
-            else {
-                $VHDName += ".vhdx"
-            }
+            $VHDName += ".vhdx"
         }
 
         ## User specified neither, defauled to vhdx
@@ -89,7 +84,7 @@ function Add-FslBackUp {
                 try{
                     copy-FslToDisk -VhdPath $New_VHD_Path -FilePath $dir -recurse -Overwrite
                 }catch{
-                    Write-Error "Could not back up directory: $dir"
+                    Write-Error "Could not back up directory: $dir" -ErrorAction Continue
                 }
             }
         }
