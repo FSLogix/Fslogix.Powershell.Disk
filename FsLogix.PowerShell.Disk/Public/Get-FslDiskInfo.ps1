@@ -27,13 +27,19 @@ function Get-FslDiskInfo {
         Get-FslDiskInfo -path 'C:\Users\Danie\VHD\Test1.vhd' -CSVFile 'C:\Users\Danie\Desktop\logging.csv'
         Will output the information about test1.vhd into csv file logging.csv.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName = 'None')]
     param (
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [System.String]$Path,
 
         [Parameter(Position = 1, ValueFromPipeline = $true)]
-        [System.String]$Csvfile
+        [System.String]$Csvfile,
+
+        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 5,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
 
     )
 
@@ -54,7 +60,7 @@ function Get-FslDiskInfo {
         if (![System.string]::IsNullOrEmpty($path)) {
 
             ## Helper function to retrieve virtual disks
-            $VHDs = get-fslVHD -path $Path
+            $VHDs = get-fslVHD -path $Path -start $Start -end $End
             $VHDInfo = $true
         }
         else {

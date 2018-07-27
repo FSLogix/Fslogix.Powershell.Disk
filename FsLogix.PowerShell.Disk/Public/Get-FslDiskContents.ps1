@@ -30,7 +30,7 @@ function Get-FslDiskContents {
         get-fsldiskcontents C:\users\danie\ODFC\test1.vhd share\test
         returns all the contents in 'share\test' directory within test1.vhd
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName = 'None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]$VHDPath,
@@ -42,7 +42,13 @@ function Get-FslDiskContents {
         [Switch]$recurse,
 
         [Parameter(Position = 3)]
-        [switch]$dismount
+        [switch]$dismount,
+
+        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 5,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
@@ -56,7 +62,7 @@ function Get-FslDiskContents {
         }
 
         ## Helper functions get-fslvhd and get-fsldisk will help with errors ##
-        $VHDs = get-fslVHD -path $VHDPath
+        $VHDs = get-fslVHD -path $VHDPath -start $Start -end $End
 
         ## Get contents ##
         foreach ($vhd in $VHDs) {

@@ -27,7 +27,13 @@ function Grant-FslSecurity {
 
         [Parameter(Position = 6, Mandatory = $true, ParameterSetName = 'ACL')]
         [Validateset("Allow", "Deny")]
-        [String]$PERMISSION
+        [String]$PERMISSION,
+
+        [Parameter(Position = 7,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 8,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
@@ -39,7 +45,7 @@ function Grant-FslSecurity {
             Write-Error "Could not find path: $path" -ErrorAction Stop
         }
 
-        $VHDs = get-fslvhd -path $path
+        $VHDs = get-fslvhd -path $path -start $end -end $end
         foreach ($vhd in $VHDs) {
             if ($block) {
                 ## Need to test if this works ##

@@ -29,7 +29,7 @@ function move-FslDisk {
         move-fsldisk -path C:\Users\danie\ODFC -Destination C:\Users\danie\FSLOGIX -overwrite Yes
         Migrates all the VHD's in ODFC to FSLOGIX and overwrites if the VHD already exists.
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'none')]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
         [System.String]$path,
@@ -38,7 +38,13 @@ function move-FslDisk {
         [System.String]$Destination,
 
         [Parameter(Position = 2)]
-        [Switch]$Overwrite
+        [Switch]$Overwrite,
+
+        [Parameter(Position = 3,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
@@ -55,7 +61,7 @@ function move-FslDisk {
 
     process {
 
-        $VhdDetails = get-fslvhd -path $path
+        $VhdDetails = get-fslvhd -path $path -start $Start -end $end
 
 
         foreach ($currVhd in $VhdDetails) {

@@ -23,7 +23,8 @@ function Get-FslCimInfo {
         Will output the cim inforamtion for test.vhd into Logging.csv onto the user's desktop
 
     #>
-    [CmdletBinding()]
+    #[CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName = 'None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
@@ -31,7 +32,13 @@ function Get-FslCimInfo {
 
         [Parameter(Position = 1)]
         [Alias("csv")]
-        [System.String]$csvpath
+        [System.String]$csvpath,
+
+        [Parameter(Position = 2,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 3,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
     )
 
     begin {
@@ -48,7 +55,7 @@ function Get-FslCimInfo {
             remove-item -Path $csvpath -Force -ErrorAction SilentlyContinue
         }
 
-        $VHDs = get-fslvhd -path $VHDpath
+        $VHDs = get-fslvhd -path $VHDpath -start $Start -end $End
 
         foreach ($vhd in $VHDs) {
 

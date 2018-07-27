@@ -37,7 +37,7 @@ function copy-FslToDisk {
         files with the same name and dismount the virtual disk upon completion.
 
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetName='None')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
@@ -56,7 +56,15 @@ function copy-FslToDisk {
         [Switch]$dismount,
 
         [Parameter(Position = 5)]
-        [switch]$recurse
+        [switch]$recurse,
+
+        [Parameter(Position = 6,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 7,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
+
+
     )
 
     begin {
@@ -74,7 +82,7 @@ function copy-FslToDisk {
             Write-Error "Could not validate: $filepath" -ErrorAction Stop
         }
 
-        $VhdDetails = get-fslvhd -path $vhdpath
+        $VhdDetails = get-fslvhd -path $vhdpath -start $Start -end $End
 
         foreach ($vhd in $VhdDetails) {
 

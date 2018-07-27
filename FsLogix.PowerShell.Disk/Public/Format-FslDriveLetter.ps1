@@ -44,9 +44,15 @@ function Format-FslDriveLetter {
         [Parameter(Position = 3, ParameterSetName = 'SetDL')]
         [Switch]$Set,
 
-        [Parameter(Position = 2, ParameterSetName = 'SetDL',Mandatory = $true)]
+        [Parameter(Position = 4, ParameterSetName = 'SetDL',Mandatory = $true)]
         [ValidatePattern('^[a-zA-Z]')]
-        [System.Char]$Letter
+        [System.Char]$Letter,
+
+        [Parameter(Position = 5,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$Start,
+
+        [Parameter(Position = 6,ParameterSetName = 'index', Mandatory = $true)]
+        [int]$End
 
 
     )
@@ -57,7 +63,7 @@ function Format-FslDriveLetter {
 
     process {
         ## Helper function to retrieve VHD's. Will handle errors ##
-        $VHDs = get-fslvhd -Path $VhdPath
+        $VHDs = get-fslvhd -Path $VhdPath -start $start -end $end
 
         ## Helper FsLogix functions, Get-DriveLetter, Set-FslDriveletters, remove-fslDriveletter, and dismount-fsldisk ##
         ## Will validate error handling.                                                                               ##
