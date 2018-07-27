@@ -50,13 +50,13 @@ function copy-FslToDisk {
         [System.string]$Destination,
 
         [Parameter(Position = 3)]
-        [alias("overwrite")]
-        [Switch]$force,
+        [Switch]$Overwrite,
 
         [Parameter(Position = 4)]
         [Switch]$dismount,
 
         [Parameter(Position = 5)]
+        [alias("force")]
         [switch]$recurse,
 
         [Parameter(Position = 6, ParameterSetName = 'index', Mandatory = $true)]
@@ -97,12 +97,13 @@ function copy-FslToDisk {
 
             Write-Verbose "$(Get-Date): Copying file contents to $VHD_FILE_LOCATION"
             $Command = "copy-item -path $FilePath -Destination $VHD_File_Location"
+            if ($Overwrite) {
+                $Command += " -force"
+            }
             if ($recurse) {
-                $Command += " -Recurse -Erroraction Silentlycontinue"
+                $Command += " -Recurse"
             }
-            if ($force) {
-                $Command = "(xcopy $Filepath $VHD_FILE_LOCation /E /C /H /K /O /B /I /Y)"
-            }
+            $Command += " -Erroraction Silentlycontinue"
 
             Invoke-Expression $Command
             Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
