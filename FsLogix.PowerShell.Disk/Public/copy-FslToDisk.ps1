@@ -59,10 +59,10 @@ function copy-FslToDisk {
         [alias("force")]
         [switch]$recurse,
 
-        [Parameter(Position = 6, ParameterSetName = 'index', Mandatory = $true)]
+        [Parameter(Position = 7, ParameterSetName = 'index', Mandatory = $true)]
         [int]$Start,
 
-        [Parameter(Position = 7, ParameterSetName = 'index', Mandatory = $true)]
+        [Parameter(Position = 8, ParameterSetName = 'index', Mandatory = $true)]
         [int]$End
 
 
@@ -91,20 +91,17 @@ function copy-FslToDisk {
             $DriveLetter = get-driveletter -path $vhd.path
             $VHD_File_Location = join-path($DriveLetter) ($Destination)
 
-            if (-not(test-path -path $VHD_File_Location)) {
-                Write-Error "Could not find path: $VHD_FILE_LOCATION" -ErrorAction Stop
-            }
-
             Write-Verbose "$(Get-Date): Copying file contents to $VHD_FILE_LOCATION"
-            $Command = "copy-item -path $FilePath -Destination $VHD_File_Location"
-            if ($Overwrite) {
-                $Command += " -force"
-            }
+            $Command = "robocopy $FilePath $VHD_File_Location /w:1 /r:1 /xj /sec /ns /nc /nfl"
+            #$Command = "copy-item -path $FilePath -Destination $VHD_File_Location"
             if ($recurse) {
-                $Command += " -Recurse"
+                $Command += " /s /e"
             }
-            $Command += " -Erroraction Silentlycontinue"
-
+            if ($overwrite){
+                $Command += " /is"
+            }
+            #$Command += " -Erroraction Silentlycontinue"
+ 
             Invoke-Expression $Command
             Write-Verbose "$(Get-Date): Copied $FilePath to $VHD_File_Location"
 

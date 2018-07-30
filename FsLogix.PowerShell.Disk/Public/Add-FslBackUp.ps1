@@ -109,10 +109,6 @@ function Add-FslBackUp {
             $VHDName = [io.path]::GetFileNameWithoutExtension($VHDName)
         }
 
-        if($SizeInGB -eq 0){
-            $SizeInGB = 25gb
-        }
-
         ## If User did not specify VHD Name ##
         if ([System.String]::IsNullOrEmpty($VHDName)) {
             $VHDName = "BACKUP-$([datetime]::Today.ToString('yyyy-MM-dd'))"
@@ -131,7 +127,13 @@ function Add-FslBackUp {
             $Directory += $env:USERPROFILE
             #$User = split-path $env:USERPROFILE -Leaf
         }
-
+        foreach($dir in $Directory){
+            $TotalDirSize += Get-FslFolderSize -Path $dir -gb
+        }
+        if($SizeInGB -eq 0){
+            $SizeInGB = ($TotalDirSize + 5) * 1gb
+        }
+        
         ## User specified they want vhd ##
         if ($VHD) {
             $VHDName += ".vhd"
@@ -159,8 +161,9 @@ function Add-FslBackUp {
                 Write-Error "Could not find directory path: $dir" -ErrorAction Continue
             }else{
                 Write-Verbose "Backing up directory: $dir"
+                $Destination = split-path $dir -Leaf
                 try{
-                    copy-FslToDisk -VhdPath $New_VHD_Path -FilePath $dir -recurse -Overwrite
+                    copy-FslToDisk -VhdPath $New_VHD_Path -FilePath $dir -Destination $Destination -recurse -Overwrite
                 }catch{
                     Write-Error "Could not back up directory: $dir" -ErrorAction Continue
                 }
