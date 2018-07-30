@@ -75,10 +75,12 @@ function Clear-FslDisk {
                 continue
             }else{ Write-Verbose "$(Get-Date): Retreived contents"}
 
-            if ($force) {
-                $contents | remove-item -Recurse -Force
-            }else {
-                $contents | remove-item -Recurse
+            foreach($item in $contents){
+                if($force){
+                    remove-item $item.fullname -Force
+                }else{
+                    remove-item $item.fullname
+                }
             }
 
             Write-Verbose "$(Get-Date): Succesfully cleared $folderpath"

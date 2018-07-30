@@ -51,14 +51,13 @@ function Get-FslAvailableDriveLetter {
     ## Finds all available driveletters that are mapped or unmapped, but not in use
     if($all -or $NextAvailableAll){
 
-        $Drives = Get-PsDrive -PSProvider 'FileSystem'
-        $AvailableLetters = $Letters | Where-Object {$_.name -notin $Drives.Name}
-
+        $Drives = Get-PsDrive -PSProvider "FileSystem"
+        $AvailableLetters = ($Letters).Where({$_.name -notin $Drives.Name})
     }else{ ## Finds all available driveletters that are unmapped
 
-        $UsedLetters = Get-Wmiobject -class win32_logicaldisk
+        $UsedLetters = Get-Wmiobject -class "win32_logicaldisk"
         $Mapped_Letters = $UsedLetters.DeviceID.substring(0,1)
-        $AvailableLetters = $Letters | Where-Object {$_ -notin $Mapped_Letters}
+        $AvailableLetters = ($Letters).where({$_ -notin $Mapped_Letters})
 
     }
 

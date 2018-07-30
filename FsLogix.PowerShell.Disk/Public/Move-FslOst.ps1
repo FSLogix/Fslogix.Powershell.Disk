@@ -136,7 +136,7 @@ function Move-FslOst {
             write-verbose "$(Get-Date): FslUser: $FSLUser."
             Write-Verbose "$(Get-Date): FslSID: $strSid."
 
-            $Users_AppData = $AppDataProfiles | Where-Object {$_.Name -like "*$strSid*"}
+            $Users_AppData = ($AppDataProfiles).where({$_.Name -like "*$strSid*"})
             if ($null -eq $Users_AppData) {
                 Write-Error "Could not retrieve App Data profiles in $appdataprofiles" -ErrorAction Stop
             }
@@ -181,15 +181,17 @@ function Move-FslOst {
                 continue
             }
             else {
+                $AppDataDest = split-path $Users_AppDataDir -Leaf
                 Write-Verbose "$(Get-Date): Found $FslUser's AppData files."
-                Write-Verbose "$(Get-Date): Copying AppData to $New_Migrated_VHD"
-                copy-FslToDisk -VhdPath $New_Migrated_VHD -FilePath $Users_AppDataDir -Overwrite -recurse
+                Write-Verbose "$(Get-Date): Copying AppData to $New_Migrated_VHD\$appDataDest"
+                copy-FslToDisk -VhdPath $New_Migrated_VHD -FilePath $Users_AppDataDir -Destination $AppDataDest -Overwrite -recurse
             }
             if ($null -eq $Users_Ost) {
                 Write-Warning "Could not find $FslUser's Ost file."
                 continue
             }
             else {
+               # $OSTDest = split-path $Users_Ost.FullName -Leaf
                 Write-Verbose "$(Get-Date): Found $FslUser's OST file."
                 Write-Verbose "$(Get-Date): Copying OST to $New_Migrated_VHD"
                 copy-FslToDisk -VhdPath $New_Migrated_VHD -FilePath $Users_Ost.FullName -Overwrite -recurse

@@ -83,9 +83,9 @@ function ConvertTo-FslDisk {
         }
 
         if ($Convert_To_VHD) {
-            $VhdDetails = $VHDs.FullName | get-fsldisk | Where-Object {$_.vhdformat -eq "VHDX"}
+            $VhdDetails = ($VHDs.FullName | get-fsldisk).where({$_.vhdformat -eq "vhdx"})
         }else {
-            $VhdDetails = $VHDs.FullName | get-fsldisk | where-object {$_.vhdformat -eq "VHD"}
+            $VhdDetails = ($VHDs.FullName | get-fsldisk).where({$_.vhdformat -eq "vhd"})
         }
         if ($null -eq $VhdDetails) {
             Write-Warning "VHD's in $path are already $ConvertTo type, cannot convert."

@@ -81,18 +81,13 @@ function Copy-FslDiskToDisk {
             Write-Warning "No Files found in $FirstFilePath"
         }
 
-        $Contents | ForEach-Object {
-
-            if ($Overwrite) {
-                Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -Force -ErrorAction SilentlyContinue
-                Write-Verbose "$(Get-Date): Successfully copied $($_.fullname) to VHD: $secondVHD"
+        foreach($items in $Contents){
+            if($Overwrite){
+                copy-item -Path $items.fullname -Destination $SecondFilePath -Recurse -Force -ErrorAction SilentlyContinue
             }else{
-                Copy-Item -path $_.FullName -Destination $SecondFilePath -Recurse -ErrorAction Stop
-                Write-Verbose "$(Get-Date): Successfully Copied $($_.fullname) to VHD: $secondVHD"
+                copy-item -Path $items.fullname -Destination $SecondFilePath -Recurse -ErrorAction SilentlyContinue
             }
-
-        }#foreach
-
+        }
         $FirstVHDPath | dismount-FslDisk
         $SecondVHDPath | dismount-FslDisk
 

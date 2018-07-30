@@ -51,7 +51,7 @@ function dismount-FslDisk {
         if ($DismountAll) {
 
             $Get_Attached_VHDs = Get-Disk | select-object -Property Model, Location
-            $VHDs = $Get_Attached_VHDs | Where-Object {$_.Model -like "Virtual Disk*"}
+            $VHDs = ($Get_Attached_VHDs).where({$_.Model -like "Virtual Disk*"})
 
             if ($null -eq $VHDs) {
                 Write-Warning "Could not find any attached VHD's."
