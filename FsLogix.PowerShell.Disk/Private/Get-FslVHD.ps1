@@ -60,7 +60,7 @@ function Get-FslVHD {
             if($start -gt $GC_count){
                 Write-Error "Starting Index: $Start cannot be greater than to total count of disks: $GC_Count." -ErrorAction Stop
             }
-
+            
             $DiskHashTable = @{}
             $counter = 1
             foreach($vhd in $VHDs){
@@ -71,7 +71,7 @@ function Get-FslVHD {
             }
             Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: $Start to ending index: $End."
             $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
-            $VhdDetails = ($vhdlist | Where-Object {$_.value -ge $Start -and $_.Value -le $End}).Key | get-fsldisk
+            $VhdDetails = (($vhdlist).where({$_.value -ge $Start -and $_.Value -le $End})).Key | get-fsldisk
         }else{
             $VhdDetails = $VHDs.FullName | get-fsldisk
         }

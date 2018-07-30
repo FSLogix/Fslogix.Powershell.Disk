@@ -29,6 +29,7 @@ function Move-FslVhd {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
+        [alias("path")]
         [System.String]$VHD,
 
         [Parameter(Position = 1, Mandatory = $true)]

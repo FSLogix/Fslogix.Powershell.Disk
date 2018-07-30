@@ -64,7 +64,7 @@ function Get-FslCimInfo {
                 Mount-VHD -Path $vhd.path
             }
 
-            $disk = get-disk | Where-Object {$_.Location -eq $vhd.path}
+            $disk = (get-disk).where({$_.Location -eq $vhd.path})
             $Disk_Name = split-path -path $vhd.path -Leaf
 
             $out = $disk | select-object @{ N = 'VHD'; E = {$Disk_Name}},
