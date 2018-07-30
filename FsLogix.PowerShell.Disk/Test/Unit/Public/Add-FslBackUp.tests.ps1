@@ -16,7 +16,7 @@ Describe $sut {
             {Add-FslBackup -Destination 'C:\blah' -Directory $DIR} | should throw
         }
         it 'Directory is invalid should give one error' {
-            Add-FslBackUp -Directory 'C:\blah' -ErrorVariable Error
+            Add-FslBackUp -Directory 'C:\blah' -ErrorVariable Error 
             $Error.count | should be 1
         }
         it 'Copy failed, because of size or whatever reason' {
@@ -26,6 +26,11 @@ Describe $sut {
         }
     }
     context -name 'Should not throw' {
+        BeforeEach{
+            mock -CommandName get-childitem -MockWith {
+                return 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Public'
+            }
+        }
         it 'No input, use defaults' {
             {add-fslbackup} | should not throw
         }

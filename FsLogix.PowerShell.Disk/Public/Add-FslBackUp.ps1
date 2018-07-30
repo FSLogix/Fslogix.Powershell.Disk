@@ -101,11 +101,13 @@ function Add-FslBackUp {
 
     begin {
         set-strictmode -Version latest
+        $ValidDirectory = @()
+        $TotalDirSize = 0
     }
 
     process {
 
-        if($VHDName.Contains(".vhd") -or $VHDName.Contains(".vhdx")){
+        if ($VHDName.Contains(".vhd") -or $VHDName.Contains(".vhdx")) {
             $VHDName = [io.path]::GetFileNameWithoutExtension($VHDName)
         }
 
@@ -120,17 +122,23 @@ function Add-FslBackUp {
         }
 
         ## If user did not specify a directory
-        if([System.String]::IsNullOrEmpty($Directory)){
+        if ([System.String]::IsNullOrEmpty($Directory)) {
             $Directory = @()
             $Directory += $env:APPDATA
             #$Romaings = split-path $env:APPDATA -Leaf
             $Directory += $env:USERPROFILE
             #$User = split-path $env:USERPROFILE -Leaf
         }
-        foreach($dir in $Directory){
-            $TotalDirSize += Get-FslFolderSize -Path $dir -gb
+        foreach ($dir in $Directory) {
+            if (-not(test-path $dir)) {
+                Write-Error "Could not find directory path: $dir" -ErrorAction Continue
+            }
+            else {
+                $ValidDirectory += $dir
+                $TotalDirSize += Get-FslFolderSize -Path $dir -gb
+            }
         }
-        if($SizeInGB -eq 0){
+        if ($SizeInGB -eq 0) {
             $SizeInGB = ($TotalDirSize + 5) * 1gb
         }
         
@@ -156,18 +164,17 @@ function Add-FslBackUp {
         }
 
         $New_VHD_Path = $Destination + "\" + $VHDName
-        foreach($dir in $Directory){
-            if(-not(test-path $dir)){
-                Write-Error "Could not find directory path: $dir" -ErrorAction Continue
-            }else{
-                Write-Verbose "Backing up directory: $dir"
-                $Destination = split-path $dir -Leaf
-                try{
-                    copy-FslToDisk -VhdPath $New_VHD_Path -FilePath $dir -Destination $Destination -recurse -Overwrite
-                }catch{
-                    Write-Error "Could not back up directory: $dir" -ErrorAction Continue
-                }
+        foreach ($dir in $ValidDirectory) {
+            
+            Write-Verbose "Backing up directory: $dir"
+            $Destination = split-path $dir -Leaf
+            try {
+                copy-FslToDisk -VhdPath $New_VHD_Path -FilePath $dir -Destination $Destination -recurse -Overwrite
             }
+            catch {
+                Write-Error "Could not back up directory: $dir" -ErrorAction Continue
+            }
+            
         }
     }
 
