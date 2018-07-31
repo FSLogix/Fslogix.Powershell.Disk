@@ -5,7 +5,7 @@ function Add-FslBackUp {
 
         .DESCRIPTION
         The virtual disk created is defaulted with a name of: BACKUP-(Date).
-        The virtual disk's size is defaulted to a vhdx, dynamic, and 25gb.
+        The virtual disk's size is defaulted to a vhdx, dynamic, and the size of the directory + 5gb.
         The user can opt in to change these values through parameters.
         Read more in the examples and Parameter information.
 
