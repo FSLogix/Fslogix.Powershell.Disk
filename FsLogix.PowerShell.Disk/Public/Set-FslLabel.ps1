@@ -37,6 +37,7 @@ function Set-FslLabel {
     
     process {
 
+        ## FsLogix private function, get-driveletter, will help with error handling.
         $DriveLetter = get-driveletter -VHDPath $VHD
         $DriveLabel = "Label.exe " + $DriveLetter.substring(0,1) + ": " + $FslUser
         Write-Verbose "Invoking: $Drivelabel"

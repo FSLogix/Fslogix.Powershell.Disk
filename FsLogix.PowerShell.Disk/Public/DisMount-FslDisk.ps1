@@ -35,7 +35,7 @@ function dismount-FslDisk {
 
     process {
         if ($FullName -ne "") {
-            if($FullName -notlike "*.vhd*"){
+            if ($FullName -notlike "*.vhd*") {
                 Write-Error "Disk must include .vhd/.vhdx extension." -ErrorAction Stop
             }
             $name = split-path -Path $FullName -Leaf
@@ -52,7 +52,7 @@ function dismount-FslDisk {
 
             $Get_Attached_VHDs = Get-Disk | select-object -Property Model, Location
             $VHDs = ($Get_Attached_VHDs).where({$_.Model -like "Virtual Disk*"})
-
+           
             if ($null -eq $VHDs) {
                 Write-Warning "Could not find any attached VHD's."
             }
