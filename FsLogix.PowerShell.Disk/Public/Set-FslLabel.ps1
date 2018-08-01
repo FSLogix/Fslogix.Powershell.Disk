@@ -39,9 +39,17 @@ function Set-FslLabel {
 
         ## FsLogix private function, get-driveletter, will help with error handling.
         $DriveLetter = get-driveletter -VHDPath $VHD
-        $DriveLabel = "Label.exe " + $DriveLetter.substring(0,1) + ": " + $FslUser
-        Write-Verbose "Invoking: $Drivelabel"
-        Invoke-Expression -Command $DriveLabel
+        if ($DriveLetter.length -ne 3) {
+            ## returned guid
+            $diskID = (get-disk | Where-Object {$_.Location -eq $VHD}).ObjectId
+            $Volume = get-volume | Where-Object {$_.ObjectId -eq $diskID }
+            $Volume | Set-Volume -NewFileSystemLabel $FslUser
+        }
+        else {
+            $DriveLabel = "Label.exe " + $DriveLetter.substring(0, 1) + ": " + $FslUser
+            Write-Verbose "Invoking: $Drivelabel"
+            Invoke-Expression -Command $DriveLabel
+        }
         Write-Verbose "$(split-path -path $VHD -leaf)'s label has been labeled to: $FslUser"
     }
     
