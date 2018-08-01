@@ -1,3 +1,4 @@
+#Requires -Modules "Hyper-V"
 function move-FslToDisk {
     <#
         .SYNOPSIS

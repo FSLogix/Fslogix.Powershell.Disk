@@ -1,3 +1,4 @@
+#Requires -Modules "Hyper-V"
 function New-FslDisk {
     <#
         .SYNOPSIS
@@ -195,16 +196,6 @@ function New-FslDisk {
             Write-Error $Error[0]
             exit
         }
-
-
-        Write-Verbose "$(Get-Date): Validating VHD..."
-        if (test-fslvhd -path $NewVHDPath) {
-            Write-Verbose "$(Get-Date): VHD succesfully created. Exiting script..."
-        }
-        else {
-            Write-Warning "$(Get-Date): VHD was created but unable to be used."
-        }
-
 
     } #process
 

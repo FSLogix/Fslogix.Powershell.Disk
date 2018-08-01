@@ -40,18 +40,19 @@ function Get-FslDisk {
             $VHDInfo = $Path | Get-DiskImage -ErrorAction Stop
             $DiskNumber = $null
             $extension = ((get-item -path $Path).Extension).TrimStart(".")
+            
             if ($VHDInfo.Attached) {
                 $DiskNumber = ((get-disk).where( {$_.location -eq $path})).number
             }
-            $VhdType = "Need to work on this"
-                
-            $VHDInfo | Add-Member @{path        = $VHDInfo.ImagePath} 
-            $VHDInfo | Add-member @{VhdFormat   = $extension} 
-            $VHDInfo | Add-Member @{DiskNumber  = $DiskNumber} 
-            $VHDInfo | Add-Member @{VhdType     = $VhdType}
-            $VHDInfo | Add-Member @{Name        = $Name} 
+        
+        
+            $VHDInfo | Add-Member @{path = $VHDInfo.ImagePath} 
+            $VHDInfo | Add-member @{VhdFormat = $extension} 
+            $VHDInfo | Add-Member @{DiskNumber = $DiskNumber} 
+            $VHDInfo | Add-Member @{Name = $Name} 
           
             Write-Output $VHDInfo
+            Dismount-DiskImage -ImagePath $Path
         }
         else {
             Write-Error "File path should include a .vhd or .vhdx extension." -ErrorAction Stop

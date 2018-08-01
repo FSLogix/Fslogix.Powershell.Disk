@@ -41,8 +41,8 @@ function Set-FslLabel {
         $DriveLetter = get-driveletter -VHDPath $VHD
         if ($DriveLetter.length -ne 3) {
             ## returned guid
-            $diskID = (get-disk | Where-Object {$_.Location -eq $VHD}).ObjectId
-            $Volume = get-volume | Where-Object {$_.ObjectId -eq $diskID }
+            $diskID = (get-disk | Where-Object {$_.Location -eq $path}).Guid
+            $Volume = get-volume | Where-Object {$_.Path -like "*$diskId*"}
             $Volume | Set-Volume -NewFileSystemLabel $FslUser
         }
         else {
@@ -50,6 +50,7 @@ function Set-FslLabel {
             Write-Verbose "Invoking: $Drivelabel"
             Invoke-Expression -Command $DriveLabel
         }
+
         Write-Verbose "$(split-path -path $VHD -leaf)'s label has been labeled to: $FslUser"
     }
     

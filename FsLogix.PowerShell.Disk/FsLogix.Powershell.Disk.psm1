@@ -1,4 +1,3 @@
-#Requires -Modules "Hyper-V"
 #Requires -Modules "ActiveDirectory"
 #Requires -RunAsAdministrator
 
