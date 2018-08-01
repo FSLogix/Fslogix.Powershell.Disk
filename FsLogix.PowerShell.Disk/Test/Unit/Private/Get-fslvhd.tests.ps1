@@ -36,7 +36,7 @@ Describe $sut {
     context -name 'Test get-fslVHD'{
         it 'Index 1 to 1 should return 1 disk'{
             mock -CommandName Get-Fsldisk -MockWith {
-                get-vhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                get-diskimage 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
             }
             $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
             $vhd.count | should be 1

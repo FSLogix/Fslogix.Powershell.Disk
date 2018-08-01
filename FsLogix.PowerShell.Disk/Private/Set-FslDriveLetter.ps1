@@ -33,7 +33,7 @@ function Set-FslDriveLetter {
 
     process {
 
-        if(-not(test-path -path $VHDPath)){
+        if (-not(test-path -path $VHDPath)) {
             Write-Error "Could not find path: $VHDPath" -ErrorAction Stop
         }
 
@@ -44,42 +44,31 @@ function Set-FslDriveLetter {
 
         $AvailableLetters = Get-FslAvailableDriveLetter
 
-        $NewLetter = "$Letter" + ":"
         $Available = $false
 
-        if($AvailableLetters -contains $Letter){
+        if ($AvailableLetters -contains $Letter) {
             $Available = $true
         }
 
-        if($Available -eq $false){
+        if ($Available -eq $false) {
             Write-Error "DriveLetter '$($Letter):\' is not available. For available driveletters, type cmdlet: Get-FslAvailableDriveLetter" -ErrorAction Stop
         }
-
-        foreach ($vhd in $VHDs) {
-            $name = split-path -path $vhd.path -leaf
-            $DL = Get-driveletter -VHDPath $vhd.path
-            $subbedDL = $DL.substring(0,2)
-
-            try {
-                $drive = Get-WmiObject -Class win32_volume -Filter "DriveLetter = '$subbedDl'" | out-null
-            }
-            catch {
-                Write-Verbose "$(Get-Date): Could not change $name's Driveletter to $letter."
-                Write-Error $Error[0]
-                exit
-            }
-
-            try {
-                $drive | Set-WmiInstance -Arguments @{DriveLetter = $NewLetter} | Out-Null
-            }
-            catch {
-                Write-Verbose "$(Get-Date): Could not change $name's Driveletter to $letter."
-                Write-Error $Error[0]
-            }
-
-            Write-Verbose "$(Get-Date): Succesfully changed $name's Driveletter to $letter."
-            dismount-FslDisk -path $Vhd.path
+        if($VHDs.attached){
+            Write-Warning "VHD currently in use, dismount disk."
+            Dismount-fsldisk $VHDs.path
         }
+
+        
+        $name = $vhds.name
+
+        $mount = Mount-DiskImage -ImagePath $vhdpath -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
+        $Disk = $mount | get-disk -ErrorAction Stop
+        $Partition = $Disk | get-partition -ErrorAction Stop
+        $Partition | Where-Object {$_.type -eq 'basic'} | set-partition -NewDriveLetter $letter -ErrorAction Stop 
+
+        Write-Verbose "$(Get-Date): Succesfully changed $name's Driveletter to [$($letter):\]."
+        dismount-FslDisk -path $Vhds.path
+    
     }
     end {
     }

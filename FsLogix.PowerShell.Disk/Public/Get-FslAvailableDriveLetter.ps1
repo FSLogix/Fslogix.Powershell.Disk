@@ -48,19 +48,32 @@ function Get-FslAvailableDriveLetter {
     ## Start at D rather than A since A-B are floppy drives and C is used by main operating system.
     $Letters = [char[]](68..90)
 
-    ## Finds all available driveletters that are mapped or unmapped, but not in use
+    
     if($all -or $NextAvailableAll){
+
+        <#
+            Not all disks are 'FileSystem'
+            Doesn't find network drives, disconnected network drives, etc
+        #>
 
         $Drives = Get-PsDrive -PSProvider "FileSystem"
         $AvailableLetters = ($Letters).Where({$_.name -notin $Drives.Name})
     }else{ ## Finds all available driveletters that are unmapped
 
+
+        <#
+            Not all disks are logical disks
+            Ex: Printer, disconnected network drives
+        #>
         $UsedLetters = Get-Wmiobject -class "win32_logicaldisk"
         $Mapped_Letters = $UsedLetters.DeviceID.substring(0,1)
         $AvailableLetters = ($Letters).where({$_ -notin $Mapped_Letters})
 
     }
-
+    <#
+        If all are used, need a solution for that.
+        mount
+    #>
     if($null -eq $AvailableLetters){
         Write-Warning "There are no available driveletters."
         exit

@@ -58,7 +58,7 @@ function Mount-FslDisk {
                 }
                 else {
                     try {
-                        mount-vhd -path $vhd.path
+                        Mount-DiskImage -path $vhd.path
                         Write-Verbose "Succesfully mounted $(split-path $vhd.path -leaf)."
                     }
                     catch {

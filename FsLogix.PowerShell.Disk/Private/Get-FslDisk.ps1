@@ -35,12 +35,22 @@ function Get-FslDisk {
 
 
         if ($path -like "*.vhd*") {
-            try {
-                $VHDInfo = $Path | get-vhd -ErrorAction Stop
+
+            $name = split-path -path $path -leaf
+            $VHDInfo = $Path | Get-DiskImage -ErrorAction Stop
+            $DiskNumber = $null
+            $extension = ((get-item -path $Path).Extension).TrimStart(".")
+            if ($VHDInfo.Attached) {
+                $DiskNumber = ((get-disk).where( {$_.location -eq $path})).number
             }
-            catch {
-                Write-Error $Error[0]
-            }
+            $VhdType = "Need to work on this"
+                
+            $VHDInfo | Add-Member @{path        = $VHDInfo.ImagePath} 
+            $VHDInfo | Add-member @{VhdFormat   = $extension} 
+            $VHDInfo | Add-Member @{DiskNumber  = $DiskNumber} 
+            $VHDInfo | Add-Member @{VhdType     = $VhdType}
+            $VHDInfo | Add-Member @{Name        = $Name} 
+          
             Write-Output $VHDInfo
         }
         else {

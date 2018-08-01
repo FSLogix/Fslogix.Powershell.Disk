@@ -1,3 +1,4 @@
+#Requires -Modules "Hyper-V"
 function ConvertTo-FslDisk {
     <#
         .SYNOPSIS
@@ -83,9 +84,9 @@ function ConvertTo-FslDisk {
         }
 
         if ($Convert_To_VHD) {
-            $VhdDetails = ($VHDs.FullName | get-fsldisk).where({$_.vhdformat -eq "vhdx"})
+            $VhdDetails = $VHDs.FullName | get-fsldisk | Where-Object {$_.vhdformat -eq "vhdx"}
         }else {
-            $VhdDetails = ($VHDs.FullName | get-fsldisk).where({$_.vhdformat -eq "vhd"})
+            $VhdDetails = $VHDs.FullName | get-fsldisk | Where-Object {$_.vhdformat -eq "vhd"}
         }
         if ($null -eq $VhdDetails) {
             Write-Warning "VHD's in $path are already $ConvertTo type, cannot convert."

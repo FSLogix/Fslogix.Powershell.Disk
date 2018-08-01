@@ -40,7 +40,7 @@ function dismount-FslDisk {
             }
             $name = split-path -Path $FullName -Leaf
             try {
-                Dismount-VHD -Path $FullName -ErrorAction Stop
+                Dismount-DiskImage -ImagePath $FullName -ErrorAction Stop
                 Write-Verbose "$(Get-Date): Successfully dismounted $name"
             }
             catch {
@@ -60,7 +60,7 @@ function dismount-FslDisk {
                 foreach ($vhd in $VHDs) {
                     $name = split-path -path $vhd.location -Leaf
 
-                    Dismount-VHD -path $vhd.location -ErrorAction Stop
+                    Dismount-DiskImage -ImagePath $vhd.location -ErrorAction Stop
                     Write-Verbose "$(Get-Date): Succesfully dismounted VHD: $name"
 
 

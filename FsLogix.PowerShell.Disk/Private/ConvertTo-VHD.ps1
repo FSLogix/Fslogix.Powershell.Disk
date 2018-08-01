@@ -1,3 +1,4 @@
+#Requires -Modules "Hyper-V"
 function convertTo-VHD {
     <#
         .PARAMETER path

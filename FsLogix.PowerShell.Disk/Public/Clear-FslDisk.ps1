@@ -77,9 +77,9 @@ function Clear-FslDisk {
 
             foreach($item in $contents){
                 if($force){
-                    remove-item $item.fullname -Force
+                    remove-item $item.fullname -Force -Recurse 
                 }else{
-                    remove-item $item.fullname
+                    remove-item $item.fullname -Recurse 
                 }
             }
 

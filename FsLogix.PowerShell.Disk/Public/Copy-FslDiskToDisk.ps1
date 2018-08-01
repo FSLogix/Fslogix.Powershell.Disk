@@ -74,6 +74,7 @@ function Copy-FslDiskToDisk {
         if (-not(test-path -path $SecondFilePath)) {
             write-error "Could not find path: $SecondFilePath" -ErrorAction Stop
         }
+        Write-Verbose "Copying $FirstFIlePath to $SecondFilePath"
 
         $Contents = get-childitem -path $FirstFilePath
 

@@ -1,3 +1,4 @@
+#Requires -Modules "Hyper-V"
 function convertTo-VHDx {
     <#
         .SYNOPSIS
@@ -87,7 +88,7 @@ function convertTo-VHDx {
 
         try {
             Convert-VHD -path $Old_Path -DestinationPath $New_Path
-            Write-Verbose "$(Get-Date): $name succesfully converted to a .vhd"
+            Write-Verbose "$(Get-Date): $name succesfully converted to a .vhdx"
         }
         catch {
             write-error $Error[0]

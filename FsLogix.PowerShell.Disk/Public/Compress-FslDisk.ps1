@@ -1,3 +1,4 @@
+#Requires -Modules "Hyper-V"
 function Compress-FslDisk {
     [CmdletBinding(DefaultParameterSetName = "None")]
     param (
@@ -26,24 +27,20 @@ function Compress-FslDisk {
     
     process {
         $VHD_List = Get-FslVHD -path $VHD -start $Starting_Index -end $Ending_Index
-        foreach($_disk in $VHD_List){
+        foreach ($_disk in $VHD_List) {
             $Disk_Info = [PSCustomObject]@{
-                Name = split-path -path $_disk.path -Leaf
-                Path = $_disk.path
+                Name  = split-path -path $_disk.path -Leaf
+                Path  = $_disk.path
                 InUse = $_disk.attached
             }
            
-            if($Disk_Info.InUse){
-                Write-Error "$($Disk_Info.name) is currently in use." -ErrorAction Continue
+            if ($Disk_Info.InUse) {
+                Write-Error "$($Disk_Info.name) is currently in use." -ErrorAction Stop
             }
             
-            try{
-                Write-Verbose "$(Get-Date): Compacting Virtual Disk: $($Disk_Info.Name)"
-                Optimize-VHD -Path $Disk_Info.path -Mode Full -ErrorAction Continue
-                Write-Verbose "$(Get-Date): Successfully Compacted Virtual Disk: $($Disk_Info.Name)"
-            }catch{
-                Write-Error $Error[0]
-            }
+            Write-Verbose "$(Get-Date): Compacting Virtual Disk: $($Disk_Info.Name)"
+            Optimize-VHD -Path $Disk_Info.path -Mode Full -ErrorAction Stop
+            Write-Verbose "$(Get-Date): Successfully Compacted Virtual Disk: $($Disk_Info.Name)"
         }
         
     }
