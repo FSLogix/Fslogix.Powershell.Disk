@@ -56,7 +56,7 @@ Describe $sut {
             {move-fsldisk -path $vhd -Destination $dest -Overwrite } | should not throw
         }
         it 'Move vhd, does not already exist'{
-            {move-fsldisk -path $vhd -Destination 'C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Private'} | should not throw
+            {move-fsldisk -path $vhd -Destination 'C:\Users\danie\Documents\VHDModuleProject'} | should not throw
         }
     }
 }
