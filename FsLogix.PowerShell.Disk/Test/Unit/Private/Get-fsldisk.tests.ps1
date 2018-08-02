@@ -6,6 +6,28 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 
 Describe $sut {
 
+    context -Name 'mock get-diskimage'{
+        BeforeEach{
+            mock -CommandName get-diskimage -MockWith{
+                [PSCustomObject]@{
+                    ImagePath = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                    Attached = 'true'
+                }
+            }
+            mock -CommandName Get-Disk -MockWith{
+                [PSCustomObject]@{
+                    Number = 1
+                    location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                }
+            }
+            mock -CommandName Get-FslDriveType -MockWith {
+                return 'Fixed'
+            }
+        }
+        it 'disknumber/vhdtype'{
+            {get-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'} | should not throw
+        }
+    }
     Context -Name 'Outputs that should throw' {
         it 'Used incorrect extension path' {
             $incorrect_path = { get-fsldisk -Path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Public\set-FslPermission.ps1" }
@@ -21,17 +43,8 @@ Describe $sut {
         it 'Invalid VHd should fail get-vhd'{
             {get-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Invalid.vhd' -ErrorAction Stop} | should throw
         }
-    }
-    Context -name 'Test get-vhd'{
-        Mock 'Get-VHD'
-
-        it 'Should have no verbose lines'{
-            #-Verbose 4>&1 pipelines verbose 4 to 1
-            $verboseLine = get-fsldisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx" -Verbose 4>&1
-            $verboseLine.count | Should be 0
-        }
-        it 'Assert the mock is called is only called once'{
-            Assert-MockCalled -CommandName "get-vhd" -Times 1 -ParameterFilter {$path -eq "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx"}
+        it 'Extension should be vhd'{
+            {get-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\JimMoyle\FsLogix.PowerShell.Disk\Test\Unit\Private\get-fslduplicatefiles.tests.ps1'} | should throw
         }
     }
     context -name 'Test get-fsldisk'{
