@@ -4,6 +4,7 @@ function Get-FslDisk {
         Returns a VHD's properties and it's information/values.
 
         .DESCRIPTION
+        If the VHD is mounted, more information is retrieved, however performance will be slower.
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
 
@@ -33,8 +34,9 @@ function Get-FslDisk {
             Write-Error "Cannot find path: $path" -ErrorAction Stop
         }
 
+        $Extension = get-item -path $Path
 
-        if ($path -like "*.vhd*") {
+        if($Extension.Extension -eq ".vhd" -or $Extension.Extension -eq ".vhdx" ){
 
             $name               = split-path -path $path -leaf
             $VHDInfo            = $Path | Get-DiskImage -ErrorAction Stop
@@ -43,30 +45,36 @@ function Get-FslDisk {
             $CreationTime       = $Disk_Item_Info.CreationTime
             $LastWriteTime      = $Disk_Item_Info.LastWriteTime
             $LastAccessTime     = $Disk_Item_Info.LastAccessTime
-
+            $SizeGB             = $VHDInfo.Size / 1gb
+            $SizeMB             = $VHDInfo.Size / 1mb
+            $FreeSpace          = [Math]::Round((($VHDInfo.Size - $VHDInfo.FileSize) / 1gb) ,2)
+        
             $DiskNumber         = $null
             $NumberOfPartitions = $null
             $Guid               = $null
             $VHDType            = $null
             
             if ($VHDInfo.Attached) {
-                $Disk               = (get-disk | where-object {$_.location -eq $path})
+                $Disk               = get-disk | where-object {$_.location -eq $path}
                 $DiskNumber         = $Disk.number
                 $NumberOfPartitions = $Disk.NumberOfPartitions
                 $Guid               = $Disk.Guid
                 $VHDType            = Get-FslDriveType -number $DiskNumber
             }
 
-            $VHDInfo | Add-Member @{Name                = $Name             }
-            $VHDInfo | Add-Member @{path                = $VHDInfo.ImagePath}
-            $VHDInfo | Add-Member @{Guid                = $Guid             } 
-            $VHDInfo | Add-member @{VhdFormat           = $extension        } 
-            $VHDInfo | Add-Member @{VHDType             = $VHDType          }
-            $VHDInfo | Add-Member @{DiskNumber          = $DiskNumber       }
+            $VHDInfo | Add-Member @{Name                = $Name              }
+            $VHDInfo | Add-Member @{path                = $Path              }
+            $VHDInfo | Add-Member @{Guid                = $Guid              } 
+            $VHDInfo | Add-member @{VhdFormat           = $extension         } 
+            $VHDInfo | Add-Member @{VHDType             = $VHDType           }
+            $VHDInfo | Add-Member @{DiskNumber          = $DiskNumber        }
             $VHDInfo | Add-Member @{NumberOfPartitions  = $NumberOfPartitions}
-            $VHDInfo | Add-Member @{CreationTime        = $CreationTime     }
-            $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime    }
-            $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime   }
+            $VHDInfo | Add-Member @{CreationTime        = $CreationTime      }
+            $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime     }
+            $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime    }
+            $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
+            $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
+            $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
         
             Write-Output $VHDInfo
         }
