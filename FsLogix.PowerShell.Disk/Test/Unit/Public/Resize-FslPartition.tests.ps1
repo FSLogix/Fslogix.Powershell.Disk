@@ -4,7 +4,7 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
-$VHD = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Daniel_S-0-2-26-1944519217-1788772061-1800150966-14811.vhd'
+$VHD = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Kim_S-0-2-26-1944519217-1788772061-1800150966-14812.VHD'
 Describe $sut {
     context -name 'should throw' {
         BeforeAll {
@@ -38,11 +38,14 @@ Describe $sut {
             {Resize-FslPartition -path $VHD -SizeInGb 2} | should throw
         }
     }
-    Context -Name 'Should not throw'{
+    Context -Name 'mock'{
         BeforeAll{
             mock -CommandName Resize-Partition -MockWith {}
         }
-        it 'normal input'{
+        it 'Invalid partition number throws'{
+            {Resize-FslPartition -path $VHD -SizeInGb 2 -PartitionNumber 35} | should throw
+        }
+        it 'normal input, does not throw'{
             {Resize-FslPartition -path $VHD -SizeInGb 2} | should not throw
         }
     }

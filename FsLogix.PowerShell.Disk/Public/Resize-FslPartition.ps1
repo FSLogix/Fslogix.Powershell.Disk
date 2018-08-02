@@ -45,12 +45,8 @@ function Resize-FslPartition {
             }
 
             $error.Clear()
-            try {
-                Resize-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -Size ($SizeInGb * 1gb)
-            }
-            catch {
-                Write-Error $Error[0]
-            }
+            Resize-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -Size ($SizeInGb * 1gb)
+        
             if(!$error){
                 Write-Verbose "Successfully resized $(split-path -path $Current_disk.path -leaf) to: $SizeInGb(gb)"
             }
