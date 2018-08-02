@@ -83,7 +83,12 @@ function get-FslDuplicateFiles {
             $dirlist.Enqueue($dir.FullName)
         }
 
-        ## Find Duplicate Algorithm ##
+        <# 
+            Find Duplicates
+            Iterates through a directory and obtains the file's hashcode within the directory.
+            If the hashcode exists in the hashcode hashtable, then a duplicate exist. Otherwise,
+            store it into the hashtable as a unique value. 
+        #>
         foreach ($dir in $DirList) {
 
             Write-Verbose "$(Get-Date): Checking directory: $dir"
