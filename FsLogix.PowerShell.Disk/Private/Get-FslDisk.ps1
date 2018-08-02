@@ -36,23 +36,37 @@ function Get-FslDisk {
 
         if ($path -like "*.vhd*") {
 
-            $DiskNumber   = $null
-            $VHDType      = $null
-            
-            $name = split-path -path $path -leaf
-            $VHDInfo = $Path | Get-DiskImage -ErrorAction Stop
-            $extension = ((get-item -path $Path).Extension).TrimStart(".")
+            $name               = split-path -path $path -leaf
+            $VHDInfo            = $Path | Get-DiskImage -ErrorAction Stop
+            $Disk_Item_Info     = Get-item -path $path
+            $extension          = ($Disk_Item_Info.Extension).TrimStart(".")
+            $CreationTime       = $Disk_Item_Info.CreationTime
+            $LastWriteTime      = $Disk_Item_Info.LastWriteTime
+            $LastAccessTime     = $Disk_Item_Info.LastAccessTime
+
+            $DiskNumber         = $null
+            $NumberOfPartitions = $null
+            $Guid               = $null
+            $VHDType            = $null
             
             if ($VHDInfo.Attached) {
-                $DiskNumber = (get-disk | where-object {$_.location -eq $path}).number
-                $VHDType = Get-FslDriveType -number $DiskNumber
+                $Disk               = (get-disk | where-object {$_.location -eq $path})
+                $DiskNumber         = $Disk.number
+                $NumberOfPartitions = $Disk.NumberOfPartitions
+                $Guid               = $Disk.Guid
+                $VHDType            = Get-FslDriveType -number $DiskNumber
             }
 
-            $VHDInfo | Add-Member @{Name        = $Name               }
-            $VHDInfo | Add-Member @{path        = $VHDInfo.ImagePath  } 
-            $VHDInfo | Add-member @{VhdFormat   = $extension          } 
-            $VHDInfo | Add-Member @{VHDType     = $VHDType            }
-            $VHDInfo | Add-Member @{DiskNumber  = $DiskNumber         }
+            $VHDInfo | Add-Member @{Name                = $Name             }
+            $VHDInfo | Add-Member @{path                = $VHDInfo.ImagePath}
+            $VHDInfo | Add-Member @{Guid                = $Guid             } 
+            $VHDInfo | Add-member @{VhdFormat           = $extension        } 
+            $VHDInfo | Add-Member @{VHDType             = $VHDType          }
+            $VHDInfo | Add-Member @{DiskNumber          = $DiskNumber       }
+            $VHDInfo | Add-Member @{NumberOfPartitions  = $NumberOfPartitions}
+            $VHDInfo | Add-Member @{CreationTime        = $CreationTime     }
+            $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime    }
+            $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime   }
         
             Write-Output $VHDInfo
         }
