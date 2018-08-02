@@ -44,7 +44,11 @@ function get-driveletter {
         $DriveLetter = $Mount | get-disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             Write-Verbose "Did not receive valid driveletter. Assigning guid."
-            $guid_ID = (new-guid).Guid
+            
+            ## Using .Net for major speed improvement
+            ## Powershell code: (New-Guid).guid
+            $guid_ID = ([guid]::NewGuid()).Guid
+
             $Partitions = get-partition -DiskNumber $mount.Number | select-object -last 1
             $PartFolder = join-path "C:\programdata\fslogix" $guid_ID
             if (-not(test-path -path $PartFolder)) {
