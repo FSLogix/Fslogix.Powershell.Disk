@@ -45,7 +45,7 @@ function get-driveletter {
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             Write-Verbose "Did not receive valid driveletter: $Driveletter. Assigning guid."
             
-            ## Using .Net for major speed improvement
+            ## Using .Net for speed improvement
             ## Powershell code: (New-Guid).guid
             $guid_ID = ([guid]::NewGuid()).Guid
 
