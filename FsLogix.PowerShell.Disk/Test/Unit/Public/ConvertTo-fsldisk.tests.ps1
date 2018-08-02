@@ -32,6 +32,10 @@ Describe $sut {
             $Invalid_input = { ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit" -convertTo vhd}
             $Invalid_input | should throw
         }
+        it 'get-childitem returns nothing'{
+            mock -CommandName get-childitem -MockWith {$null}
+            {ConvertTo-FslDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -convertTo vhd} | should throw
+        }
     }
     BeforeEach{
         mock -CommandName Convert-VHD -MockWith {$true}

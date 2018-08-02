@@ -32,15 +32,14 @@ Describe $sut {
             mock -CommandName Get-FslDisk -MockWith {return $null}
             {get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhdx' -WarningAction Stop} | should throw
         }
+        it 'No vhds in path should give warning'{
+            mock -CommandName get-childitem -MockWith {$null}
+            {Get-fslvhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -WarningAction Stop} | should throw
+            
+        }
     }
     context -name 'Test get-fslVHD'{
-        it 'Index 1 to 1 should return 1 disk'{
-            mock -CommandName Get-Fsldisk -MockWith {
-                get-diskimage 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
-            }
-            $vhd = get-fslVHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -start 1 -end 1
-            $vhd.count | should be 1
-        }
+       
         BeforeEach{
             mock -CommandName Get-FslDisk -MockWith {
                 [PSCustomObject]@{
