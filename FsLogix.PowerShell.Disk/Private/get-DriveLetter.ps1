@@ -52,7 +52,7 @@ function get-driveletter {
             $Partitions = get-partition -DiskNumber $mount.Number | select-object -last 1
             $PartFolder = join-path "C:\programdata\fslogix" $guid_ID
             if (-not(test-path -path $PartFolder)) {
-                New-Item -ItemType Directory -Path $PartFolder
+                New-Item -ItemType Directory -Path $PartFolder | Out-Null
             }else{
                 Add-PartitionAccessPath -InputObject $Partitions -AccessPath $PartFolder -ErrorAction Stop | Out-Null
             }

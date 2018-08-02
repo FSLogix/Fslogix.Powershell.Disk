@@ -62,9 +62,6 @@ function Copy-FslDiskToDisk {
         $First_DL = get-driveletter -path $FirstVHDPath
         $Second_DL = get-driveletter -path $SecondVHDPath
 
-        #$FirstVHD = split-path $FirstVHDPath -Leaf
-        $SecondVHD = split-path $SecondVHDPath -leaf
-
         $FirstFilePath = join-path($First_DL) ($FirstFilePath)
         $SecondFilePath = join-path($Second_DL) ($SecondFilePath)
 

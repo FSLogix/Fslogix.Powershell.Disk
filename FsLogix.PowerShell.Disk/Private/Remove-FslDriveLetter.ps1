@@ -40,7 +40,7 @@ function Remove-FslDriveLetter {
                     $mount = get-disk | Where-Object {$_.Location -eq $vhd.path}
                 }
                 else {
-                    $mount = Mount-DiskImage -path $vhd.path -Passthru -ErrorAction Stop
+                    $mount = Mount-DiskImage -ImagePath $vhd.path -Passthru -ErrorAction Stop | get-diskimage
                 }
             }
             catch {

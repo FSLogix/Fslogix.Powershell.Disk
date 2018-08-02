@@ -94,8 +94,8 @@ function Format-FslDriveLetter {
                     Dismount-fsldisk $vhd.path
                 }
                 $Driveletterassigned = $false
+                $letter = [int][char]'Z'
                 while ($DriveLetterAssigned -eq $false) {
-                    $letter = [int][char]'Z'
                     try {
                         $mount = Mount-DiskImage -ImagePath $vhd.path -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
                         $Disk = $mount | get-disk -ErrorAction Stop
@@ -110,6 +110,9 @@ function Format-FslDriveLetter {
                     catch {
                         $letter --
                     }
+                }
+                if($Driveletterassigned){
+                    Write-Verbose "Assigned DriveLetter: $([char]$letter)."
                 }
                 dismount-FslDisk $vhd.path
             }

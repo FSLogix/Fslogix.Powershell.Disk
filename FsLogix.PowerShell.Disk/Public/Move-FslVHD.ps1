@@ -82,8 +82,9 @@ function Move-FslVhd {
                 $name += 'x'
             }
 
-            $Old_VHD_MigratedName = [System.IO.Path]::GetFileNameWithoutExtension($disk.path)
-            $Old_VHD_MigratedName_Extension = [System.IO.Path]::GetExtension($disk.path)
+            $Old_VHD_MigratedName_Extension = $name.Split(".") | select-object -Last 1
+            $Old_VHD_MigratedName = $name.TrimEnd("." + $Old_VHD_MigratedName_Extension)
+
             $OLD_VHD_New_MigratedName = $Old_VHD_MigratedName.replace('.', "-MIGRATED-")
             if ($OLD_VHD_New_MigratedName -eq $Old_VHD_MigratedName) {
                 if ($OLD_VHD_New_MigratedName[0] -ne 'S') {
@@ -93,7 +94,7 @@ function Move-FslVhd {
                     $OLD_VHD_New_MigratedName += "-MIGRATED-"
                 }
             }
-            $OLD_VHD_New_MigratedName += $Old_VHD_MigratedName_Extension
+            $OLD_VHD_New_MigratedName = $OLD_VHD_New_MigratedName + "." + $Old_VHD_MigratedName_Extension
 
             $Migrated_VHD = (split-path $Disk.path) + "\" + $OLD_VHD_New_MigratedName
 
