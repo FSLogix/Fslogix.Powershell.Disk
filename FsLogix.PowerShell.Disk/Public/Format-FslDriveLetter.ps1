@@ -7,14 +7,20 @@ function Format-FslDriveLetter {
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
 
-        .PARAMETER VHDpath
-        Path to a specificed VHD or directory of VHD's.
+        .PARAMETER Get
+        Returns the driveletter associated with the VHD. If none is available, returns the path.
 
-        .PARAMETER Command
-        User command to either get a driveletter, set a driveletter, or remove a driveletter.
+        .PARAMETER Remove
+        Removes the driveletter associated with the VHD.
+
+        .PARAMETER Set
+        Sets a driveletter to a vhd
 
         .PARAMETER Letter
-        Letter to assign if user opts to set a drive letter
+        User associated letter when setting vhd's driveletter
+
+        .PARAMETER Assign
+        Automatically assigns a driveletter, starting from Z.
 
         .EXAMPLE
         format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -get
@@ -102,7 +108,6 @@ function Format-FslDriveLetter {
                         $DriveLetterAssigned = $true
                     }
                     catch {
-                        Write-Error $Error[0]
                         $letter --
                     }
                 }
