@@ -62,6 +62,7 @@ function Get-FslDisk {
                 $VHDType            = Get-FslDriveType -number $DiskNumber
             }
 
+            $VHDInfo | Add-Member @{ComputerName        = $env:COMPUTERNAME  }
             $VHDInfo | Add-Member @{Name                = $Name              }
             $VHDInfo | Add-Member @{path                = $Path              }
             $VHDInfo | Add-Member @{Guid                = $Guid              } 
