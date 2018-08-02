@@ -60,7 +60,7 @@ function Get-FslDisk {
                 $DiskNumber         = $Disk.number
                 $NumberOfPartitions = $Disk.NumberOfPartitions
                 $Guid               = $Disk.Guid -replace '{','' -replace '}',''
-                #$VHDType            = Get-FslDriveType -number $DiskNumber
+                $VHDType            = Get-FslDriveType -number $DiskNumber
 
             }
 
@@ -89,7 +89,7 @@ function Get-FslDisk {
             $VHDInfo | Add-Member @{path                = $Path              }
             $VHDInfo | Add-Member @{Guid                = $Guid              }
             $VHDInfo | Add-member @{VhdFormat           = $extension         }
-            #$VHDInfo | Add-Member @{VHDType             = $VHDType           }
+            $VHDInfo | Add-Member @{VHDType             = $VHDType           }
             $VHDInfo | Add-Member @{DiskNumber          = $DiskNumber        }
             $VHDInfo | Add-Member @{NumberOfPartitions  = $NumberOfPartitions}
             $VHDInfo | Add-Member @{CreationTime        = $CreationTime      }
