@@ -37,7 +37,7 @@ function Get-FslDisk {
         $Extension = get-item -path $Path
 
         if($Extension.Extension -eq ".vhd" -or $Extension.Extension -eq ".vhdx" ){
-
+            
             $name               = split-path -path $path -leaf
             $VHDInfo            = $Path | Get-DiskImage -ErrorAction Stop
             $Disk_Item_Info     = Get-item -path $path
@@ -53,15 +53,38 @@ function Get-FslDisk {
             $NumberOfPartitions = $null
             $Guid               = $null
             $VHDType            = $null
-            
+           
             if ($VHDInfo.Attached) {
+                Write-Verbose "1"
                 $Disk               = get-disk | where-object {$_.location -eq $path}
                 $DiskNumber         = $Disk.number
                 $NumberOfPartitions = $Disk.NumberOfPartitions
                 $Guid               = $Disk.Guid
+                Write-Verbose "2"
                 $VHDType            = Get-FslDriveType -number $DiskNumber
+                Write-Verbose "3"
+            }
+            
+            <#$Properties = [PSCustomObject]@{
+                ComputerName        = $env:COMPUTERNAME
+                Name                = $name
+                path                = $Path 
+                Guid                = $Guid
+                VhdFormat           = $extension
+                VHDType             = $VHDType
+                Attached            = $VHDInfo.Attached 
+                DiskNumber          = $DiskNumber
+                NumberOfPartitions  = $NumberOfPartitions 
+                CreationTime        = $CreationTime
+                LastWriteTime       = $LastWriteTime
+                LastAccessTime      = $LastAccessTime
+                SizeInGB            = $SizeGB
+                SizeInMB            = $SizeMB
+                FreespaceGB         = $FreeSpace
             }
 
+            Write-Output $Properties #>
+        
             $VHDInfo | Add-Member @{ComputerName        = $env:COMPUTERNAME  }
             $VHDInfo | Add-Member @{Name                = $Name              }
             $VHDInfo | Add-Member @{path                = $Path              }
@@ -76,8 +99,9 @@ function Get-FslDisk {
             $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
             $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
             $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
-        
+            
             Write-Output $VHDInfo
+        
         }
         else {
             Write-Error "File path should include a .vhd or .vhdx extension." -ErrorAction Stop
