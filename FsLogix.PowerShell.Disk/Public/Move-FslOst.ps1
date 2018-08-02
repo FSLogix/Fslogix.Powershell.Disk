@@ -94,17 +94,17 @@ function Move-FslOst {
         ## Assumption is after enumerating ad users, we will obtain the corresponding user's ##
         ## OST within %username% and the corresponding user's appdata within 'profiles'      ##
         ## Will need to validate with David Young on exactly what he requires                ##
-        if ([System.string]::IsNullOrEmpty($ost)) {
+        if (!$ost) {
             $ost = '\\server\share\usersost\%username%'
             Write-Verbose "$(get-date): User did not enter OST path: Defaulting to $ost."
         }
 
-        if ([System.string]::IsNullOrEmpty($AppData)) {
+        if (!$AppData) {
             $appdata = '\\server\share\users\profiles'
             Write-Verbose "$(get-date): User did not enter AppData profile directory. Defaulting to $appdata."
         }
 
-        if ([System.string]::IsNullOrEmpty($DiskDestination)) {
+        if (!$DiskDestination) {
             $DiskDestination = '\\server\share\ODFC'
             Write-Verbose "$(get-date): User did not enter Destination director. Defaulted to $diskdestination."
         }
