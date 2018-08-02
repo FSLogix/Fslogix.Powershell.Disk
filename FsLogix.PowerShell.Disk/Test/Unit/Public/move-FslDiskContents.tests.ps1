@@ -8,7 +8,11 @@ Describe $sut {
     #NEED TO ADD MORE TEST CASES
     context -name 'Outputs that should throw'{
         BeforeEach{
-            mock -CommandName get-fsldisk -MockWith {} -Verifiable
+            mock -CommandName Get-FslDisk -MockWith {
+                [PSCustomObject]@{
+                    Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd2.vhdx'
+                }
+            }
             mock -CommandName get-driveletter -MockWith {} -Verifiable
             mock -CommandName join-path -MockWith {} -Verifiable
         }
@@ -38,8 +42,19 @@ Describe $sut {
                     fullname = 'C:\blah'
                 }
             }
-            mock -CommandName get-driveletter -MockWith {} -Verifiable
+            mock -CommandName Get-FslDisk -MockWith {
+                [PSCustomObject]@{
+                    Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd2.vhdx'
+                }
+            }
             mock -CommandName test-path -MockWith {$true}
+            mock -CommandName get-driveletter -MockWith {}
+            mock -CommandName join-path -MockWith {}
+        }
+
+        it 'test mock'{
+            $path = Get-FslDisk -Path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd2.vhdx'
+            $path.path | should be 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd2.vhdx'
         }
         
         it 'Valid inputs'{

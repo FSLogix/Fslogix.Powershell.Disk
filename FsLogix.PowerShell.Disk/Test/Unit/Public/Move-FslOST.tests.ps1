@@ -55,7 +55,7 @@ Describe $sut {
                 {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ODFC\Daniel_S-0-2-26-1944519217-1788772061-1800150966-14811.vhd' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
             }
             it 'Could not get users in appdata folder' {
-                {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
+                {Move-FslOst -AdGroup 'Daniel' -SizeInGB '2' -Ost 'C:\Users\danie\Documents\VHDModuleProject\ProfileMigration\ost\%username%' -AppData 'C:\Users\danie\Documents\VHDModuleProject\Disk\Fslogix.Powershell.Disk\FsLogix.PowerShell.Disk\Test\Unit\Public\Move-FslOST.tests.ps1' -DiskDestination 'C:\Users\danie\Documents\VHDModuleProject'} | should throw
             }
             it 'No appdata in user profile'{
                 mock -CommandName get-childitem -MockWith {$false} -ParameterFilter{
