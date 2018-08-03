@@ -14,17 +14,20 @@ function Get-FslDriveType {
     
     process {
         
-        Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+        #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
         $Disk = get-disk | where-object {$_.Number -eq $DiskNumber}
-        $Partition_AccessPaths = $Disk | Get-Partition | Select-Object -expandproperty accesspaths
-        Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+
+        # This line of code is really slow
+        $Partition_AccessPaths = ($Disk | Get-Partition).AccessPaths
+        #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+        
         $volume = Get-WMIObject -Class Win32_Volume
         foreach($AccessPath in $Partition_AccessPaths){
             if($volume.DeviceId -contains $AccessPath){
                 $Volume = $volume | where-object {$_.deviceid -eq $Accesspath}
             }
         }
-        Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+        #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
         if($null -eq $Volume){
             Write-Warning "Could not find volume associated with disk number: $DiskNumber"
         }else{
