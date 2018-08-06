@@ -33,9 +33,7 @@ function Get-FslDisk {
         if (-not(test-path -path $Path)) {
             Write-Error "Cannot find path: $path" -ErrorAction Stop
         }
-
         $Extension = get-item -path $Path
-
         if($Extension.Extension -eq ".vhd" -or $Extension.Extension -eq ".vhdx" ){
 
             $name               = split-path -path $path -leaf
@@ -53,7 +51,7 @@ function Get-FslDisk {
             $NumberOfPartitions = $null
             $Guid               = $null
             $VHDType            = $null
-
+            
             if ($VHDInfo.Attached) {
 
                 $Disk               = get-disk | where-object {$_.location -eq $path}
@@ -63,7 +61,6 @@ function Get-FslDisk {
                 $VHDType            = Get-FslDriveType -number $DiskNumber
 
             }
-
             $VHDInfo | Add-Member @{ComputerName        = $env:COMPUTERNAME  }
             $VHDInfo | Add-Member @{Name                = $Name              }
             $VHDInfo | Add-Member @{path                = $Path              }
@@ -78,7 +75,6 @@ function Get-FslDisk {
             $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
             $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
             $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
-
             Write-Output $VHDInfo
 
         }
