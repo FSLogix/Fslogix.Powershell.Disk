@@ -15,9 +15,10 @@ function Get-FslDriveType {
     process {
         
         #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
-        $Disk = get-disk | where-object {$_.Number -eq $DiskNumber}
+        $Disk = get-disk -Number $DiskNumber
 
         # This line of code is really slow
+        # Need to improve runtime of this command.
         $Partition_AccessPaths = ($Disk | Get-Partition).AccessPaths
         #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
         
