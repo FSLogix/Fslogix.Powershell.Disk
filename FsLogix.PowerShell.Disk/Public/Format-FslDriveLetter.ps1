@@ -20,7 +20,9 @@ function Format-FslDriveLetter {
         User associated letter when setting vhd's driveletter
 
         .PARAMETER Assign
-        Automatically assigns a driveletter, starting from Z.
+        Automatically assigns a driveletter, starting from Z. If 'Z' is not available, then
+        the script will iterate alphabetically downwards until letter 'D'. If D is not availabe, then 
+        a driveletter cannot be assigned.
 
         .EXAMPLE
         format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -get
@@ -32,6 +34,11 @@ function Format-FslDriveLetter {
         .EXAMPLE
         format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -remove
         Remove's the driveltter on test1.vhd
+
+        .EXAMPLE 
+        format-fsldriveletter -path C:\users\danie\documents\ODFC\test1.vhd -assign
+        Assigns the VHD, test1.vhd, drive letter Z. If Z is not 
+        available, then it'll iterate downwards.
     #>
     [CmdletBinding(DefaultParametersetName = 'None')]
     param (
