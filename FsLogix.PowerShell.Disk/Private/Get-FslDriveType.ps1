@@ -14,21 +14,16 @@ function Get-FslDriveType {
     
     process {
         
-        #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+        Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
         $Disk = get-disk -Number $DiskNumber
 
         # This line of code is really slow
         # Need to improve runtime of this command.
-        $Partition_AccessPaths = ($Disk | Get-Partition).AccessPaths
-        #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+        $Partition_AccessPaths = ($Disk | Get-Partition).AccessPaths | select-object -first 1
+        Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
         
-        $volume = Get-WMIObject -Class Win32_Volume
-        foreach($AccessPath in $Partition_AccessPaths){
-            if($volume.DeviceId -contains $AccessPath){
-                $Volume = $volume | where-object {$_.deviceid -eq $Accesspath}
-            }
-        }
-        #Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
+        $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -eq $Partition_AccessPaths}
+        Write-Verbose "$((get-date).ToString('yy/mm/dd/hh:mm:ss:fff'))"
         if($null -eq $Volume){
             Write-Warning "Could not find volume associated with disk number: $DiskNumber"
         }else{
