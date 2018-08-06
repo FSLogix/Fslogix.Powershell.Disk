@@ -64,26 +64,6 @@ function Get-FslDisk {
 
             }
 
-            <#$Properties = [PSCustomObject]@{
-                ComputerName        = $env:COMPUTERNAME
-                Name                = $name
-                path                = $Path
-                Guid                = $Guid
-                VhdFormat           = $extension
-                VHDType             = $VHDType
-                Attached            = $VHDInfo.Attached
-                DiskNumber          = $DiskNumber
-                NumberOfPartitions  = $NumberOfPartitions
-                CreationTime        = $CreationTime
-                LastWriteTime       = $LastWriteTime
-                LastAccessTime      = $LastAccessTime
-                SizeInGB            = $SizeGB
-                SizeInMB            = $SizeMB
-                FreespaceGB         = $FreeSpace
-            }
-
-            Write-Output $Properties #>
-
             $VHDInfo | Add-Member @{ComputerName        = $env:COMPUTERNAME  }
             $VHDInfo | Add-Member @{Name                = $Name              }
             $VHDInfo | Add-Member @{path                = $Path              }
