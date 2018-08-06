@@ -41,44 +41,44 @@ function Get-FslDisk {
             catch {
                 Write-Error $Error[0]
             }
-            $name = split-path -path $path -leaf
-            $Disk_Item_Info = Get-item -path $path
-            $extension = ($Disk_Item_Info.Extension).TrimStart(".")
-            $CreationTime = $Disk_Item_Info.CreationTime
-            $LastWriteTime = $Disk_Item_Info.LastWriteTime
-            $LastAccessTime = $Disk_Item_Info.LastAccessTime
-            $SizeGB = $VHDInfo.Size / 1gb
-            $SizeMB = $VHDInfo.Size / 1mb
-            $FreeSpace = [Math]::Round((($VHDInfo.Size - $VHDInfo.FileSize) / 1gb) , 2)
+            $name               = split-path -path $path -leaf
+            $Disk_Item_Info     = Get-item -path $path
+            $extension          = ($Disk_Item_Info.Extension).TrimStart(".")
+            $CreationTime       = $Disk_Item_Info.CreationTime
+            $LastWriteTime      = $Disk_Item_Info.LastWriteTime
+            $LastAccessTime     = $Disk_Item_Info.LastAccessTime
+            $SizeGB             = $VHDInfo.Size / 1gb
+            $SizeMB             = $VHDInfo.Size / 1mb
+            $FreeSpace          = [Math]::Round((($VHDInfo.Size - $VHDInfo.FileSize) / 1gb) , 2)
 
-            $DiskNumber = $null
+            $DiskNumber         = $null
             $NumberOfPartitions = $null
-            $Guid = $null
-            $VHDType = $null
+            $Guid               = $null
+            $VHDType            = $null
             
             if ($VHDInfo.Attached) {
 
                 $Disk = get-disk | where-object {$_.location -eq $path}
-                $DiskNumber = $Disk.number
+                $DiskNumber         = $Disk.number
                 $NumberOfPartitions = $Disk.NumberOfPartitions
-                $Guid = $Disk.Guid -replace '{', '' -replace '}', ''
-                $VHDType = Get-FslDriveType -number $DiskNumber
+                $Guid               = $Disk.Guid -replace '{', '' -replace '}', ''
+                $VHDType            = Get-FslDriveType -number $DiskNumber
 
             }
-            $VHDInfo | Add-Member @{ComputerName = $env:COMPUTERNAME  }
-            $VHDInfo | Add-Member @{Name = $Name              }
-            $VHDInfo | Add-Member @{path = $Path              }
-            $VHDInfo | Add-Member @{Guid = $Guid              }
-            $VHDInfo | Add-member @{VhdFormat = $extension         }
-            $VHDInfo | Add-Member @{VHDType = $VHDType           }
-            $VHDInfo | Add-Member @{DiskNumber = $DiskNumber        }
-            $VHDInfo | Add-Member @{NumberOfPartitions = $NumberOfPartitions}
-            $VHDInfo | Add-Member @{CreationTime = $CreationTime      }
-            $VHDInfo | Add-Member @{LastWriteTime = $LastWriteTime     }
-            $VHDInfo | Add-Member @{LastAccessTime = $LastAccessTime    }
-            $VHDInfo | Add-Member @{SizeInGB = $SizeGB            }
-            $VHDInfo | Add-Member @{SizeInMB = $SizeMB            }
-            $VHDInfo | Add-Member @{FreespaceGB = $FreeSpace         }
+            $VHDInfo | Add-Member @{ComputerName        = $env:COMPUTERNAME  }
+            $VHDInfo | Add-Member @{Name                = $Name              }
+            $VHDInfo | Add-Member @{path                = $Path              }
+            $VHDInfo | Add-Member @{Guid                = $Guid              }
+            $VHDInfo | Add-member @{VhdFormat           = $extension         }
+            $VHDInfo | Add-Member @{VHDType             = $VHDType           }
+            $VHDInfo | Add-Member @{DiskNumber          = $DiskNumber        }
+            $VHDInfo | Add-Member @{NumberOfPartitions  = $NumberOfPartitions}
+            $VHDInfo | Add-Member @{CreationTime        = $CreationTime      }
+            $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime     }
+            $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime    }
+            $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
+            $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
+            $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
             Write-Output $VHDInfo
 
         }
