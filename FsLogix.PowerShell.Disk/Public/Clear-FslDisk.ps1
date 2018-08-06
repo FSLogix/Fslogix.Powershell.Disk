@@ -75,6 +75,7 @@ function Clear-FslDisk {
                 continue
             }else{ Write-Verbose "$(Get-Date): Retreived contents"}
 
+            ## Using a forloop is faster than sending to pipeling in remove-item.
             foreach($item in $contents){
                 if($force){
                     remove-item $item.fullname -Force -Recurse 
