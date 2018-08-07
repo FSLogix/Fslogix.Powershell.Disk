@@ -100,6 +100,27 @@ Describe $sut {
             $Cmd = Get-FslDriveType 0
             $Cmd | should be 'unknown'
         }
+        it 'Removeable'{
+            mock -CommandName Get-WmiObject -mockwith{
+                [PSCustomObject]@{
+                    DeviceId  = '\\?\Volume{asdfsdf}\'
+                    DriveType = 1
+                }
+            }
+            $Cmd = Get-FslDriveType 0
+            $Cmd | should be 'Removeable'
+        }
+        it 'Fixed'{
+            mock -CommandName Get-WmiObject -mockwith{
+                [PSCustomObject]@{
+                    DeviceId  = '\\?\Volume{asdfsdf}\'
+                    DriveType = 2
+                }
+            }
+            $Cmd = Get-FslDriveType 0
+            $Cmd | should be 'Fixed'
+
+        }
         it 'Network'{
             mock -CommandName Get-WmiObject -mockwith{
                 [PSCustomObject]@{

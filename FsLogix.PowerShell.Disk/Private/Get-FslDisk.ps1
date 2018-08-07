@@ -36,7 +36,7 @@ function Get-FslDisk {
         $Disk_Item_Info = get-item -path $Path
         if ($Disk_Item_Info.Extension -eq ".vhd" -or $Disk_Item_Info.Extension -eq ".vhdx" ) {
             try {
-                $VHDInfo = $Path | Get-DiskImage
+                $VHDInfo = $Path | Get-DiskImage -ErrorAction Stop
             }
             catch {
                 Write-Error $Error[0]
