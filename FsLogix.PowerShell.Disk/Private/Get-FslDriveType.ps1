@@ -13,7 +13,6 @@ function Get-FslDriveType {
     }
     
     process {
-    
         $Partition = get-partition -disknumber $DiskNumber | Where-Object {$_.type -eq 'Basic'}
         $Partition_AccessPaths = $Partition | select-object -expandproperty accesspaths | select-object -first 1
         ## If Guid returned
