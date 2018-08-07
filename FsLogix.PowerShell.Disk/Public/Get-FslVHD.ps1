@@ -60,7 +60,15 @@ function Get-FslVHD {
             if($start -gt $GC_count){
                 Write-Error "Starting Index: $Start cannot be greater than to total count of disks: $GC_Count." -ErrorAction Stop
             }
-            
+        
+            <#
+                get-childitem | select-object -skip 1 | select-object -skiplast 5
+                Using something like this could improve performance?
+                Instead of storing paths into a data structure, simply put everything into one variable
+                through piping.
+                Future task.
+            #>
+
             $DiskHashTable = @{}
             $counter = 1
             foreach($vhd in $VHDs){
