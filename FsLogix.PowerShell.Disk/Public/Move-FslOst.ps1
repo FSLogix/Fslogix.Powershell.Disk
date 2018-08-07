@@ -1,3 +1,5 @@
+#Requires -Modules "Hyper-V"
+#Requires -Modules "ActiveDirectory"
 <#
     Daniel, answers below.
 
