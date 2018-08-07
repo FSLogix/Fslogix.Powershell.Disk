@@ -16,11 +16,10 @@ function Get-FslDriveType {
     
         $Partition = get-partition -disknumber $DiskNumber | Where-Object {$_.type -eq 'Basic'}
         $Partition_AccessPaths = $Partition | select-object -expandproperty accesspaths | select-object -first 1
-
         ## If Guid returned
         if($Partition_AccessPaths -like 'C:\ProgramData\FsLogix\FslGuid\*'){
-            $Partition_AccessPaths = $Partition.Guid
-            $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -like "*$Partition_AccessPaths*"}
+            $Partition_AccessPaths = $Partition.Guid 
+            $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -eq "\\?\Volume$($Partition_AccessPaths)\"}
         }
 
         ## If driveletter returned
