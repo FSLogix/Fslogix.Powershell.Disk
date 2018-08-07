@@ -39,6 +39,15 @@ Describe $sut {
             $invalid_path = { convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest" }
             $invalid_path | should throw
         }
+        it 'VHD is in use'{
+            Mock -CommandName Get-FslDisk -MockWith {
+                [PSCustomObject]@{
+                    Path  = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                    Attached = $true
+                }
+            }
+            {convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\testvhd1.vhd" -overwrite -WarningAction Stop } | should throw
+        }
     }
 
     Context -Name 'Test Remove-Item' {
