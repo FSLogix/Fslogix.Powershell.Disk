@@ -33,8 +33,8 @@ function Get-FslDisk {
         if (-not(test-path -path $Path)) {
             Write-Error "Cannot find path: $path" -ErrorAction Stop
         }
-        $Extension = get-item -path $Path
-        if ($Extension.Extension -eq ".vhd" -or $Extension.Extension -eq ".vhdx" ) {
+        $Disk_Item_Info = get-item -path $Path
+        if ($Disk_Item_Info.Extension -eq ".vhd" -or $Disk_Item_Info.Extension -eq ".vhdx" ) {
             try {
                 $VHDInfo = $Path | Get-DiskImage
             }
@@ -42,7 +42,6 @@ function Get-FslDisk {
                 Write-Error $Error[0]
             }
             $name               = split-path -path $path -leaf
-            $Disk_Item_Info     = Get-item -path $path
             $extension          = ($Disk_Item_Info.Extension).TrimStart(".")
             $CreationTime       = $Disk_Item_Info.CreationTime
             $LastWriteTime      = $Disk_Item_Info.LastWriteTime
