@@ -86,4 +86,30 @@ Describe $sut {
             }
         }
     }
+    Context -name 'Test output'{
+        Mock -CommandName Get-FslDisk -MockWith {
+            [PSCustomObject]@{
+                Number              = 1
+                Path                = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                location            = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                NumberOfPartitions  = 2
+                Guid                = 'Test'
+                ImagePath           = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                Attached            = 'true'
+                Size                = 10gb
+                FileSize            = 8gb
+            }
+        }
+        it 'Output 1'{
+            $command = get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            $command.Number             | should be 1
+            $command.Path               | should be 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            $command.location           | should be 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            $Command.NumberOfPartitions | should be 2
+            $Command.Guid               | should be 'Test'
+            $Command.Attached           | should be $true
+            $Command.Size               | should be 10gb
+            $Command.FileSize           | should be 8gb
+        }
+    }
 }
