@@ -116,7 +116,7 @@ Describe $sut {
                 }
             }
             mock -CommandName Get-FslDriveType -MockWith {
-                return 'Fixed'
+                return 'CD-ROM'
             }
             $output = Get-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
             $output.ComputerName        | should be $env:COMPUTERNAME
@@ -124,7 +124,7 @@ Describe $sut {
             $output.path                | should be $path
             $output.Guid                | should be 'Test'
             $output.VHDFormat           | should be 'vhd'
-            $output.vhdtype             | should be 'fixed'
+            $output.vhdtype             | should be 'CD-ROM'
             $output.disknumber          | should be 2
             $output.NumberOfPartitions  | should be 3
             $output.SizeInGb            | should be 15
