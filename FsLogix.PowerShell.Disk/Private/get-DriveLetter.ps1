@@ -32,15 +32,16 @@ function get-driveletter {
         if (-not(test-path $VHDPath)) {
             Write-Error "Can not find path: $VHDPath" -ErrorAction Stop
         }
+
         $Name = split-path -path $VHDPath -leaf
         $VHD = get-fsldisk $VHDPath
+        
         if ($VHD.Attached) {
             $mount = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
         }
         else {
             $Mount = Mount-DiskImage -ImagePath $VHDPath -PassThru -ErrorAction Stop | get-diskimage
         }
-
         $DriveLetter = $Mount | get-disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             Write-Verbose "Did not receive valid driveletter: $Driveletter. Assigning guid."
@@ -49,13 +50,14 @@ function get-driveletter {
             ## Powershell code: (New-Guid).guid
             $guid_ID = ([guid]::NewGuid()).Guid
 
-            $Partitions = get-partition -DiskNumber $mount.Number | select-object -last 1
+            $Partitions = get-partition -DiskNumber $mount.Number | Where-Object {$_.type -eq 'Basic'}
             $PartFolder = join-path "C:\programdata\fslogix\FslGuid" $guid_ID
             if (-not(test-path -path $PartFolder)) {
                 New-Item -ItemType Directory -Path $PartFolder | Out-Null 
             }else{
-                Add-PartitionAccessPath -InputObject $Partitions -AccessPath $PartFolder -ErrorAction Stop | Out-Null
+                remove-item $PartFolder -Force
             }
+            Add-PartitionAccessPath -InputObject $Partitions -AccessPath $PartFolder -ErrorAction Stop | Out-Null
             $DriveLetter = $PartFolder
         }
 
