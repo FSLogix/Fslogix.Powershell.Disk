@@ -23,7 +23,7 @@ Describe $sut {
             }
             mock -CommandName Get-WmiObject -mockwith{
                 [PSCustomObject]@{
-                    DeviceId = 'pls'
+                    DeviceId = 'test2'
                     DriveType = 0
                 }
             }
@@ -36,12 +36,12 @@ Describe $sut {
             [PSCustomObject]@{
                 Type = 'Basic'
                 AccessPaths = 'C:\ProgramData\FsLogix\FslGuid\test'
-                Guid = 'Test'
+                Guid = '{Test}'
             }
         }
         mock -CommandName Get-WmiObject -mockwith{
             [PSCustomObject]@{
-                DeviceId = 'Test'
+                DeviceId = '\\?\Volume{Test}\'
                 DriveType = 0
             }
         }
@@ -89,6 +89,16 @@ Describe $sut {
                 Type = 'Basic'
                 AccessPaths = '\\?\Volume{asdfsdf}\'
             }
+        }
+        it 'unknown'{
+            mock -CommandName Get-WmiObject -mockwith{
+                [PSCustomObject]@{
+                    DeviceId  = '\\?\Volume{asdfsdf}\'
+                    DriveType = 0
+                }
+            }
+            $Cmd = Get-FslDriveType 0
+            $Cmd | should be 'unknown'
         }
         it 'Network'{
             mock -CommandName Get-WmiObject -mockwith{
