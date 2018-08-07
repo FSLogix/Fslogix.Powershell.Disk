@@ -32,7 +32,6 @@ function Get-FslDriveType {
         if($Partition_AccessPaths -like "\\?\Volume{*}\"){
             $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -eq $Partition_AccessPaths}
         }
-    
         if($null -eq $Volume){
             Write-Warning "Could not find volume associated with disk number: $DiskNumber"
         }else{
