@@ -14,10 +14,25 @@ function Get-FslDriveType {
     
     process {
     
-        $Partition_AccessPaths = Get-Partition -DiskNumber 1 | select-object -expandproperty accesspaths | select-object -first 1
-       
-        $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -eq $Partition_AccessPaths}
-        
+        $Partition = get-partition -disknumber $DiskNumber | Where-Object {$_.type -eq 'Basic'}
+        $Partition_AccessPaths = $Partition | select-object -expandproperty accesspaths | select-object -first 1
+
+        ## If Guid returned
+        if($Partition_AccessPaths -like 'C:\ProgramData\FsLogix\FslGuid\*'){
+            $Partition_AccessPaths = $Partition.Guid
+            $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -like "*$Partition_AccessPaths*"}
+        }
+
+        ## If driveletter returned
+        if($Partition_AccessPaths.length -eq '3'){
+            $volume = Get-WmiObject -class Win32_Volume | Where-Object {$_.Driveletter -eq "$($Partition_AccessPaths.substring(0,2))"}
+        }
+
+        ## If \\?\Volume{*}\ Returned
+        if($Partition_AccessPaths -like "\\?\Volume{*}\"){
+            $volume = Get-WMIObject -Class Win32_Volume | Where-Object {$_.DeviceId -eq $Partition_AccessPaths}
+        }
+    
         if($null -eq $Volume){
             Write-Warning "Could not find volume associated with disk number: $DiskNumber"
         }else{
