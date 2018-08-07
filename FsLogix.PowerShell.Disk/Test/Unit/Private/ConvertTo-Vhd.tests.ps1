@@ -7,9 +7,14 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 Describe $sut {
 
     BeforeAll {
-        if (-not(test-path -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx")) {
-            convertto-vhdx -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhd"
+        Mock -CommandName Get-FslDisk -MockWith {
+            [PSCustomObject]@{
+                Path  = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+                Attached = $false
+            }
         }
+        mock -CommandName Remove-item -MockWith {}
+        mock -CommandName convert-VHD -MockWith {}
     }
 
     Context -Name 'Outputs that should throw' {
@@ -39,19 +44,18 @@ Describe $sut {
             $Already_Exist | should throw
         }
         it 'VHD is attached should give warning and stop'{
-            mount-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+            Mock -CommandName Get-FslDisk -MockWith {
+                [PSCustomObject]@{
+                    Path  = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+                    Attached = $true
+                }
+            }
             {convertTo-VHD -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -WarningAction Stop} | should throw
-            dismount-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+            
         }
     }
 
     Context -Name 'mock commands' {
-        mock 'remove-item' -MockWith {$true}
-
-        it 'Overwrite existing, Should throw' {
-            {convertto-vhd -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\TestVHD1.vhdx" -overwrite -ErrorAction Stop} | should throw
-        }
-
         mock -CommandName Remove-item -MockWith {Throw $Error[0]}
 
         it 'Remove-Item fails should give error, because disk already exists'{
