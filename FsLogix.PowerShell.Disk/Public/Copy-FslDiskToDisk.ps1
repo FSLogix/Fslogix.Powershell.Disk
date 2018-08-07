@@ -34,6 +34,11 @@ function Copy-FslDiskToDisk {
     param (
         [Parameter(Position = 0, Mandatory = $true)]
         [Alias("VHD1")]
+        [ValidateScript({
+            if(-not(test-path -path $_)){
+                Throw "Could not find VHD Path: $_"
+            }
+        })]
         [System.String]$FirstVHDPath,
 
         [Parameter(Position = 1)]
@@ -42,6 +47,11 @@ function Copy-FslDiskToDisk {
 
         [Parameter(Position = 2, Mandatory = $true)]
         [Alias("VHD2")]
+        [ValidateScript({
+            if(-not(test-path -path $_)){
+                Throw "Could not find VHD Path: $_"
+            }
+        })]
         [System.String]$SecondVHDPath,
 
         [Parameter(Position = 3)]

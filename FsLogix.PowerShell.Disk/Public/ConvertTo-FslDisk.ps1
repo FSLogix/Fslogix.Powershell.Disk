@@ -41,6 +41,11 @@ function ConvertTo-FslDisk {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [ValidateScript({
+            If(-not(test-path -path $_)){
+                Throw "Could not find path $_"
+            }
+        })]
         [System.String]$Path,
 
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
@@ -71,10 +76,6 @@ function ConvertTo-FslDisk {
 
         if ($ConvertTo -eq "vhdx") {
             $Convert_To_VHD = $false
-        }
-
-        if (-not(test-path -path $Path)) {
-            Write-Error "Path: $path is invalid." -ErrorAction Stop
         }
 
         ## Get VHD(s) within Path ##
