@@ -112,4 +112,34 @@ Describe $sut {
             $Command.FileSize           | should be 8gb
         }
     }
+    Context -name 'Different algorithms for index selection'{
+        mock -CommandName Get-FslDisk -MockWith {
+            [PSCustomObject]@{
+                Name = 'test.vhd'
+                Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+            }
+        }
+        mock -CommandName get-childitem -MockWith {
+            [PSCustomObject]@{
+                Count = 9
+                FullName = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            }
+        }
+        it 'End index is greater than 0 should give warning'{
+            get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -start 1 -end 50 -WarningVariable Warn
+            $warn.count | should be 1
+        }
+        it 'Count is less than 10, uses select-object'{
+            {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -start 1 -end 50} | should not throw
+        }
+        mock -CommandName get-childitem -MockWith {
+            [PSCustomObject]@{
+                Count = 11
+                FullName = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            }
+        }
+        it 'Count is greater than 10, uses hashtable enumeration'{
+            {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -start 1 -end 50} | should not throw
+        }
+    }
 }
