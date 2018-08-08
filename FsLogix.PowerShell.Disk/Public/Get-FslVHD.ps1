@@ -15,7 +15,7 @@ function Get-FslVHD {
         Get-FslVHD -path C:\Users\danie\Documents\VHDModuleProject\ODFCTest2
         Retreives all the VHD's within the folder 'ODFCTest2'
     #>
-    [CmdletBinding(DefaultParametersetName='none')]
+    [CmdletBinding(DefaultParametersetName = 'none')]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true)]
         [System.String]$path,
@@ -33,14 +33,15 @@ function Get-FslVHD {
 
     process {
 
-        if(-not(test-path -path $path)){
+        if (-not(test-path -path $path)) {
             write-error "Path: $path is invalid." -ErrorAction Stop
         }
         $VHDs = get-childitem -path $path -filter "*.vhd*" -Recurse
-        if($null -eq $VHDs){
+        if ($null -eq $VHDs) {
             Write-Warning "Could not find any VHDs in path: $path"
             exit
-        }else{
+        }
+        else {
             try {
                 $GC_count = $VHDs.count
             }
@@ -53,37 +54,50 @@ function Get-FslVHD {
 
         if ($Start -ne 0 -and $End -ne 0) {
 
-            if($start -gt $end){
+            if ($start -eq 1) {
+                $start = 0
+            }
+            if ($start -gt $end) {
                 Write-Error "Starting Index: $start cannot be greater than ending index: $end." -ErrorAction Stop
             }
 
-            if($start -gt $GC_count){
+            if ($start -gt $GC_count) {
                 Write-Error "Starting Index: $Start cannot be greater than to total count of disks: $GC_Count." -ErrorAction Stop
             }
-        
-            <#
-                get-childitem | select-object -skip 1 | select-object -skiplast 5
-                Using something like this could improve performance?
-                Instead of storing paths into a data structure, simply put everything into one variable
-                through piping.
-                Future task.
-            #>
-
-            $DiskHashTable = @{}
-            $counter = 1
-            foreach($vhd in $VHDs){
-                $DiskHashTable.add($vhd.fullname,$counter++)
-                if($counter -gt $End){
-                    break
-                }
+            if ($end -gt $GC_count) {
+                Write-Warning "Ending index is greater than total VHD's found. Ending index is now: $GC_Count"
+                $end = $GC_count
             }
-            Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: $Start to ending index: $End."
-            $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
-            $VhdDetails = (($vhdlist).where({$_.value -ge $Start -and $_.Value -le $End})).Key | get-fsldisk
-        }else{
+
+            if ($start -eq 0) {
+                Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: 1 to ending index: $End."
+            }
+            else {
+                Write-Verbose "$(Get-Date): Obtaining VHD's from starting index: $Start to ending index: $End."
+            }
+
+            ## If it's a small number, this seems to run faster
+            if ($GC_count -gt 10) {
+                $VHD_Adujusted_List = $VHDs | select-object -Skip $start | select-object -SkipLast ($GC_count - $end)
+                $VhdDetails = $VHD_Adujusted_List.fullname | get-fsldisk
+            }
+            else { ## But if it's a large number of disks, this seems to run faster.
+                $DiskHashTable = @{}
+                $counter = 1
+                foreach ($vhd in $VHDs) {
+                    $DiskHashTable.add($vhd.fullname, $counter++)
+                    if ($counter -gt $End) {
+                        break
+                    }
+                }
+                $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
+                $VhdDetails = (($vhdlist).where( {$_.value -ge $Start -and $_.Value -le $End})).Key | get-fsldisk
+            }
+        }
+        else {
             $VhdDetails = $VHDs.FullName | get-fsldisk
         }
-        if($null -eq $VhdDetails){
+        if ($null -eq $VhdDetails) {
             Write-Warning "Could not retrieve any VHD's in $path"
             exit
         }
