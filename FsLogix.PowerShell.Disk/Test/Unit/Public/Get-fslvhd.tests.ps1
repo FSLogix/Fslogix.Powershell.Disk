@@ -87,6 +87,12 @@ Describe $sut {
         }
     }
     Context -name 'Test output'{
+        mock -CommandName get-childitem -MockWith {
+            [PSCustomObject]@{
+                Count = 9
+                FullName = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            }
+        }
         Mock -CommandName Get-FslDisk -MockWith {
             [PSCustomObject]@{
                 Number              = 1
@@ -110,6 +116,10 @@ Describe $sut {
             $Command.Attached           | should be $true
             $Command.Size               | should be 10gb
             $Command.FileSize           | should be 8gb
+        }
+        it 'Number of VHD should be 1'{
+            $command = {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'}
+            $command.count | should be 1
         }
     }
     Context -name 'Different algorithms for index selection'{
