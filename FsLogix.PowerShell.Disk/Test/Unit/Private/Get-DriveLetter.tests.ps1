@@ -62,7 +62,7 @@ Describe $sut {
             $command = get-driveletter $path
             $command | should be 'D:\'
         }
-        it 'Guid'{
+        <#it 'Guid'{
             $obj = New-MockObject -Type 'Microsoft.Management.Infrastructure.CimSession'
             mock -CommandName get-partition -MockWith {
                 $obj | add-member @{AccessPaths = '\\?\Volume{test}'}
@@ -70,6 +70,6 @@ Describe $sut {
                 return $obj
             }
             {get-driveletter $path} | should not throw
-        }
+        }#>
     }
 }
