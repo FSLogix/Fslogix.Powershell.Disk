@@ -35,7 +35,6 @@ function get-driveletter {
 
         $Name = split-path -path $VHDPath -leaf
         $VHD = get-fsldisk $VHDPath
-        
         if ($VHD.Attached) {
             $mount = Get-Disk | Where-Object {$_.Location -eq $VHDPath}
         }
@@ -53,12 +52,15 @@ function get-driveletter {
 
             $Partitions = get-partition -DiskNumber $mount.Number | Where-Object {$_.type -eq 'Basic'}
             $PartFolder = join-path "C:\programdata\fslogix\FslGuid" $guid_ID
+            
             if (-not(test-path -path $PartFolder)) {
                 New-Item -ItemType Directory -Path $PartFolder | Out-Null 
             }else{
                 remove-item $PartFolder -Force
             }
+           
             Add-PartitionAccessPath -InputObject $Partitions -AccessPath $PartFolder -ErrorAction Stop | Out-Null
+    
             $DriveLetter = $PartFolder
         }
 

@@ -4,11 +4,41 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
+$path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
 Describe $sut {
     BeforeAll{
-        mock -CommandName Mount-DiskImage -MockWith {} -Verifiable
-        mock -CommandName get-disk -MockWith {}
-        mock -CommandName get-partition -MockWith {}
+        mock -CommandName New-Item -MockWith {}
+        mock -CommandName Remove-Item -MockWith {}
+        mock -CommandName Add-PartitionAccessPath -MockWith {}
+
+        Mock -CommandName Get-FslDisk -MockWith {
+            [PSCustomObject]@{
+                Attached = $false
+                Number = 1
+            }
+        }
+        mock -CommandName Mount-DiskImage -MockWith {
+            [PSCustomObject]@{
+                Number = 1
+            }
+        }
+        mock -CommandName get-disk -MockWith {
+            [PSCustomObject]@{
+                Number = 1
+                Location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+            }
+        }
+        mock -CommandName get-partition -MockWith {
+            [PSCustomObject]@{
+                AccessPaths = 'D:\'
+                Type = 'Basic'
+            }
+        }
+        mock -CommandName Get-DiskImage -MockWith {
+            [PSCustomObject]@{
+                Number = 1
+            }
+        }
     }
     context -Name 'should throw'{
         it 'invalid path'{
@@ -16,22 +46,21 @@ Describe $sut {
         }
     }
     context -name 'should not throw'{
-        mock -CommandName get-diskimage -MockWith{
-            return [PSCustomObject]@{
-                Attached = $false
-            }
-        }
         it 'should not throw'{
-            {get-driveletter 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'} | should not throw
+            {get-driveletter $path} | should not throw
         }
         it 'attached'{
-            mock -CommandName get-diskimage -MockWith{
+            Mock -CommandName Get-FslDisk -MockWith {
                 [PSCustomObject]@{
                     Attached = $true
+                    Number = 1
                 }
             }
-            {get-driveletter 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'} | should not throw
+            {get-driveletter $path} | should not throw
+        }
+        it 'confirm output'{
+            $command = get-driveletter $path
+            $command | should be 'D:\'
         }
     }
-    
 }
