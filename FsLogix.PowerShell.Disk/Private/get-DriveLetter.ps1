@@ -42,7 +42,8 @@ function get-driveletter {
         else {
             $Mount = Mount-DiskImage -ImagePath $VHDPath -PassThru -ErrorAction Stop | get-diskimage
         }
-        $DriveLetter = $Mount | get-disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | select-object -first 1
+    
+        $DriveLetter = Get-Partition -DiskNumber $mount.Number | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             Write-Verbose "Did not receive valid driveletter: $Driveletter. Assigning guid."
             
