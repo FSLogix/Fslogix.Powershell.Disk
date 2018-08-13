@@ -57,6 +57,7 @@ function get-driveletter {
                 New-Item -ItemType Directory -Path $PartFolder | Out-Null 
             }else{
                 remove-item $PartFolder -Force
+                New-Item -ItemType Directory -Path $PartFolder | Out-Null 
             }
            
             Add-PartitionAccessPath -InputObject $Partitions -AccessPath $PartFolder -ErrorAction Stop | Out-Null
