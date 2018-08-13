@@ -78,8 +78,9 @@ function Get-FslVHD {
 
             ## If it's a small number, this seems to run faster
             if ($GC_count -gt 10) {
-                $VHD_Adujusted_List = $VHDs | select-object -Skip $start | select-object -SkipLast ($GC_count - $end)
-                $VhdDetails = $VHD_Adujusted_List.fullname | get-fsldisk
+                $VHDs_Skipped = $VHDs | select-object -Skip $start
+                $VHD_Adjusted_List = $VHDs_Skipped | select-object -SkipLast ($GC_count - $end)
+                $VhdDetails = $VHD_Adjusted_List.fullname | get-fsldisk
             }
             else { ## But if it's a large number of disks, this seems to run faster.
                 $DiskHashTable = @{}
