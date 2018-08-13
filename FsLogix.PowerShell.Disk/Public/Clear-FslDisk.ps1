@@ -19,6 +19,9 @@ function Clear-FslDisk {
         Optional parameter to specify an ending index for selecting disks.
         Start has to be initialized.
 
+        .PARAMETER Dismount
+        Optional switch parameter if user wants VHD dismounted upon script completion.
+
         .EXAMPLE
         Clear-fsldisk -path 'C:\test1.vhd'
         Clears out all the contents within test1.vhd
@@ -50,21 +53,30 @@ function Clear-FslDisk {
         [int]$Start,
 
         [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
-        [int]$End
+        [int]$End,
+
+        [Parameter(Position = 5)]
+        [Switch]$dismount
     )
 
     begin {
         set-strictmode -Version latest
+
+        if(-not(test-path -Path $path)){
+            Write-Error "Could not find path: $Path" -ErrorAction Stop
+        }
     }
 
     process {
         
-        ## Helper function ##
+        ## Helper function
+        ## Get-FslVHD will validate error handling
         $VHDs = get-fslvhd -path $path -start $Start -end $End
 
         foreach ($vhd in $VHDs) {
 
-            ## Helper function ##
+            ## Helper function 
+            ## Get-FslDiskContents will validate error handling
             $contents = Get-fsldiskcontents -VHDPath $vhd.path -FolderPath $folder
             $folderpath = Join-Path (Split-Path $vhd.path -leaf) ($folder)
 
@@ -74,6 +86,7 @@ function Clear-FslDisk {
             }else{ Write-Verbose "$(Get-Date): Retreived contents"}
 
             ## Using a forloop is faster than sending to pipeling in remove-item.
+            ## Speed test done by Joshua King
             foreach($item in $contents){
                 if($force){
                     remove-item $item.fullname -Force -Recurse 
@@ -83,8 +96,10 @@ function Clear-FslDisk {
             }
 
             Write-Verbose "$(Get-Date): Succesfully cleared $folderpath"
-            dismount-FslDisk -path $vhd.path
-
+            
+            if($dismount){
+                dismount-FslDisk -path $vhd.path
+            }
         }#foreach
     }
 

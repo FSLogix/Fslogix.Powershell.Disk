@@ -9,7 +9,9 @@ Describe $sut {
     BeforeAll {
         Mock -CommandName remove-item -MockWith {$true} -Verifiable
         Mock -CommandName Get-FslVhd -MockWith{
-            return get-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+            [PSCustomObject]@{
+                Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+            }
         }
         Mock -CommandName dismount-FslDisk -MockWith {$true}
     }
@@ -37,6 +39,9 @@ Describe $sut {
         }
         it 'Used index range'{
             {clear-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2' -start 1 -end 2} | should not throw
+        }
+        it 'Valid path'{
+            {Clear-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -dismount} | should not throw
         }
     }
 }
