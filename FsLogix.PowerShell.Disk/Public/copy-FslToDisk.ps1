@@ -41,11 +41,6 @@ function copy-FslToDisk {
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias("path")]
-        [ValidateScript({
-            if(-not(test-path -path $_)){
-                Throw "Could not find VHD path $_"
-            }
-        })]
         [System.string]$VhdPath,
 
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]

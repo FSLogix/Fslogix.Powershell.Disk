@@ -7,11 +7,6 @@ function Compress-FslDisk {
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true
         )][Alias("Path")]
-        [ValidateScript({
-            if(-not(test-path -path $_)){
-                Throw "Could not find path: $_"
-            }
-        })]
         [System.String]$VHD,
 
         [Parameter(Position = 1,

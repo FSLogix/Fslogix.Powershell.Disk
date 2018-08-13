@@ -41,11 +41,6 @@ function ConvertTo-FslDisk {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [ValidateScript({
-            If(-not(test-path -path $_)){
-                Throw "Could not find path $_"
-            }
-        })]
         [System.String]$Path,
 
         [Parameter(Position = 1, Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
