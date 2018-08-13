@@ -19,7 +19,10 @@ function Compress-FslDisk {
             Mandatory = $true,
             ValueFromPipeline = $true,
             ParameterSetName = "Index"
-        )][Alias("End")][int]$Ending_Index
+        )][Alias("End")][int]$Ending_Index,
+
+        [Parameter(Position = 3)]
+        [Switch]$Dismount
     )
     
     begin {
@@ -36,7 +39,12 @@ function Compress-FslDisk {
             }
            
             if ($Disk_Info.InUse) {
-                Write-Error "$($Disk_Info.name) is currently in use." -ErrorAction Stop
+                if($Dismount){ 
+                    Write-Warning "$(Get-Date): $($Disk_Info.name) is currently in use. Dismounting disk."
+                    dismount-FslDisk -FullName $Disk_Info.Path
+                }else{
+                    Write-Error "$($Disk_Info.name) is currently in use." -ErrorAction Stop
+                }
             }
             
             Write-Verbose "$(Get-Date): Compacting Virtual Disk: $($Disk_Info.Name)"
