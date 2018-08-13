@@ -18,14 +18,13 @@ function Clear-FslGuid {
         }
       
 
-        $VHD_Guid_path = (get-childitem -path $GuidPath).FullName
+        $VHD_Guid_path = get-childitem -path $GuidPath | Select-Object -Property FullName
         if($null -eq $VHD_Guid_path){
             Write-Warning -Message "Guid is already cleared"
-            exit
         }
         foreach($path in $VHD_Guid_path){
             try{
-                Remove-item -Path $Path -Force -ErrorAction SilentlyContinue
+                Remove-item -Path $Path -Force -Recurse -ErrorAction SilentlyContinue
             }catch{
                 Write-Error "Could not remove guid: $path"
             }

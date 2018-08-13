@@ -9,7 +9,11 @@ Describe $sut {
     Context -Name 'General tests' {
         BeforeEach {
             mock -CommandName remove-item -MockWith {} -Verifiable
+            mock -CommandName get-childitem -MockWith {
+                'hi.txt'
+            }
         }
+    
         it 'should throw' {
             {Clear-FslGuid -GuidPath 'C:\blah'} | should throw
         }
@@ -22,9 +26,10 @@ Describe $sut {
     }
     context -name 'Test folder' {
         it 'Should be empty' {
-            Clear-FslGuid
-            $File_Contents = get-childitem 'C:\programdata\FsLogix\FslGuid'
-            $File_Contents | should be $null
+            Clear-FslGuid -WarningVariable Warn
+            $out = get-childitem 'C:\programdata\FsLogix\FslGuid'
+            $out | should be $Null
+            $warn.count | should be 1
         }
     }
     
