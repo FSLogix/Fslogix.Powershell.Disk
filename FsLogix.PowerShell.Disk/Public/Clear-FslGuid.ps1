@@ -23,11 +23,7 @@ function Clear-FslGuid {
             Write-Warning -Message "Guid is already cleared"
         }
         foreach($path in $VHD_Guid_path){
-            try{
-                Remove-item -Path $Path -Force -Recurse -ErrorAction SilentlyContinue
-            }catch{
-                Write-Error "Could not remove guid: $path"
-            }
+            Remove-item -Path $Path -Force -Recurse -ErrorAction SilentlyContinue
         }
         Write-Verbose "Cleared all Guid paths in $GuidPath."
     }
