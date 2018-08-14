@@ -35,17 +35,32 @@ function dismount-FslDisk {
 
     process {
         if ($FullName -ne "") {
-            if ($FullName -notlike "*.vhd*") {
-                Write-Error "Disk must include .vhd/.vhdx extension." -ErrorAction Stop
+            if(-not(test-path -path $FullName)){
+                Write-Error "Could not find path: $FullName" -ErrorAction Stop
+            }else{
+                $VHDInfo = get-item -Path $FullName
+                $VHDExtension = $VHDInfo.Extension
+                $Name = $VHDInfo.BaseName
             }
-            $name = split-path -Path $FullName -Leaf
-            try {
-                Dismount-DiskImage -ImagePath $FullName -ErrorAction Stop
-                Write-Verbose "$(Get-Date): Successfully dismounted $name"
-            }
-            catch {
-                write-error $Error[0]
-                exit
+    
+            if(($VHDExtension -eq '.vhd') -or ($VHDExtension -eq '.vhdx')){
+                ## User entered valid vhd path
+                try {
+                    Dismount-DiskImage -ImagePath $FullName
+                    Write-Verbose "$(Get-Date): Successfully dismounted $name"
+                }
+                catch {
+                    write-error $Error[0]
+                }
+            
+            }elseif (($null -eq $VHDExtension) -or ($VHDExtension -eq "")) {
+                if($VHDInfo.Attributes -eq 'Directory'){
+                    Write-Error "Path must be a VHD, not a directory." -ErrorAction Stop
+                }else{
+                    Write-Error "Could not find extension. Please validate path." -ErrorAction Stop
+                }
+            }else{
+                Write-Error "Path must be a virtual disk." -ErrorAction Stop
             }
         }
         if ($DismountAll) {

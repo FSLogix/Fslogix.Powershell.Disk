@@ -3,43 +3,105 @@ $funcType = Split-Path $here -Leaf
 $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
-dismount-fsldisk -dismountAll
+
 
 
 Describe $sut {
     $path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
-
-    Context -name 'No VHDs attached should give warning' {
-        it 'No VHDs should give warning' {
-            dismount-fsldisk -dismountAll -WarningVariable Warn
-            $warn.count | should be 1
+    BeforeAll{
+        mock -CommandName Get-Item -MockWith {
+            [PSCustomObject]@{
+                Extension = '.vhd'
+                BaseName = 'TestVHD1'
+                Attributes = 'Archive'
+            }
         }
-        mount-vhd $path -Passthru
+        mock -CommandName Get-Disk -MockWith {
+            [PSCustomObject]@{
+                Model = 'Virtual Disk'
+                Location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+            }
+        }
+        mock -CommandName Dismount-DiskImage -MockWith {}
     }
-    Context -name 'Should not throw' {
-        mock -CommandName dismount-vhd -MockWith {$true}
-        it 'Accepts Pipeline' {
-            {$path | dismount-FslDisk } | should be $true
+    Context -Name 'Should Throw'{
+        it 'Invalid VHD Path'{
+            {Dismount-fsldisk -path 'C:\blah'} | should throw
         }
-        it 'Calling dismount-fsldisk without path' {
-            {dismount-FslDisk -dismountAll} | should not throw
+        it 'User inputted directory'{
+            mock -CommandName Get-Item -MockWith {
+                [PSCustomObject]@{
+                    Extension = $null
+                    BaseName = 'TestVHD1'
+                    Attributes = 'Directory'
+                }
+            }
+            {Dismount-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\Disk\Fslogix.Powershell.Disk'} | should throw
         }
-        it 'returns some verbose lines' {
-            #-Verbose 4>&1 pipelines verbose 4 to 1
-            $verboseLine = {dismount-FslDisk -fullname "C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test.1.vhd" -Verbose 4>&1}
-            $verboseLine.count | Should BeGreaterThan 0
+        it 'User used non-vhd for path'{
+            mock -CommandName Get-Item -MockWith {
+                [PSCustomObject]@{
+                    Extension = '.ps1'
+                    BaseName = 'TestVHD1'
+                    Attributes = 'Archive'
+                }
+            }
+            {Dismount-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\Disk\Fslogix.Powershell.Disk\FsLogix.PowerShell.Disk\Private\ConvertTo-VHD.ps1'} | should throw
         }
-        it 'Valid path'{
-            {$path | dismount-FslDisk } | should not throw
+        it 'Dismountall, but no VHDs attached'{
+            mock -CommandName Get-Disk -MockWith {
+                [PSCustomObject]@{
+                    Model = 'Hello World'
+                    Location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                }
+            }
+            dismount-FslDisk -DismountAll -WarningVariable Warn
+            $Warn.count | should be 1
+            $Warn | should be "Could not find any attached VHD's."
         }
+        it 'Weird bug'{
+            mock -CommandName Get-Item -MockWith {
+                [PSCustomObject]@{
+                    Extension = $null
+                    BaseName = 'TestVHD1'
+                    Attributes = 'Archive'
+                }
+            }
+            {Dismount-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\Disk\Fslogix.Powershell.Disk\FsLogix.PowerShell.Disk\Private\ConvertTo-VHD.ps1'} | should throw
+        }
+        <#it 'Dismount-DiskImage Fails?'{
+            mock -CommandName Dismount-DiskImage -MockWith{
+                Throw "Hopefully this never happens"
+            }
+            mock -CommandName Get-Item -MockWith {
+                [PSCustomObject]@{
+                    Extension = '.vhd'
+                    BaseName = 'TestVHD1'
+                    Attributes = 'Archive'
+                }
+            }
+            {dismount-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'} | should throw "Hopefully this never happens"
+        }#>
     }
-    Context -name 'should throw'{
-        it 'User entered directory'{
-            {dismount-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest'} | should throw
+    Context -name 'Should not throw'{
+        it 'Dismountall'{
+            mock -CommandName Get-Disk -MockWith {
+                [PSCustomObject]@{
+                    Model = 'Virtual Disk'
+                    Location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                }
+            }
+            {Dismount-fsldisk -DismountAll} | should not throw
         }
-        it 'User is trying to dismount non attached vhd'{
-            dismount-FslDisk -DismountAll
-            {dismount-FslDisk -FullName $path -ErrorAction Stop} | should throw
+        it 'Correct path'{
+            mock -CommandName Get-Item -MockWith {
+                [PSCustomObject]@{
+                    Extension = '.vhd'
+                    BaseName = 'TestVHD1'
+                    Attributes = 'Archive'
+                }
+            }
+            {dismount-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'} | should not throw
         }
     }
 }
