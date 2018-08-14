@@ -93,8 +93,8 @@ Describe $sut {
             $output.vhdtype             | should be 'fixed'
             $output.disknumber          | should be 1
             $output.NumberOfPartitions  | should be 2
-            $output.SizeInGb            | should be 10
-            $output.SizeInMb            | should be (10gb/1mb)
+            #$output.SizeInGb            | should be 10
+            #$output.SizeInMb            | should be (10gb/1mb)
         }
 
         it 'output 2'{
@@ -127,8 +127,26 @@ Describe $sut {
             $output.vhdtype             | should be 'CD-ROM'
             $output.disknumber          | should be 2
             $output.NumberOfPartitions  | should be 3
-            $output.SizeInGb            | should be 15
-            $output.SizeInMb            | should be (15gb/1mb)
+            #$output.SizeInGb            | should be 15
+            #$output.SizeInMb            | should be (15gb/1mb)
+        }
+        it 'returns x ost'{
+            mock -CommandName Get-Driveletter -MockWith {
+                return 'C:\'
+            }
+            mock -CommandName get-childitem -MockWith {
+                return 'test.ost'
+            }
+            {get-fsldisk -Path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -full} | should not throw
+        }
+        it 'returns 0 ost'{
+            mock -CommandName Get-Driveletter -MockWith {
+                return 'C:\'
+            }
+            mock -CommandName get-childitem -MockWith {
+                $null
+            }
+            {get-fsldisk -Path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -full} | should not throw
         }
     }
 }

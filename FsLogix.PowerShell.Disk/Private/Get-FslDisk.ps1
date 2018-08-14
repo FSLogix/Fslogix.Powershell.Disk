@@ -21,11 +21,34 @@ function Get-FslDisk {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [System.String]$Path
+        [System.String]$Path,
+
+        [Parameter(Position = 1)]
+        [Switch]$Full
     )
 
     begin {
         set-strictmode -Version latest
+        function Get-Ost($VHD_Path){
+            $DriveLetter = get-driveletter -VHDPath $VHD_Path
+            $Ost = get-childitem -path (join-path $DriveLetter *.ost) -recurse
+            if ($null -eq $ost) {
+                return 0
+            }
+            else {
+                try {
+                    $count = $ost.count
+                }
+                catch [System.Management.Automation.PropertyNotFoundException] {
+                    # When calling the get-childitem cmdlet, if the cmldet only returns one
+                    # object, then it loses the count property, despite working on terminal.
+                    # Perhaps when only 1 item is found, they return the item and an array is
+                    # Returned when more than 1 item is found.
+                    $count = 1
+                }
+                return $count
+            }
+        }
     }
 
     process {
@@ -72,12 +95,19 @@ function Get-FslDisk {
             $VHDInfo | Add-Member @{VHDType             = $VHDType           }
             $VHDInfo | Add-Member @{DiskNumber          = $DiskNumber        }
             $VHDInfo | Add-Member @{NumberOfPartitions  = $NumberOfPartitions}
-            $VHDInfo | Add-Member @{CreationTime        = $CreationTime      }
-            $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime     }
-            $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime    }
-            $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
-            $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
-            $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
+
+            if($full){
+
+                $OstCount = Get-Ost($Path)
+
+                $VHDInfo | Add-Member @{CreationTime        = $CreationTime      }
+                $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime     }
+                $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime    }
+                $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
+                $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
+                $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
+                $VHDInfo | Add-Member @{OstCount            = $OstCount          }
+            }
             Write-Output $VHDInfo
 
         }
