@@ -33,7 +33,7 @@ function Copy-FslDiskToDisk {
     [CmdletBinding()]
     param (
         [Parameter(Position = 0, Mandatory = $true)]
-        [Alias("VHD1")]
+        [Alias("VHD1", "Path")]
         [System.String]$FirstVHDPath,
 
         [Parameter(Position = 1)]
@@ -41,11 +41,11 @@ function Copy-FslDiskToDisk {
         [System.string]$FirstFilePath,
 
         [Parameter(Position = 2, Mandatory = $true)]
-        [Alias("VHD2")]
+        [Alias("VHD2","Destination")]
         [System.String]$SecondVHDPath,
 
         [Parameter(Position = 3)]
-        [Alias("File2")]
+        [Alias("File2", "FileDestination")]
         [System.String]$SecondFilePath,
 
         [Parameter(Position = 4)]
@@ -57,6 +57,13 @@ function Copy-FslDiskToDisk {
     }
 
     process {
+        
+        if(-not(test-path -path $FirstVHDPath)){
+            Write-Error "Could not find first VHD Path: $FirstVHDPath" -ErrorAction Stop
+        }
+        if(-not(test-path -path $SecondVHDPath)){
+            Write-Error "Could not find second VHD Path: $SecondVHDPath" -ErrorAction Stop
+        }
 
         ## FsLogix's helper function: Get-Driveletter ##
         $First_DL = get-driveletter -path $FirstVHDPath
