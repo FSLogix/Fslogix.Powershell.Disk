@@ -32,6 +32,7 @@ function Get-FslDisk {
         function Get-Ost($VHD_Path){
             $DriveLetter = get-driveletter -VHDPath $VHD_Path
             $Ost = get-childitem -path (join-path $DriveLetter *.ost) -recurse
+            dismount-FslDisk -FullName $VHD_Path
             if ($null -eq $ost) {
                 return 0
             }

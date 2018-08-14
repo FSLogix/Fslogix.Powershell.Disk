@@ -11,9 +11,23 @@ function Get-FslVHD {
         Created by Daniel Kim @ FSLogix
         Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
 
+        .PARAMETER Path
+        Path to a specified VHD or directory of VHD
+
+        .PARAMETER Start
+        Optional parameter to specify a start index 
+
+        .PARAMETER End
+        Optional parameter to speicfy an end index
+
+        .PARAMETER Full
+        Optional switch parameter to obtain full information.
+        Will result in performance slow down
+
         .EXAMPLE
         Get-FslVHD -path C:\Users\danie\Documents\VHDModuleProject\ODFCTest2
         Retreives all the VHD's within the folder 'ODFCTest2'
+
     #>
     [CmdletBinding(DefaultParametersetName = 'none')]
     param (
@@ -24,7 +38,10 @@ function Get-FslVHD {
         [uint16]$start,
 
         [Parameter(Position = 2, Mandatory = $true, ParameterSetName = 'index')]
-        [uint16]$end
+        [uint16]$end,
+
+        [Parameter(Position = 3)]
+        [Switch]$full
     )
 
     begin {
@@ -80,7 +97,12 @@ function Get-FslVHD {
             if ($GC_count -gt 10) {
                 $VHDs_Skipped = $VHDs | select-object -Skip $start
                 $VHD_Adjusted_List = $VHDs_Skipped | select-object -SkipLast ($GC_count - $end)
-                $VhdDetails = $VHD_Adjusted_List.fullname | get-fsldisk
+                if($full){
+                    $VhdDetails = $VHD_Adjusted_List.fullname | get-fsldisk -Full
+                }else{
+                    $VhdDetails = $VHD_Adjusted_List.fullname | get-fsldisk
+                }
+                
             }
             else { ## But if it's a large number of disks, this seems to run faster.
                 $DiskHashTable = @{}
@@ -92,11 +114,20 @@ function Get-FslVHD {
                     }
                 }
                 $Vhdlist = $DiskHashTable.GetEnumerator() | Sort-object -property Name
-                $VhdDetails = (($vhdlist).where( {$_.value -ge $Start -and $_.Value -le $End})).Key | get-fsldisk
+                if($full){
+                    $VhdDetails = (($vhdlist).where( {$_.value -ge $Start -and $_.Value -le $End})).Key | get-fsldisk -Full
+                }else{
+                    $VhdDetails = (($vhdlist).where( {$_.value -ge $Start -and $_.Value -le $End})).Key | get-fsldisk
+                }
+                
             }
         }
         else {
-            $VhdDetails = $VHDs.FullName | get-fsldisk
+            if($full){
+                $VhdDetails = $VHDs.FullName | get-fsldisk -Full
+            }else{
+                $VhdDetails = $VHDs.FullName | get-fsldisk
+            }
         }
         if ($null -eq $VhdDetails) {
             Write-Warning "Could not retrieve any VHD's in $path"
