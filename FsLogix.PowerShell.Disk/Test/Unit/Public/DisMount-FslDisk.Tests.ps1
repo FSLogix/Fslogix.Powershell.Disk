@@ -69,19 +69,6 @@ Describe $sut {
             }
             {Dismount-fsldisk -path 'C:\Users\danie\Documents\VHDModuleProject\Disk\Fslogix.Powershell.Disk\FsLogix.PowerShell.Disk\Private\ConvertTo-VHD.ps1'} | should throw
         }
-        <#it 'Dismount-DiskImage Fails?'{
-            mock -CommandName Dismount-DiskImage -MockWith{
-                Throw "Hopefully this never happens"
-            }
-            mock -CommandName Get-Item -MockWith {
-                [PSCustomObject]@{
-                    Extension = '.vhd'
-                    BaseName = 'TestVHD1'
-                    Attributes = 'Archive'
-                }
-            }
-            {dismount-FslDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'} | should throw "Hopefully this never happens"
-        }#>
     }
     Context -name 'Should not throw'{
         it 'Dismountall'{
