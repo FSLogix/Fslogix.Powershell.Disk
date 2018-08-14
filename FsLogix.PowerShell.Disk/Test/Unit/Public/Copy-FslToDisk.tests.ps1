@@ -7,7 +7,9 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 describe $sut{
     BeforeAll{
         Mock -CommandName Get-FslVhd -MockWith {
-            return get-vhd -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx'
+            [PSCustomObject]@{
+                Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx"
+            }
         }
     }
     context -name "Output should throw"{
@@ -16,33 +18,34 @@ describe $sut{
         }
 
         it 'Invalid File Path'{
-            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\blah"} |  should throw
+            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\blah"} | should throw
         }
 
         it 'No VHDs found in path'{
-            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Public" -FilePath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Public"} | out-null | should throw
+            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Public" -FilePath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Public"} | should throw
         }
         it 'Optional destination parameter is invalid'{
             {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Private" -Destination 'blahasdf'} | should throw
         }
     }
     Context -name 'Should not throw'{
+        $FilePath = 'C:\Users\danie\Documents\VHDModuleProject\Disk\Fslogix.Powershell.Disk\FsLogix.PowerShell.Disk\Public'
         BeforeEach{
-            mock -CommandName copy-Item -MockWith {$true}
-            mock -CommandName Get-Driveletter -MockWith {$true}
-            mock -CommandName test-path -mockwith {$true}
+            mock -CommandName copy-Item -MockWith {}
+            mock -CommandName Get-Driveletter -MockWith { 'C:\'}
+            mock -CommandName Dismount-fsldisk -MockWith {}
         }
         it 'Valid input'{
-            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Private"} | should not throw
+            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath $FilePath} | should not throw
         }
         it 'overwrite'{
-            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Private" -Overwrite} | should not throw
+            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath $FilePath -Overwrite} | should not throw
         }
         it 'recurse'{
-            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Private" -recurse} | should not throw
+            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath $FilePath -recurse} | should not throw
         }
         it 'dismount'{
-            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath "C:\Users\danie\Documents\VHDModuleProject\FsLogix.PowerShell.Disk\Test\Unit\Private" -dismount} | should not throw
+            {copy-FslToDisk -path "C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx" -filepath $FilePath -dismount} | should not throw
         }
     }
 }
