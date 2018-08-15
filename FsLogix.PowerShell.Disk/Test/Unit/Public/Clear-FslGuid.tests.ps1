@@ -23,8 +23,11 @@ Describe $sut {
         it 'should not throw' {
             {Clear-FslGuid} | should not throw
         }
-        it 'should not throw' {
-            {Clear-FslGuid -GuidPath 'C:\programdata\FsLogix\FslGuid'} | should not throw
+        it 'If a guid folder was never generated'{
+            mock -CommandName Test-Path -MockWith {
+                $false
+            }
+            {Clear-FslGuid} | should throw
         }
     }
     context -name 'Test folder' {
