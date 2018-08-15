@@ -1,8 +1,18 @@
 function Clear-FslGuid {
+    <#
+        .SYNOPSIS
+        Deletes all the guid folders within "C:\programdata\FsLogix\FslGuid"
+
+        .DESCRIPTION
+        By deleting the guid folderes, this also removes the partition access path
+        that was generated.
+        
+        .EXAMPLE
+        Clear-fslguid
+        Removes all guid folders.
+    #>
     [CmdletBinding()]
-    param (
-        [Parameter(Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
-        [System.String]$GuidPath       
+    param (       
     )
     
     begin {
@@ -10,9 +20,9 @@ function Clear-FslGuid {
     }
     
     process {
-        if (!$GuidPath) {
-            $GuidPath = "C:\programdata\FsLogix\FslGuid"
-        }
+        
+        $GuidPath = "C:\programdata\FsLogix\FslGuid"
+
         if (-not(test-path $GuidPath)) {
             Write-Error "Could not found path: $GuidPath" -ErrorAction Stop
         }
