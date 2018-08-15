@@ -43,7 +43,7 @@ function Compress-FslDisk {
                     Write-Warning "$(Get-Date): $($Disk_Info.name) is currently in use. Dismounting disk."
                     dismount-FslDisk -FullName $Disk_Info.Path
                 }else{
-                    Write-Error "$($Disk_Info.name) is currently in use." -ErrorAction Stop
+                    Write-Error "$($Disk_Info.name) is currently in use. Please de-attach." -ErrorAction Stop
                 }
             }
 
