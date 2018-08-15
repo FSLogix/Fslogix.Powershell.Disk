@@ -14,9 +14,13 @@ function Get-FslDisk {
 
         .PARAMETER path
         User specified path location to a VHD. Must include .vhd/.vhdx extension
+
+        .PARAMETER Full
+        Switch parameter to obtain full information of a disk. Performance will be slower.
+
         .EXAMPLE
         get-FslVHD -path C:\Users\Daniel\ODFC\test1.vhd
-        Will return the properties associated with test1.vhdKs
+        Will return the properties associated with test1.vhd's
     #>
     [CmdletBinding()]
     param (

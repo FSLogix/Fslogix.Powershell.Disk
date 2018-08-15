@@ -151,5 +151,26 @@ Describe $sut {
         it 'Count is greater than 10, uses hashtable enumeration'{
             {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -start 1 -end 50} | should not throw
         }
+        it 'full parameter no index'{
+            {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -full } | should not throw
+        }
+        it 'full parameter count is greater than 10'{
+            mock -CommandName get-childitem -MockWith {
+                [PSCustomObject]@{
+                    Count = 20
+                    FullName = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                }
+            }
+            {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -full -start 1 -end 50} | should not throw
+        }
+        it 'full parameter count is less than 10'{
+            mock -CommandName get-childitem -MockWith {
+                [PSCustomObject]@{
+                    Count = 9
+                    FullName = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd'
+                }
+            }
+            {get-fslvhd 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\test - copy (2).vhd' -full -start 1 -end 50} | should not throw
+        }
     }
 }
