@@ -51,8 +51,8 @@ Describe $sut{
                     ComputerName  = $Env:COMPUTERNAME
                     Path          = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\NoDl.vhdx'
                     location      = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\NoDl.vhdx'
-                    vhdFormat        = 'VHDx'
-                    vhdType          = 'Fixed'
+                    vhdFormat     = 'VHDx'
+                    vhdType       = 'Fixed'
                     Size          = 1gb
                     Filesize      = .5gb
                  }
