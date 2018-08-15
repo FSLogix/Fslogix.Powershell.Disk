@@ -114,7 +114,7 @@ function get-FslDuplicateFiles {
                 ## Hashtable will have unique values of hashcode ##
                 if ($HashArray.ContainsValue($FileHash)) {
                     Write-Verbose "$(Get-Date): Duplicate found in Directory: $($dir) | File: $($file.name) "
-                    $Duplicates.add($DupCounter++, $file.name)
+                    $Duplicates.add($DupCounter++, $file.fullname)
                     if ($csvLineNumber++ -eq 0) {
                         $file | Add-Member @{VHD = $name}
 

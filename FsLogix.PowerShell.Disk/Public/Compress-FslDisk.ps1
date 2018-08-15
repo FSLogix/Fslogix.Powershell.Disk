@@ -46,6 +46,8 @@ function Compress-FslDisk {
                     Write-Error "$($Disk_Info.name) is currently in use." -ErrorAction Stop
                 }
             }
+
+            Get-FslDuplicates -vhdpath $Disk_Info.Path -Remove
             
             Write-Verbose "$(Get-Date): Compacting Virtual Disk: $($Disk_Info.Name)"
             Optimize-VHD -Path $Disk_Info.path -Mode Full -ErrorAction Stop
