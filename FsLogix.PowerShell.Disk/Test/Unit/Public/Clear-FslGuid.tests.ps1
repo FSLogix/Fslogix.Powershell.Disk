@@ -5,7 +5,6 @@ $here = $here | Split-Path -Parent | Split-Path -Parent | Split-Path -Parent
 . "$here\$funcType\$sut"
 
 Describe $sut {
-   
     Context -Name 'General tests' {
         BeforeEach {
             mock -CommandName remove-item -MockWith {} -Verifiable
@@ -26,6 +25,15 @@ Describe $sut {
         it 'If a guid folder was never generated'{
             mock -CommandName Test-Path -MockWith {
                 $false
+            }
+            {Clear-FslGuid} | should throw
+        }
+        it 'This will need to be tested. If guid generated is not a junction type'{
+            mock -CommandName get-childitem -MockWith {
+                [PSCustomObject]@{
+                    FullName = 'C:\programdata\FsLogix\FslGuid\hi.txt'
+                    LinkType = 'idk'
+                }
             }
             {Clear-FslGuid} | should throw
         }
