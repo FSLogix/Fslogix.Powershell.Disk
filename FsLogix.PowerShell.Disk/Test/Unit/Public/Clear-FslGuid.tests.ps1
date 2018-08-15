@@ -10,7 +10,10 @@ Describe $sut {
         BeforeEach {
             mock -CommandName remove-item -MockWith {} -Verifiable
             mock -CommandName get-childitem -MockWith {
-                'hi.txt'
+                [PSCustomObject]@{
+                    FullName = 'C:\programdata\FsLogix\FslGuid\hi.txt'
+                    LinkType = 'junction'
+                }
             }
         }
     

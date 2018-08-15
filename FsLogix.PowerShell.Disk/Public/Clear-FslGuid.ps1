@@ -10,22 +10,24 @@ function Clear-FslGuid {
     }
     
     process {
-        if(!$GuidPath){
+        if (!$GuidPath) {
             $GuidPath = "C:\programdata\FsLogix\FslGuid"
         }
-        if(-not(test-path $GuidPath)){
+        if (-not(test-path $GuidPath)) {
             Write-Error "Could not found path: $GuidPath" -ErrorAction Stop
         }
       
 
-        $VHD_Guid_path = get-childitem -path $GuidPath | Select-Object -Property FullName
-        if($null -eq $VHD_Guid_path){
+        $VHD_Guid_path = get-childitem -path $GuidPath | Where-Object {$_.LinkType -eq 'Junction'} | Select-Object -Property FullName
+        if ($null -eq $VHD_Guid_path) {
             Write-Warning -Message "Guid is already cleared"
         }
-        foreach($path in $VHD_Guid_path){
-            Remove-item -Path $Path -Force -Recurse -ErrorAction SilentlyContinue
+        else {
+            foreach ($path in $VHD_Guid_path.FullName) {
+                Remove-item -Path $Path -Force -Recurse #-ErrorAction SilentlyContinue
+            }
+            Write-Verbose "Cleared all Guid paths in $GuidPath."
         }
-        Write-Verbose "Cleared all Guid paths in $GuidPath."
     }
     
     end {
