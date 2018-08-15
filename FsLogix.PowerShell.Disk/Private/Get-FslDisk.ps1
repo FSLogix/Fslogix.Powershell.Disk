@@ -43,8 +43,8 @@ function Get-FslDisk {
                 catch [System.Management.Automation.PropertyNotFoundException] {
                     # When calling the get-childitem cmdlet, if the cmldet only returns one
                     # object, then it loses the count property, despite working on terminal.
-                    # Perhaps when only 1 item is found, they return the item and an array is
-                    # Returned when more than 1 item is found.
+                    # When only one object is found, the type is System.IO.FileSystemInfo
+                    # When objects found is greater than 1, the type is System.Array
                     $count = 1
                 }
                 return $count
