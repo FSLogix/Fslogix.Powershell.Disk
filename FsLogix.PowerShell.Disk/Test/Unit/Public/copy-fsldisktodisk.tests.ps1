@@ -8,6 +8,9 @@ Describe $sut {
     BeforeAll {
         mock -CommandName Copy-Item -MockWith {}
         mock -CommandName dismount-FslDisk -MockWith {} -Verifiable
+        mock -CommandName Get-Driveletter -MockWith {
+            'C:\'
+        }
     }
     Context -name 'Should throw' {
         $VHD1 = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
