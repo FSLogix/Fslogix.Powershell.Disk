@@ -53,13 +53,11 @@ function get-driveletter {
             $Partitions = get-partition -DiskNumber $DiskNumber | Where-Object {$_.type -eq 'Basic'}
             $PartFolder = join-path "C:\programdata\fslogix\FslGuid" $guid_ID
             
-            if (-not(test-path -path $PartFolder)) {
-                New-Item -ItemType Directory -Path $PartFolder | Out-Null 
-            }else{
-                remove-item $PartFolder -Force
-                New-Item -ItemType Directory -Path $PartFolder | Out-Null 
+            if(test-path -path $PartFolder){
+                Remove-item -path $PartFolder -Force
             }
-           
+            
+            New-Item -ItemType Directory -Path $PartFolder | Out-Null 
             Add-PartitionAccessPath -InputObject $Partitions -AccessPath $PartFolder -ErrorAction Stop | Out-Null
     
             $DriveLetter = $PartFolder
