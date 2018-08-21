@@ -67,6 +67,10 @@ function Get-FslAttachedDisk {
 
             ## Return all currently attached disks
             $AttachedDisks = Get-Disk | where-object {$_.Model -like "Virtual Disk*"}
+            if($null -eq $AttachedDisks){
+                Write-Warning "Could not find any virtual disks."
+                exit
+            }
             $Disks = $AttachedDisks.Location | get-fslvhd -start $Start -end $end
             $DiskInfo = $true
         }
