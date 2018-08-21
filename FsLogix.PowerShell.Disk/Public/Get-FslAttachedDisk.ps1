@@ -1,5 +1,10 @@
 function Get-FslAttachedDisk {
     <#
+        IS THIS FUNCTION REALLY NEEDED?
+        AFTER THE UPDATES TO GET-FSLDISK/GET-FSLVHD?
+
+
+        
         .SYNOPSIS
         Retrieves the attached disk's information
 
