@@ -4,10 +4,6 @@ function convertTo-VHD {
         .PARAMETER path
         Path to the given .vhd.
 
-        .DESCRIPTION
-        Created by Daniel Kim @ FSLogix
-        Github: https://github.com/FSLogix/Fslogix.Powershell.Disk
-
         .PARAMETER Remove_Old
         If user wants to remove the old VHD after conversion.
 
