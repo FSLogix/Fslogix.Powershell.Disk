@@ -86,8 +86,9 @@ function Move-FslVhd {
             $Old_VHD_MigratedName = $name.TrimEnd("." + $Old_VHD_MigratedName_Extension)
 
             $OLD_VHD_New_MigratedName = $Old_VHD_MigratedName.replace('.', "-MIGRATED-")
-            if ($OLD_VHD_New_MigratedName -eq $Old_VHD_MigratedName) {
-                if ($OLD_VHD_New_MigratedName[0] -ne 'S') {
+            if ($OLD_VHD_New_MigratedName -eq $Old_VHD_MigratedName) { # If the replace  didn't change the flags
+                # Check flip-flop
+                if ($OLD_VHD_New_MigratedName[0] -ne 'S') { 
                     $OLD_VHD_New_MigratedName = "-MIGRATED-$OLD_VHD_New_MigratedName"
                 }
                 else {
