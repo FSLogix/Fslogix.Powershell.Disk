@@ -115,6 +115,8 @@ function Format-FslDriveLetter {
 
                 }
                 catch {
+                    ## For some reason
+                    ## $Letter-- won't work.
                     $letter = $letter - 1
                     if ($Letter -eq 'C') {
                         Write-Error "Cannot find free drive letter" -ErrorAction Stop
