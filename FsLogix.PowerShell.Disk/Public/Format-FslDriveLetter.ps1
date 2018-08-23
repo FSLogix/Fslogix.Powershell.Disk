@@ -96,6 +96,7 @@ function Format-FslDriveLetter {
                 Remove-FslDriveLetter -Path $vhd.path
             }
             if ($Assign) {
+                Write-Verbose "assign was called"
                 if($vhd.attached){
                     Write-Warning "VHD Currently in use. Dismounting disk"
                     Dismount-fsldisk $vhd.path
@@ -107,7 +108,10 @@ function Format-FslDriveLetter {
                         $mount = Mount-DiskImage -ImagePath $vhd.path -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
                         $Disk = $mount | get-disk -ErrorAction Stop
                         $Partition = $Disk | get-partition -ErrorAction Stop
-                        $Partition | Where-Object {$_.type -eq 'basic'} | set-partition -NewDriveLetter $letter -ErrorAction Stop 
+                        
+                        $Partition_Obj = $Partition | Where-Object {$_.type -eq 'basic'}
+                        $Partition_Obj | set-partition -NewDriveLetter $letter -ErrorAction Stop 
+                        
                         if ($Letter -eq 'C') {
                             Write-Error "Cannot find free drive letter"
                             exit
@@ -115,7 +119,7 @@ function Format-FslDriveLetter {
                         $DriveLetterAssigned = $true
                     }
                     catch {
-                        $letter --
+                        $letter--
                     }
                 }
                 if($Driveletterassigned){

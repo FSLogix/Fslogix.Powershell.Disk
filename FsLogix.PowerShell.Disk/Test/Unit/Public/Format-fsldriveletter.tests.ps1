@@ -56,5 +56,29 @@ Describe $sut{
             mock -CommandName Set-Partition -MockWith {}
             {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -Assign} | should not throw
         }
+        it 'Assign, Z Fails, go to Y'{
+            mock -CommandName Get-FslVhd -MockWith {
+                [PSCustomObject]@{
+                    Attached = $true
+                    Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                }
+            }
+            Mock -CommandName Mount-DiskImage -MockWith {
+                [PSCustomObject]@{
+                    Number = 1
+                }
+            }
+            Mock -CommandName Get-Diskimage -MockWith {}
+            Mock -CommandName Get-Disk -MockWith {
+                
+            }
+            Mock -CommandName Get-Partition -MockWith {
+                [PSCustomObject]@{
+                    Type = Basic
+                }
+            }
+            mock -CommandName Set-Partition -MockWith {throw}
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -Assign} | should not throw
+        }
     }
 }
