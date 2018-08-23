@@ -9,6 +9,7 @@ $VHD = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd3.vhd'
 Describe $sut {
     BeforeAll{
         mock -CommandName Optimize-VHD -MockWith {} -Verifiable
+        mock -CommandName Get-FslDuplicates -MockWith {}
     }
     context 'Attached VHD should throw'{
         mock -CommandName Get-FslVHD -MockWith {
@@ -30,6 +31,18 @@ Describe $sut {
         }
         it 'does not throw'{
             {Compress-FslDisk -VHD $VHD} | should not throw
+        }
+        it 'dismount'{
+            {Compress-FslDisk -VHD $VHD } | should not throw
+        }
+        it 'attached'{
+            mock -CommandName Get-FslVHD -MockWith {
+                [PSCustomObject]@{
+                    Path = $VHD
+                    Attached = $true
+                }
+            }
+            {Compress-FslDisk -VHD $VHD -dismount} | should throw
         }
     }
 }
