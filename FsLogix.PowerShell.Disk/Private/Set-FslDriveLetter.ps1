@@ -53,18 +53,16 @@ function Set-FslDriveLetter {
         if ($Available -eq $false) {
             Write-Error "DriveLetter '$($Letter):\' is not available. For available driveletters, type cmdlet: Get-FslAvailableDriveLetter" -ErrorAction Stop
         }
-        if($VHDs.attached){
-            Write-Warning "VHD currently in use, dismount disk."
-            Dismount-fsldisk $VHDs.path
-        }
-
-        
         $name = $vhds.name
-
-        $mount = Mount-DiskImage -ImagePath $vhdpath -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
-        $Disk = $mount | get-disk -ErrorAction Stop
+        if ($vhds.attached) {
+            $Disk = get-disk | where-object {$_.Location -eq $VHDPath}
+        }
+        else {
+            $mount = Mount-DiskImage -ImagePath $vhdpath -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
+            $Disk = $mount | get-disk -ErrorAction Stop
+        }
         $Partition = $Disk | get-partition -ErrorAction Stop
-        $Partition | Where-Object {$_.type -eq 'basic'} | set-partition -NewDriveLetter $letter -ErrorAction Stop 
+        $Partition | sort-object -property size | select-object -last 1 | set-partition -NewDriveLetter $letter -ErrorAction Stop 
 
         Write-Verbose "$(Get-Date): Succesfully changed $name's Driveletter to [$($letter):\]."
         dismount-FslDisk -path $Vhds.path

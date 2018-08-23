@@ -74,60 +74,59 @@ function Format-FslDriveLetter {
     )
 
     begin {
-        set-strictmode -Version latest
     }
 
     process {
-        ## Helper function to retrieve VHD's. Will handle errors ##
-        $VHDs = get-fslvhd -Path $VhdPath -start $start -end $end
+        ## FsLogix helper function
+        $VHD = get-fsldisk $VhdPath
 
         ## Helper FsLogix functions, Get-DriveLetter, Set-FslDriveletters, remove-fslDriveletter, and dismount-fsldisk ##
         ## Will validate error handling.                                                                               ##
-        foreach ($vhd in $VHDs) {
-
-            if ($Get) {
-                get-driveletter -VHDPath $vhd.path
-                dismount-FslDisk -path $vhd.path
-            }
-            if ($Set) {
-                Set-FslDriveLetter -VHDPath $vhd.path -Letter $letter
-            }
-            if ($Remove) {
-                Remove-FslDriveLetter -Path $vhd.path
-            }
-            if ($Assign) {
-                Write-Verbose "assign was called"
-                if($vhd.attached){
-                    Write-Warning "VHD Currently in use. Dismounting disk"
-                    Dismount-fsldisk $vhd.path
-                }
-                $Driveletterassigned = $false
-                $letter = [int][char]'Z'
-                while ($DriveLetterAssigned -eq $false) {
-                    try {
+        if ($Get) {
+            get-driveletter -VHDPath $vhd.path
+            dismount-FslDisk -path $vhd.path
+        }
+        if ($Set) {
+            Set-FslDriveLetter -VHDPath $vhd.path -Letter $letter
+        }
+        if ($Remove) {
+            Remove-FslDriveLetter -Path $vhd.path
+        }
+        if ($Assign) {
+            $Driveletterassigned = $false
+            $letter = [int][char]'Z'
+            while ($DriveLetterAssigned -eq $false) {
+                try {
+                    Write-Verbose "$Letter"
+                    
+                    if ($Vhd.attached) {
+                        $Disk = Get-Disk | Where-Object {$_.Location -eq $VhdPath}
+                    }
+                    else {
                         $mount = Mount-DiskImage -ImagePath $vhd.path -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
                         $Disk = $mount | get-disk -ErrorAction Stop
-                        $Partition = $Disk | get-partition -ErrorAction Stop
-                        
-                        $Partition_Obj = $Partition | Where-Object {$_.type -eq 'basic'}
-                        $Partition_Obj | set-partition -NewDriveLetter $letter -ErrorAction Stop 
-                        
-                        if ($Letter -eq 'C') {
-                            Write-Error "Cannot find free drive letter"
-                            exit
-                        }
-                        $DriveLetterAssigned = $true
                     }
-                    catch {
-                        $letter--
+                    $Partition = $Disk | get-partition -ErrorAction Stop
+                        
+                    $Partition_Obj = $Partition | sort-object -property size | select-object -last 1
+                    $Partition_Obj | set-partition -NewDriveLetter $letter -ErrorAction Stop 
+                        
+                    $DriveLetterAssigned = $true
+
+                }
+                catch {
+                    $letter = $letter - 1
+                    if ($Letter -eq 'C') {
+                        Write-Error "Cannot find free drive letter" -ErrorAction Stop
                     }
                 }
-                if($Driveletterassigned){
-                    Write-Verbose "Assigned DriveLetter: $([char]$letter)."
-                }
-                dismount-FslDisk $vhd.path
             }
+            if ($Driveletterassigned) {
+                Write-Verbose "Assigned DriveLetter: $([char]$letter)."
+            }
+            dismount-FslDisk $vhd.path
         }
+        
     }
 
     end {

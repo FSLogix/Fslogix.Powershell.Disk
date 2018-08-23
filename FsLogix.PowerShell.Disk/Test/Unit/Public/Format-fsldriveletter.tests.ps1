@@ -33,7 +33,7 @@ Describe $sut{
             {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhdx' -set -Letter 'D'} | should not throw
         }
         it 'Assign'{
-            mock -CommandName Get-FslVhd -MockWith {
+            mock -CommandName Get-Fsldisk -MockWith {
                 [PSCustomObject]@{
                     Attached = $true
                     Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
@@ -56,8 +56,8 @@ Describe $sut{
             mock -CommandName Set-Partition -MockWith {}
             {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -Assign} | should not throw
         }
-        it 'Assign, Z Fails, go to Y'{
-            mock -CommandName Get-FslVhd -MockWith {
+        it 'All letters fail.'{
+            mock -CommandName Get-Fsldisk  -MockWith {
                 [PSCustomObject]@{
                     Attached = $true
                     Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
@@ -68,8 +68,15 @@ Describe $sut{
                     Number = 1
                 }
             }
-            Mock -CommandName Get-Diskimage -MockWith {}
+            Mock -CommandName Get-Diskimage -MockWith {
+                [PSCustomObject]@{
+                    Number = 1
+                }
+            }
             Mock -CommandName Get-Disk -MockWith {
+                [PSCustomObject]@{
+                    Location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
+                }
                 
             }
             Mock -CommandName Get-Partition -MockWith {
@@ -78,7 +85,7 @@ Describe $sut{
                 }
             }
             mock -CommandName Set-Partition -MockWith {throw}
-            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -Assign} | should not throw
+            {Format-FslDriveLetter -VhdPath 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd' -Assign} | should throw
         }
     }
 }
