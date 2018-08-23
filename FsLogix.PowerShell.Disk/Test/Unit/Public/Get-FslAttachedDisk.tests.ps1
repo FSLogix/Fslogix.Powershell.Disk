@@ -8,9 +8,18 @@ $VHD = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\testvhd1.vhd'
 
 Describe $sut{
     Mock -CommandName Remove-item -MockWith {$true}
-    Mock -CommandName get-fslvhd -MockWith {
-        return get-vhd $VHD
-    }
+    mock -CommandName get-fslvhd -MockWith {
+        [PSCustomObject]@{
+            ComputerName  = $Env:COMPUTERNAME
+            Path          = $VHD
+            location      = $VHD
+            vhdFormat     = 'VHDx'
+            vhdType       = 'Fixed'
+            Size          = 1gb
+            Filesize      = .5gb
+            Model         = "Virtual Disk"
+         }
+    }-Verifiable
     Mock -CommandName Export-csv -MockWith {$true}
     Context -Name "Should throw"{
         it 'Incorrect VHD path'{
@@ -18,11 +27,26 @@ Describe $sut{
             $command | should throw
         }
         it 'Incorrect Csv path'{
-            $command = {Get-FslAttachedDisk -csvfile 'C:\blah'}
+            $command = {Get-FslAttachedDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest' -csvfile 'C:\blah'}
             $command | should throw
+        }
+        it 'Should give warning if no attached disks'{
+            mock -CommandName Get-Disk -MockWith {
+                [PSCustomObject]@{
+                    Model = "blah"
+                }
+            }
+            Get-FslAttachedDisk -WarningVariable Warn
+            $warn.count | should be 1
         }
     }
     Context -name 'Should not throw'{
+        mock -CommandName Get-Disk -MockWith {
+            [PSCustomObject]@{
+                Model = "Virtual Disk"
+                Location = "$VHD"
+            }
+        }
         it 'Calling the function by itself'{
             {Get-FslAttachedDisk} | should not throw
         }
@@ -42,8 +66,8 @@ Describe $sut{
         }
         it 'test output 2'{
             $output = Get-FslAttachedDisk -path $VHD
-            $output.format | should be 'VHD'
-            $output.Type | should be 'Dynamic'
+            $output.format | should be 'VHDx'
+            $output.Type | should be 'Fixed'
         }
         it 'test output 3'{
             mock -CommandName get-fslvhd -MockWith {
@@ -55,6 +79,7 @@ Describe $sut{
                     vhdType       = 'Fixed'
                     Size          = 1gb
                     Filesize      = .5gb
+                    Model         = "Virtual Disk"
                  }
             }-Verifiable
             $output = Get-FslAttachedDisk -path 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest\NoDl.vhdx'

@@ -40,10 +40,10 @@ function Get-FslAttachedDisk {
         [Parameter(Position = 1, ValueFromPipeline = $true)]
         [System.String]$Csvfile,
 
-        [Parameter(Position = 4,ParameterSetName = 'index', Mandatory = $true)]
+        [Parameter(Position = 4, ParameterSetName = 'index', Mandatory = $true)]
         [int]$Start,
 
-        [Parameter(Position = 5,ParameterSetName = 'index', Mandatory = $true)]
+        [Parameter(Position = 5, ParameterSetName = 'index', Mandatory = $true)]
         [int]$End
 
     )
@@ -59,7 +59,7 @@ function Get-FslAttachedDisk {
         $DiskInfo = $false
         $ExportCsv = $false
 
-        if((![System.string]::IsNullOrEmpty($path)) -and (-not(test-path -path $path))){
+        if ((![System.string]::IsNullOrEmpty($path)) -and (-not(test-path -path $path))) {
             Write-Error "Could not find path: $path" -ErrorAction Stop
         }
         if (![System.string]::IsNullOrEmpty($path)) {
@@ -72,12 +72,13 @@ function Get-FslAttachedDisk {
 
             ## Return all currently attached disks
             $AttachedDisks = Get-Disk | where-object {$_.Model -like "Virtual Disk*"}
-            if($null -eq $AttachedDisks){
+            if ($null -eq $AttachedDisks) {
                 Write-Warning "Could not find any virtual disks."
-                exit
             }
-            $Disks = $AttachedDisks.Location | get-fslvhd -start $Start -end $end
-            $DiskInfo = $true
+            else {
+                $Disks = $AttachedDisks.Location | get-fslvhd -start $Start -end $end
+                $DiskInfo = $true
+            }
         }
 
         if ($Csvfile -ne "") {
@@ -94,15 +95,15 @@ function Get-FslAttachedDisk {
         if ($VHDInfo) {
             foreach ($curvhd in $VHDs) {
                 $name = split-path -path $curvhd.path -leaf
-                $out = $curvhd | select-object  @{ N = 'ComputerName';      E = {$_.ComputerName}},
-                                                @{ N = 'Name';              E = {$name}},
-                                                @{ N = 'Location';          E = {$_.path}},
-                                                @{ N = 'Format';            E = {$_.VhdFormat}},
-                                                @{ N = 'Type';              E = {$_.VhdType}},
-                                                @{ N = 'Size(GB)';          E = {$_.Size / 1gb}},
-                                                @{ N = 'Size(MB)';          E = {$_.Size / 1mb}},
-                                                @{ N = 'FreeSpace(GB)';     E = {[math]::round((($_.Size - $_.FileSize) / 1gb), 2)}},
-                                                @{ N = 'FreeSpace(MB)';     E = {[math]::round((($_.Size - $_.FileSize) / 1mb), 2)}}
+                $out = $curvhd | select-object  @{ N = 'ComputerName'; E = {$_.ComputerName}},
+                @{ N = 'Name'; E = {$name}},
+                @{ N = 'Location'; E = {$_.path}},
+                @{ N = 'Format'; E = {$_.VhdFormat}},
+                @{ N = 'Type'; E = {$_.VhdType}},
+                @{ N = 'Size(GB)'; E = {$_.Size / 1gb}},
+                @{ N = 'Size(MB)'; E = {$_.Size / 1mb}},
+                @{ N = 'FreeSpace(GB)'; E = {[math]::round((($_.Size - $_.FileSize) / 1gb), 2)}},
+                @{ N = 'FreeSpace(MB)'; E = {[math]::round((($_.Size - $_.FileSize) / 1mb), 2)}}
                 if ($ExportCsv) {
                     $out | Export-Csv -Path $Csvfile -NoTypeInformation -Append -Force
                 }
@@ -114,15 +115,15 @@ function Get-FslAttachedDisk {
         if ($DiskInfo) {
             foreach ($curvhd in $Disks) {
                 $name = split-path -path $curvhd.path -leaf
-                $out = $curvhd | select-object  @{ N = 'ComputerName';      E = {$_.ComputerName}},
-                                                @{ N = 'Name';              E = {$name}},
-                                                @{ N = 'Location';          E = {$_.path}},
-                                                @{ N = 'Format';            E = {$_.VhdFormat}},
-                                                @{ N = 'Type';              E = {$_.VhdType}},
-                                                @{ N = 'Size(GB)';          E = {$_.Size / 1gb}},
-                                                @{ N = 'Size(MB)';          E = {$_.Size / 1mb}},
-                                                @{ N = 'FreeSpace(GB)';     E = {[math]::round((($_.Size - $_.FileSize) / 1gb), 2)}},
-                                                @{ N = 'FreeSpace(MB)';     E = {[math]::round((($_.Size - $_.FileSize) / 1mb), 2)}}
+                $out = $curvhd | select-object  @{ N = 'ComputerName'; E = {$_.ComputerName}},
+                @{ N = 'Name'; E = {$name}},
+                @{ N = 'Location'; E = {$_.path}},
+                @{ N = 'Format'; E = {$_.VhdFormat}},
+                @{ N = 'Type'; E = {$_.VhdType}},
+                @{ N = 'Size(GB)'; E = {$_.Size / 1gb}},
+                @{ N = 'Size(MB)'; E = {$_.Size / 1mb}},
+                @{ N = 'FreeSpace(GB)'; E = {[math]::round((($_.Size - $_.FileSize) / 1gb), 2)}},
+                @{ N = 'FreeSpace(MB)'; E = {[math]::round((($_.Size - $_.FileSize) / 1mb), 2)}}
                 if ($ExportCsv) {
                     $out | Export-Csv -Path $Csvfile -NoTypeInformation -Append -Force
                 }
