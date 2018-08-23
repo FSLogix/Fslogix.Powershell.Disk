@@ -39,8 +39,35 @@ Describe $sut {
         }
     }
     Context -Name 'mock'{
-        BeforeAll{
+        BeforeEach{
+            mock -CommandName Get-FslVhd -MockWith {
+                [PSCustomObject]@{
+                    Path = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Kim_S-0-2-26-1944519217-1788772061-1800150966-14812.VHD'
+                }
+            }
+            mock -CommandName Get-Driveletter -MockWith {
+                return 'D:\'
+            }
+            mock -CommandName Get-Disk -MockWith {
+                [PSCustomObject]@{
+                    Location = 'C:\Users\danie\Documents\VHDModuleProject\ODFCTest2\Kim_S-0-2-26-1944519217-1788772061-1800150966-14812.VHD'
+                    Number = 2
+                }
+            }
+            mock -CommandName Get-Partition -MockWith {
+                [PSCustomObject]@{
+                    Driveletter     = 'D'
+                    PartitionNUmber = 2
+                    Number          = 2
+                }
+            }
             mock -CommandName Resize-Partition -MockWith {}
+        }
+        
+        it 'Test mock outputs'{
+            $Disk = get-disk 
+            $VHD2 = Get-FslVhd -path $VHD
+            $Disk.Location | should be $VHD2.path
         }
         it 'Invalid partition number throws'{
             {Resize-FslPartition -path $VHD -SizeInGb 2 -PartitionNumber 35} | should throw

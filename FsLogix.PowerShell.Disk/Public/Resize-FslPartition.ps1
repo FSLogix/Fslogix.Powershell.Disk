@@ -28,10 +28,14 @@ function Resize-FslPartition {
         foreach ($Current_Disk in $VHD) {
             
             $DriveLetter = Get-Driveletter $Current_Disk.path
-            $Disk = (Get-Disk).where( {$_.Location -eq $Current_Disk.path})
+
+            Write-Verbose "$($Current_disk.path)"
+            Write-Verbose "$((Get-Disk).location)"
+            $Disk = Get-Disk | Where-Object {$_.Location -eq $Current_Disk.path}
             $DiskNumber = $Disk.Number
-            $Partition = $Disk | get-partition
-            if ($PartitionNumber -eq 0) {
+
+            $Partition = Get-Partition -DiskNumber $DiskNumber
+            if (!$PartitionNumber) {
                 foreach ($part in $Partition) {
                     if ($part.DriveLetter -eq $DriveLetter.Substring(0, 1)) {
                         $PartitionNumber = $part.PartitionNumber
