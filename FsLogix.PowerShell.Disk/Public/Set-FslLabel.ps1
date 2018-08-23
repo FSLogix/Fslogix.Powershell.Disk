@@ -42,6 +42,8 @@ function Set-FslLabel {
         if ($DriveLetter.length -ne 3) {
             ## returned guid
             $diskID = (get-disk | Where-Object {$_.Location -eq $path}).Guid
+
+            # The path represented will have the guid partition access path within \\?\Volume{}\
             $Volume = get-volume | Where-Object {$_.Path -like "*$diskId*"}
             $Volume | Set-Volume -NewFileSystemLabel $FslUser
         }
