@@ -126,7 +126,7 @@ function Format-FslDriveLetter {
             if ($Driveletterassigned) {
                 Write-Verbose "Assigned DriveLetter: $([char]$letter)."
             }
-            dismount-FslDisk $vhd.path
+            dismount-FslDisk -fullname $vhd.path
         }
         
     }
