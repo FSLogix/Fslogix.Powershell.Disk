@@ -51,7 +51,8 @@ function Set-FslDriveLetter {
         }
 
         if ($Available -eq $false) {
-            Write-Error "DriveLetter '$($Letter):\' is not available. For available driveletters, type cmdlet: Get-FslAvailableDriveLetter" -ErrorAction Stop
+            Write-Warning "For available driveletters, type cmdlet: Get-FslAvailableDriveLetter"
+            Write-Error "DriveLetter '$($Letter):\' is not available. " -ErrorAction Stop
         }
         $name = $vhds.name
         if ($vhds.attached) {
