@@ -33,27 +33,6 @@ function Get-FslDisk {
 
     begin {
         set-strictmode -Version latest
-        function Get-Ost($VHD_Path){
-            $DriveLetter = get-driveletter -VHDPath $VHD_Path
-            $Ost = get-childitem -path (join-path $DriveLetter *.ost) -recurse
-            dismount-FslDisk -FullName $VHD_Path
-            if ($null -eq $ost) {
-                return 0
-            }
-            else {
-                try {
-                    $count = $ost.count
-                }
-                catch [System.Management.Automation.PropertyNotFoundException] {
-                    # When calling the get-childitem cmdlet, if the cmldet only returns one
-                    # object, then it loses the count property, despite working on terminal.
-                    # When only one object is found, the type is System.IO.FileSystemInfo
-                    # When objects found is greater than 1, the type is System.Array
-                    $count = 1
-                }
-                return $count
-            }
-        }
     }
 
     process {
@@ -103,15 +82,12 @@ function Get-FslDisk {
 
             if($full){
 
-                $OstCount = Get-Ost($Path)
-
                 $VHDInfo | Add-Member @{CreationTime        = $CreationTime      }
                 $VHDInfo | Add-Member @{LastWriteTime       = $LastWriteTime     }
                 $VHDInfo | Add-Member @{LastAccessTime      = $LastAccessTime    }
                 $VHDInfo | Add-Member @{SizeInGB            = $SizeGB            }
                 $VHDInfo | Add-Member @{SizeInMB            = $SizeMB            }
                 $VHDInfo | Add-Member @{FreespaceGB         = $FreeSpace         }
-                $VHDInfo | Add-Member @{OstCount            = $OstCount          }
             }
             Write-Output $VHDInfo
 

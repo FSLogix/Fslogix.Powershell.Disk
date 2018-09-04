@@ -45,6 +45,8 @@ function get-driveletter {
         $DiskNumber = $mount.Number
         
         $DriveLetter = Get-Partition -DiskNumber $DiskNumber | Select-Object -ExpandProperty AccessPaths | select-object -first 1
+
+        ## If the VHD does not have a drive letter assigned. Using GUID.
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             Write-Verbose "Did not receive valid driveletter: $Driveletter. Assigning guid."
             
