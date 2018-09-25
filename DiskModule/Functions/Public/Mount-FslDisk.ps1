@@ -56,6 +56,7 @@ function Mount-FslDisk {
             Try{
                 New-Item -Path $JunctionPath -ItemType Directory -ErrorAction Stop | Out-Null
             }catch{
+                Write-Warning "Could not create junction path."
                 Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
                 Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
                 Write-Error $Error[0]
@@ -72,6 +73,7 @@ function Mount-FslDisk {
                     Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $JunctionPath -ErrorAction Stop
                     $PartitonNumber = 2
                 }catch{
+                    Write-Warning "Could not remove Junction point."
                     Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
                     Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
                     Write-Error $Error[0]
