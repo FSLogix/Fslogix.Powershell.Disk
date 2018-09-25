@@ -78,6 +78,17 @@ function Add-FslPermissions {
 
                     if ($Recurse) {
                         $Directory = get-childitem -path $folder -Recurse
+                        Try {
+                            $ACL = Get-Acl $Folder
+                            $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, "FullControl", "Allow")
+                            $Acl.Setaccessrule($Ar)
+                            Set-Acl -Path $Folder $ACL
+                            Write-Verbose "Assigned permissions for user: $Ad_User"
+                        }
+                        catch {
+                            Write-Error $Error[0]
+                        }
+                        
                     }
                     else {
                         $Directory = $Folder_isFolder
