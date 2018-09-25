@@ -40,9 +40,9 @@ function Copy-FslToDisk {
             exit
         }
 
-        $Mounted_Path = $Mounted_Disk.Mount
-        $Disk_Number = $Mounted_Disk.disknumber
-        $Copy_Destination = join-path ($Mounted_Path) ($Destination)
+        $Mounted_Path       = $Mounted_Disk.Mount
+        $Disk_Number        = $Mounted_Disk.disknumber
+        $Copy_Destination   = join-path ($Mounted_Path) ($Destination)
      
         Try{
             Copy-item -Path $Path -Destination $Copy_Destination -Recurse -Force -ErrorAction Stop
