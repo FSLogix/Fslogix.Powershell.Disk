@@ -90,6 +90,9 @@ Describe $sut {
         it 'Type'{
             {Add-FslDisk -user "Daniel" -Destination "C:\test" -Type 0} | should not throw 
         }
+        it 'invalid type should throw'{
+            {Add-FslDisk -user "Daniel" -Destination "C:\test" -Type 2} | should  throw
+        }
         it 'Size'{
             {Add-FslDisk -user "Daniel" -Destination "C:\test" -SizeInMB 10000} | should not throw
         }
