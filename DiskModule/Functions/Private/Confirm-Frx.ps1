@@ -1,7 +1,6 @@
 function Confirm-Frx {
     [CmdletBinding()]
     param (
-        
     )
     
     begin {
@@ -21,10 +20,12 @@ function Confirm-Frx {
         Set-Location -path $InstallPath
         
         $frxPath = Join-Path ($InstallPath) ("frx.exe")
-        if ( -not (Test-Path $frxPath )) {
-            Write-Error 'frx.exe Not Found. Please reinstall FsLogix Applications.' -ErrorAction Stop
+        if ( -not (Test-Path -path $frxPath )) {
+            Pop-Location
+            Write-Error 'frx.exe Not Found. Please reinstall FsLogix Applications.'
             exit
         }
+        Pop-Location
     }
     
     end {
