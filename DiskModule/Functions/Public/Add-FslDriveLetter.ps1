@@ -14,7 +14,10 @@ function Add-FslDriveLetter {
         $PartitionNumber,
 
         [Switch]
-        $Dismount
+        $Dismount,
+
+        [Switch]
+        $Passthru
     )
     
     begin {
@@ -43,21 +46,23 @@ function Add-FslDriveLetter {
         $DiskNumber = $Disk.Number
 
         Try{
-            $Partition = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber
+            $Partition = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -ErrorAction Stop
         }catch{
             Write-Error $Error[0]
         }
         
         while(!$Driveletterassigned){
             Try{
-                $Partition | set-partition -NewDriveLetter $Letter -ErrorAction Stop
+                $Partition | set-partition -NewDriveLetter $([char]$Letter) -ErrorAction Stop
+                $Driveletterassigned = $true
             }catch{
                 ## For some reason
-                    ## $Letter-- won't work.
-                    $letter = $letter - 1
-                    if ($Letter -eq 'C') {
-                        Write-Error "Cannot find free drive letter" -ErrorAction Stop
-                    }
+                ## $Letter-- won't work.
+                $letter = $letter - 1
+                if ([char]$Letter -eq 'C') {
+                    Write-Warning "Could not assign a drive letter. Is the partition number correct?"
+                    Write-Error "Cannot find free drive letter." -ErrorAction Stop
+                }
             }
         }
         if ($Driveletterassigned) {
@@ -65,7 +70,15 @@ function Add-FslDriveLetter {
         }
 
         if($Dismount){
-            Dismount-DiskImage -ImagePath $Path
+            Try{
+                Dismount-DiskImage -ImagePath $Path -ErrorAction Stop
+            }catch{
+                Write-Error $Error[0]
+            }
+        }
+
+        if($Passthru){
+            [char]$Letter
         }
     }
     

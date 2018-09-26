@@ -14,7 +14,10 @@ function Set-FslDriveLetter {
         [ValidatePattern('^[a-zA-Z]')]
         [System.Char]$Letter,
 
-        [Parameter( Position = 2)]
+        [Parameter (Position = 2)]
+        [int]$PartitionNumber,
+
+        [Parameter( Position = 3)]
         [Switch]$Dismount
     )
 
@@ -51,6 +54,10 @@ function Set-FslDriveLetter {
 
     process {
 
+        if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
+            $PartitionNumber = 1
+        }
+
         if (-not(test-path -path $Path)) {
             Write-Error "Could not find path: $Path" -ErrorAction Stop
         }
@@ -80,8 +87,15 @@ function Set-FslDriveLetter {
             $mount = Mount-DiskImage -ImagePath $path -NoDriveLetter -PassThru -ErrorAction Stop | get-diskimage
             $Disk = $mount | get-disk -ErrorAction Stop
         }
-        $Partition = $Disk | get-partition -ErrorAction Stop
-        $Partition | sort-object -property size | select-object -last 1 | set-partition -NewDriveLetter $letter -ErrorAction Stop 
+
+        $DiskNumber = $disk.Number
+
+        Try{
+            $Partition = get-partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber
+        }catch{
+            Write-Error $Error[0]
+        }
+        $Partition | set-partition -NewDriveLetter $letter -ErrorAction Stop 
 
         Write-Verbose "Succesfully changed $name's Driveletter to [$($letter):\]."
         
