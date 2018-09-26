@@ -70,38 +70,32 @@ function Add-FslPermissions {
                 if (-not(test-path -path $folder)) {
                     Write-Error "Could not find path: $Folder" -ErrorAction Stop
                 }
-                else {
-                    $Folder_isFolder = get-item -path $Folder
-                    if ($Folder_isFolder.Attributes -ne 'Directory') {
-                        Write-Error "$($Folder_isFolder.BaseName) is not a folder." -ErrorAction Stop
-                    }
-
+                
+                $Folder_isFolder = get-item -path $Folder
+                if ($Folder_isFolder.Attributes -ne 'Directory') {
+                    Write-Error "$($Folder_isFolder.BaseName) is not a folder." -ErrorAction Stop
+                }
                     if ($Recurse) {
                         $Directory = $( Get-Item $Folder 
                                         Get-ChildItem $folder -recurse)                    
-                    }
-                    else {
-                        $Directory = $Folder_isFolder
-                    }
+                }
+                else {                        
+                    $Directory = $Folder_isFolder
+                }
 
-                    foreach ($dir in $Directory) {
-                        Try {
-                            $ACL = Get-Acl $dir.fullname
-                            $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, "FullControl", "Allow")
-                            $Acl.Setaccessrule($Ar)
-                            Set-Acl -Path $dir.fullname $ACL
-                            Write-Verbose "Assigned permissions for user: $Ad_User"
-                        }
-                        catch {
-                            Write-Error $Error[0]
-                        }
+                foreach ($dir in $Directory) {
+                    Try {
+                        $ACL = Get-Acl $dir.fullname
+                        $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, "FullControl", "Allow")
+                        $Acl.Setaccessrule($Ar)
+                        Set-Acl -Path $dir.fullname $ACL
+                        Write-Verbose "Assigned permissions for user: $Ad_User"
+                    }catch {
+                        Write-Error $Error[0]
                     }
                 }
-            }
-        }
-
-    }
-    
-    end {
-    }
+                
+            }#folder
+        }#switch
+    }#process
 }
