@@ -75,11 +75,11 @@ function Add-FslPermissions {
                 if ($Folder_isFolder.Attributes -ne 'Directory') {
                     Write-Error "$($Folder_isFolder.BaseName) is not a folder." -ErrorAction Stop
                 }
-                    if ($Recurse) {
-                        $Directory = $( Get-Item $Folder 
-                                        Get-ChildItem $folder -recurse)                    
-                }
-                else {                        
+                
+                if ($Recurse) {
+                    $Directory = $( Get-Item $Folder 
+                                    Get-ChildItem $folder -recurse)                    
+                }else {                        
                     $Directory = $Folder_isFolder
                 }
 
