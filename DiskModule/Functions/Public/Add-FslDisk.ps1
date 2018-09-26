@@ -29,7 +29,10 @@ function Add-FslDisk {
         [ValidateRange(0,1)]
         [int]$Type,
 
-        [Parameter( Position = 4 )]
+        [Parameter (Position = 4)]
+        [String]$Label,
+
+        [Parameter( Position = 5 )]
         [Switch]$Passthru
     )
     
@@ -60,17 +63,22 @@ function Add-FslDisk {
             Write-Error $Error[0]
         }
         
-        if(!$type){
+        if(!$PSBoundParameters.ContainsKey("Type")){
             $Type = 1
         }
 
-        if(!$SizeInMB){
+        if(!$PSBoundParameters.ContainsKey("SizeInMb")){
             $SizeInMB = 30000
         }
+
+        if(!$PSBoundParameters.ContainsKey("Label")){
+            $Label = $SamAccountName
+        }
+
         $VHD_name = "ODFC_$($SamAccountName).vhdx"
         $VHD_Path = join-path ($Destination) ($VHD_name)
         
-        $FrxCommand = " .\frx.exe create-vhd -filename $VHD_Path -size-mbs=$SizeInMB -dynamic=$type -label $samaccountname"
+        $FrxCommand = " .\frx.exe create-vhd -filename $VHD_Path -size-mbs=$SizeInMB -dynamic=$type -label $Label"
         Invoke-expression -command $FrxCommand
         Add-FslPermissions -Folder $VHD_Path -Recurse
 

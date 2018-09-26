@@ -23,6 +23,12 @@ function Add-FslDriveLetter {
     }
     
     process {
+
+        ## FsLogix VHD's default partition number is 1
+        if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
+            $PartitionNumber = 1
+        }
+
         $Driveletterassigned = $false
         $Letter = [int][char]'Z'
         $VHD = Get-FslDisk -Path $Path
@@ -32,11 +38,6 @@ function Add-FslDriveLetter {
         }
         else {
             $Disk = Mount-DiskImage -ImagePath $path -NoDriveLetter -PassThru -ErrorAction Stop | Get-Diskimage
-        }
-
-        ## FsLogix VHD's default partition number is 1
-        if(!$PartitionNumber){
-            $PartitionNumber = 1
         }
 
         $DiskNumber = $Disk.Number

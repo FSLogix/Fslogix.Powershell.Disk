@@ -96,6 +96,9 @@ Describe $sut {
         it 'Size'{
             {Add-FslDisk -user "Daniel" -Destination "C:\test" -SizeInMB 10000} | should not throw
         }
+        it 'Label'{
+            {Add-FslDisk -user "Daniel" -Destination "C:\test" -Label "Test"} | should not throw
+        }
     }
 
 }
