@@ -1,5 +1,5 @@
-$Public = @( Get-ChildItem -Path 'C:\Users\danie\Documents\DiskModule\Functions\Public')
-$Private = @( Get-ChildItem -Path 'C:\Users\danie\Documents\DiskModule\Functions\Private')
+$Public = @( Get-ChildItem -Path 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\DiskModule\Functions\Public' -filter "*.ps1")
+$Private = @( Get-ChildItem -Path 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\DiskModule\Functions\Private' -filter "*.ps1")
 $verbosepreference = "continue"
 #Dot source the filesd
 Foreach ($import in @($Public + $Private)) {
