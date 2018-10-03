@@ -74,7 +74,7 @@ function Get-FslDisk {
         }
     }
     
-    process {
+    Process {
         Switch ($PSCmdlet.ParameterSetName){
             Path {
                 if(-not(test-path -path $Path)){
