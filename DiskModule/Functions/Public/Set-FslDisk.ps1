@@ -78,6 +78,8 @@ function Set-FslDisk {
                         Write-Error "$Name does not match Syntax." -ErrorAction Stop
                     }
                 }
+                ## What should the name be. CDW had name of 'ODFC_SamAccountName'
+                ## so is the regex match for SID_Name or Name_SID neccessary?
                 
                 #Can't rename if VHD is attached
                 if($VHD.attached){
