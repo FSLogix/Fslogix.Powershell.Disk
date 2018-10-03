@@ -15,6 +15,9 @@ Describe $sut {
             }
         }
         Context 'Install path does not exist'{
+            it 'Invalid path'{
+                {Confirm-Frx -path "C:\blah" -ErrorAction Stop} | should throw
+            }
             it 'invalid install path'{
                 {Confirm-Frx -ErrorAction Stop} | should throw
             }

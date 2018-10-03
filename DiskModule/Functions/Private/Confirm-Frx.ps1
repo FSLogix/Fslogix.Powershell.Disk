@@ -1,6 +1,8 @@
 function Confirm-Frx {
     [CmdletBinding()]
     param (
+        [Parameter (Position = 0)]
+        [System.String]$Path
     )
     
     begin {
@@ -9,8 +11,12 @@ function Confirm-Frx {
     
     process {
 
+        if(!$PSBoundParameters.ContainsKey("$Path")){
+            $Path = "HKLM:\SOFTWARE\FSLogix\Apps"
+        }
+
         try {
-            $InstallPath = (Get-ItemProperty HKLM:\SOFTWARE\FSLogix\Apps -ErrorAction Stop).InstallPath
+            $InstallPath = (Get-ItemProperty $Path -ErrorAction Stop).InstallPath
         }
         catch {
             Write-Error "FsLogix Applications not found. Please intall FsLogix applications."
