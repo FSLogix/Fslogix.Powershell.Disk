@@ -58,7 +58,10 @@ function Add-FslDisk {
         }
         
         Try{
-            $SamAccountName = Get-Aduser -Identity $User -ErrorAction Stop | select-object -ExpandProperty Samaccountname
+            $AdUser = Get-Aduser -Identity $User -ErrorAction Stop
+            $SID = $AdUser.SID
+            $SamAccountName = $AdUser.samaccountname
+
         }catch{
             Write-Error $Error[0]
         }
@@ -75,12 +78,15 @@ function Add-FslDisk {
             $Label = $SamAccountName
         }
 
-        $VHD_name = "ODFC_$($SamAccountName).vhdx"
-        $VHD_Path = join-path ($Destination) ($VHD_name)
+        $VHD_name   = "ODFC_$($SamAccountName).vhdx"
+        $VHD_Folder = "$($SamaccountName)_$($SID)"
+
+        $VHD_FolderPath = join-path ($Destination) ($VHD_Folder)
+        $VHD_Path = join-path ($VHD_FolderPath) ($VHD_name)
         
         $FrxCommand = " .\frx.exe create-vhd -filename $VHD_Path -size-mbs=$SizeInMB -dynamic=$type -label $Label"
         Invoke-expression -command $FrxCommand
-        Add-FslPermissions -Folder $VHD_Path -Recurse
+        Add-FslPermissions -Folder $VHD_FolderPath -Recurse
 
         if($Passthru){
             Get-FslDisk -path $VHD_Path

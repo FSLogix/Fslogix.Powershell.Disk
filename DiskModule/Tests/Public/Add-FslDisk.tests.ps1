@@ -13,7 +13,8 @@ Describe $sut {
         mock -CommandName Test-path -MockWith {}
         Mock -CommandName Get-Aduser -MockWith {
             [PSCustomObject]@{
-                SamAccountName = "Daniel"
+                SamAccountName  = "Daniel"
+                SID             = "S-0-2-26-1996"
             }
         }
         Mock -CommandName Get-ItemProperty -MockWith {
