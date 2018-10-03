@@ -72,12 +72,12 @@ function Set-FslDisk {
                 Write-Verbose "Set $($VHD.name)'s label to: $Label"
             }
             Name{
-                if($Name -notmatch $OriginalMatch){
+                <#if($Name -notmatch $OriginalMatch){
                     Write-Warning "$Name does not match original regex. Attempting FlipFlop match."
                     if($Name -notmatch $FlipFlopMatch){
                         Write-Error "$Name does not match Syntax." -ErrorAction Stop
                     }
-                }
+                }#>
                 
 
                 #Can't rename if VHD is attached
