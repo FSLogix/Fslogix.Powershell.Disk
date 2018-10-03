@@ -2,7 +2,10 @@ function Confirm-Frx {
     [CmdletBinding()]
     param (
         [Parameter (Position = 0)]
-        [System.String]$Path
+        [System.String]$Path,
+
+        [Parameter (Position = 1)]
+        [Switch]$Passthru
     )
     
     begin {
@@ -32,6 +35,10 @@ function Confirm-Frx {
             exit
         }
         Pop-Location
+        
+        if($Passthru){
+            $frxPath
+        }
     }
     
     end {
