@@ -54,6 +54,7 @@ function Add-FslDisk {
         
         $frxPath = Join-Path ($InstallPath) ("frx.exe")
         if ( -not (Test-Path $frxPath )) {
+            Pop-Location
             Write-Error 'frx.exe Not Found' -ErrorAction Stop
         }
         
@@ -63,6 +64,7 @@ function Add-FslDisk {
             $SamAccountName = $AdUser.samaccountname
 
         }catch{
+            Pop-Location
             Write-Error $Error[0]
         }
         
@@ -86,12 +88,17 @@ function Add-FslDisk {
         
         $FrxCommand = " .\frx.exe create-vhd -filename $VHD_Path -size-mbs=$SizeInMB -dynamic=$type -label $Label"
         Invoke-expression -command $FrxCommand
-        Add-FslPermissions -Folder $VHD_FolderPath -Recurse
+        Try{
+            Add-FslPermissions -Folder $VHD_FolderPath -Recurse -ErrorAction Stop
+        }catch{
+            Pop-Location
+            Write-Error $Error[0]
+        }
 
         if($Passthru){
             Get-FslDisk -path $VHD_Path
         }
 
-        Pop-Location
+        Pop-Location -ErrorAction SilentlyContinue
     }
 }
