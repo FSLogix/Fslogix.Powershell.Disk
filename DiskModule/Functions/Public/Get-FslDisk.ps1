@@ -50,8 +50,12 @@ function Get-FslDisk {
                 [System.String]$VHDPath
             )
 
-            $VHD        = Get-Diskimage -ImagePath $VHDPath
-            $VHD_Item   = Get-Item -path $VHDPath
+            Try{
+                $VHD        = Get-Diskimage -ImagePath $VHDPath -ErrorAction Stop
+                $VHD_Item   = Get-Item -path $VHDPath -ErrorAction Stop
+            }catch{
+                Write-Error $Error[0]
+            }
 
             $Format     = $VHD_Item.Extension.TrimStart('.')
             $Name       = split-path -path $VHDPath -Leaf

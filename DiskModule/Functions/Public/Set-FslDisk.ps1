@@ -45,13 +45,14 @@ function Set-FslDisk {
     
     process {
 
-        if(!$PSBoundParameters.ContainsKey("Path")){
-            Write-Error "Must specify a path to VHD" -ErrorAction Stop
-        }
         if(-not(test-path -path $Path -ErrorAction Stop)){
             Write-Error "Could not find path: $Path" -ErrorAction Stop
-        }else{
-            $VHD = Get-Fsldisk -Path $Path
+        }
+            
+        Try{
+            $VHD = Get-Fsldisk -Path $Path -ErrorAction Stop
+        }catch{
+            Write-Error $Error[0]
         }
 
         Switch ($PSBoundParameters.Keys){
@@ -61,22 +62,23 @@ function Set-FslDisk {
                     Write-Error "Could not find driveletter for $($VHD.name)" -ErrorAction Stop
                 }
 
-                $Volume = Get-Volume | where-object {$_.DriveLetter -eq $DriveLetter.substring(0,1)}
+                $Volume_DriveLetter = $DriveLetter.substring(0,1)
+
                 Try{
-                    $Volume | Set-Volume -NewFileSystemLabel $Label -ErrorAction Stop
+                    Set-Volume -DriveLetter $Volume_DriveLetter -NewFileSystemLabel $Label -ErrorAction Stop
                 }catch{
                     Write-Error $Error[0]
                 }
                 Write-Verbose "Set $($VHD.name)'s label to: $Label"
             }
             Name{
-
                 if($Name -notmatch $OriginalMatch){
-                    Write-Error "$Name does not match Syntax." -ErrorAction Stop
+                    Write-Warning "$Name does not match original regex. Attempting FlipFlop match."
+                    if($Name -notmatch $FlipFlopMatch){
+                        Write-Error "$Name does not match Syntax." -ErrorAction Stop
+                    }
                 }
-                if($Name -notmatch $FlipFlopMatch){
-                    Write-Error "$Name does not match Syntax." -ErrorAction Stop
-                }
+                
 
                 #Can't rename if VHD is attached
                 if($VHD.attached){
@@ -89,7 +91,7 @@ function Set-FslDisk {
                 
                 try{
                     Rename-Item -Path $Path -NewName $Name -ErrorAction Stop
-                    Write-Verbose "$($VHD.name) to $Name"
+                    Write-Verbose "Renamed $($VHD.name) to $Name"
                 }
                 catch{
                     Write-Error $Error[0]
