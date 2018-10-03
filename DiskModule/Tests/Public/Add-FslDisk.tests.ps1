@@ -10,7 +10,9 @@ Describe $sut {
         Mock -CommandName Add-FslPermissions -MockWith {}
         Mock -CommandName Invoke-Expression -MockWith {}
         Mock -CommandName Pop-Location -MockWith {}
-        mock -CommandName Test-path -MockWith {}
+        mock -CommandName Test-path -MockWith {
+            $true
+        }
         Mock -CommandName Get-Aduser -MockWith {
             [PSCustomObject]@{
                 SamAccountName  = "Daniel"
