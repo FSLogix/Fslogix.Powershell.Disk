@@ -43,7 +43,7 @@ Describe $sut {
         }
         it 'passthru should be z'{
             $command = Add-FslDriveLetter -Path $path -passthru
-            $command | should be 'Z'
+            $command | should be 'Z:\'
         }
     }
     Context 'Non-Attached Disk'{
@@ -63,7 +63,7 @@ Describe $sut {
         }
         it 'passthru should be z'{
             $command = Add-FslDriveLetter -Path $path -passthru
-            $command | should be 'Z'
+            $command | should be 'Z:\'
         }
     }
     Context -Name "Partition"{

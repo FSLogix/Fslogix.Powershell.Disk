@@ -66,7 +66,7 @@ function Add-FslDriveLetter {
             }
         }
         if ($Driveletterassigned) {
-            Write-Verbose "Assigned DriveLetter: $([char]$letter)."
+            Write-Verbose "Assigned DriveLetter: $([char]$Letter):\."
         }
 
         if($Dismount){
@@ -78,7 +78,7 @@ function Add-FslDriveLetter {
         }
 
         if($Passthru){
-            [char]$Letter
+            "$([char]$Letter):\"
         }
     }
     

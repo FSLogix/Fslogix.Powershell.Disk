@@ -20,6 +20,9 @@ Describe $sut{
         Mock -CommandName Set-Volume -MockWith {}
         Mock -CommandName Dismount-DiskImage -MockWith {}
         Mock -CommandName Rename-item -MockWith {}
+        mock -CommandName Add-FslDriveLetter -MockWith {
+            "D:\"
+        }
     }
     Context -Name "General Throws"{
         it 'Invalid path'{
@@ -39,6 +42,10 @@ Describe $sut{
         }
         it 'Assert script stopped'{
             Assert-MockCalled -CommandName Set-Volume -times 0
+        }
+        it 'If returned null, assign parameter'{
+            Mock -CommandName Get-FslDriveLetter -MockWith {$Null}
+            {Set-Fsldisk -path $Path -Label "Daniel" -Assign} | should not throw
         }
 
         it 'Returns valid Driveletter, does not throw'{

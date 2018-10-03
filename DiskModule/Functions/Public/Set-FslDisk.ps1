@@ -13,17 +13,21 @@ function Set-FslDisk {
         [System.String]$Label,
 
         [Parameter (Position = 2,
+                    ParameterSetName = "Label")]
+        [Switch]$Assign,
+
+        [Parameter (Position = 3,
                     Mandatory = $true,
                     ParameterSetName = "Name")]
         [System.String]$Name,
 
-        [Parameter( Position = 3, 
+        [Parameter( Position = 4, 
                     ValuefromPipeline = $true,
                     ValuefromPipelineByPropertyName = $true, 
                     ParameterSetName = "Name")]
         [regex]$OriginalMatch = "^(.*?)_S-\d-\d+-(\d+-){1,14}\d+$",
 
-        [Parameter( Position = 4, 
+        [Parameter( Position = 5, 
                     ValuefromPipeline = $true,
                     ValuefromPipelineByPropertyName = $true, 
                     ParameterSetName = "Name")]
@@ -59,7 +63,11 @@ function Set-FslDisk {
             Label{
                 $DriveLetter = Get-FslDriveletter -Path $Path
                 if($null -eq $DriveLetter){
-                    Write-Error "Could not find driveletter for $($VHD.name)" -ErrorAction Stop
+                    if($PSBoundParameters.ContainsKey("Assign")){
+                        $DriveLetter = Add-FslDriveLetter -Path $Path -Passthru
+                    }else{
+                        Write-Error "Could not find driveletter for $($VHD.name)" -ErrorAction Stop
+                    }
                 }
 
                 $Volume_DriveLetter = $DriveLetter.substring(0,1)
