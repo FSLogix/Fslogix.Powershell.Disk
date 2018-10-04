@@ -2,7 +2,7 @@ function Add-FslDisk {
     <#
         Create VHD... ODFC_Samaccountname.vhdx
     #>
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = "Vhdx")]
     param (
         [Parameter( Position = 0, 
                     Mandatory = $true,
@@ -25,15 +25,18 @@ function Add-FslDisk {
         [System.int64]
         $SizeInMB,
 
-        [Parameter( Position = 3 )]
+        [Parameter( Position = 3)]
         [ValidateRange(0,1)]
         [int]$Type,
 
-        [Parameter (Position = 4)]
+        [Parameter( Position = 4)]
         [String]$Label,
 
-        [Parameter( Position = 5 )]
-        [Switch]$Passthru
+        [Parameter( Position = 5)]
+        [Switch]$Passthru,
+
+        [Parameter( Position = 6)]
+        [Switch]$vhd
     )
     
     begin {
@@ -80,7 +83,12 @@ function Add-FslDisk {
             $Label = $SamAccountName
         }
 
-        $VHD_name   = "ODFC_$($SamAccountName).vhdx"
+        if($PSBoundParameters.ContainsKey("vhd")){
+            $VHD_name = "ODFC_$($SamAccountName).vhd"
+        }else{
+            $VHD_name = "ODFC_$($SamAccountName).vhdx"
+        }
+
         $VHD_Folder = "$($SamaccountName)_$($SID)"
 
         $VHD_FolderPath = join-path ($Destination) ($VHD_Folder)
@@ -88,6 +96,7 @@ function Add-FslDisk {
         
         $FrxCommand = " .\frx.exe create-vhd -filename $VHD_Path -size-mbs=$SizeInMB -dynamic=$type -label $Label"
         Invoke-expression -command $FrxCommand
+
         Try{
             Add-FslPermissions -Folder $VHD_FolderPath -Recurse -ErrorAction Stop
         }catch{
@@ -96,7 +105,8 @@ function Add-FslDisk {
         }
 
         if($Passthru){
-            Get-FslDisk -path $VHD_Path
+            $output = Get-FslDisk -path $VHD_Path
+            $output
         }
 
         Pop-Location -ErrorAction SilentlyContinue

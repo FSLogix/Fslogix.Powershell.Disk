@@ -81,6 +81,21 @@ Describe $sut {
             Assert-MockCalled "Get-AdUser" -Times 1
         }
     }
+    Context -name "Add-FslPermissions fails"{
+        it 'Throws'{
+            Mock -CommandName Add-FslPermissions -MockWith {
+                Throw "Permissions"
+            }
+            {Add-Fsldisk -user "Daniel" -Destination "C:\test" -Passthru -ErrorAction Stop} | should throw
+        }
+        it 'Assert mock called'{
+            Assert-MockCalled -CommandName Add-FslPermissions -Times 1
+            Assert-MockCalled -CommandName Pop-Location -Times 1
+        }
+        it 'assert script stopped'{
+            Assert-MockCalled -CommandName Get-Fsldisk -Times 0
+        }
+    }
     Context -name "parameters"{
         mock -CommandName test-path -MockWith {
             $true
@@ -102,6 +117,8 @@ Describe $sut {
         it 'Label'{
             {Add-FslDisk -user "Daniel" -Destination "C:\test" -Label "Test"} | should not throw
         }
+        it 'VHD'{
+            {Add-FslDisk -user "Daniel" -Destination "C:\test" -vhd } | should not throw
+        }
     }
-
 }
