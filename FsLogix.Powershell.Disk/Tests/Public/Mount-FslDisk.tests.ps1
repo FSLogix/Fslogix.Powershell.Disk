@@ -26,10 +26,50 @@ Describe $sut{
                 Guid = 'Test'
             }
         }
+        Mock -CommandName Get-disk -MockWith {
+            [PSCustomObject]@{
+                Number = 1
+            }
+        }
+        mock -CommandName Get-Fsldisk -MockWith {
+            [PSCustomObject]@{
+                Attached = $false
+                Basename = "Yeahright"
+                Number   = 1
+            }
+        }
         mock -CommandName New-Item -MockWith {}
         Mock -CommandName Dismount-DiskImage -MockWith {}
         mock -CommandName remove-item -MockWith {}
         Mock -CommandName Add-PartitionAccessPath -MockWith {}
+    }
+    Context -name "Attached/Not-attached"{
+        mock -CommandName Get-Fsldisk -MockWith {
+            [PSCustomObject]@{
+                Attached = $true
+                Basename = "Yeahright"
+                Number   = 1
+            }
+        }
+        it 'attached'{
+            {Mount-fsldisk -path $Path} | should not throw
+        }
+        it 'assert get-disk was called'{
+            Assert-MockCalled -CommandName Get-disk -Times 1
+        }
+        mock -CommandName Get-Fsldisk -MockWith {
+            [PSCustomObject]@{
+                Attached = $false
+                Basename = "Yeahright"
+                Number   = 1
+            }
+        }
+        it 'not attached'{
+            {Mount-fsldisk -path $Path} | should not throw
+        }
+        it 'assert mount was called'{
+            Assert-MockCalled -CommandName mount-diskimage -Times 1
+        }
     }
     Context -name 'DriveLetter mount'{
         it 'Path'{

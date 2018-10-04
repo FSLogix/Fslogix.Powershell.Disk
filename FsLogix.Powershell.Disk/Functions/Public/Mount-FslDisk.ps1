@@ -5,9 +5,9 @@ function Mount-FslDisk {
 
     param(
         [Parameter( Position = 0, 
-                    Mandatory = $true, 
-                    ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true)]
+            Mandatory = $true, 
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Path,
         
@@ -21,25 +21,33 @@ function Mount-FslDisk {
     }
     process {
 
-        if(-not(test-path -path $Path)){
+        if (-not(test-path -path $Path)) {
             Write-Error "Could not find path: $Path" -ErrorAction Stop
         }
+        $VHD = get-Fsldisk -path $Path
+        if ($VHD.attached) {
+            $mount = get-disk -Number $VHD.Number
+        }
+        else {
 
-        Try{
-            $mount = Mount-DiskImage -ImagePath $Path -PassThru -ErrorAction Stop | Get-DiskImage -ErrorAction Stop
-        }catch{
-            Write-Error $Error[0]
-            exit
+            Try {
+                $mount = Mount-DiskImage -ImagePath $Path -PassThru -ErrorAction Stop | Get-DiskImage -ErrorAction Stop
+            }
+            catch {
+                Write-Error $Error[0]
+                exit
+            }
         }
 
-        $Name = split-path -path $Path -Leaf
+        $Name = $VHD.basename
         $DiskNumber = $mount.Number
         $PartitonNumber = 1
         $GuidPath = "C:\programdata\fslogix\Guid"
 
-        Try{
+        Try {
             $DriveLetter = Get-Partition -DiskNumber $DiskNumber -ErrorAction Stop | Select-Object -ExpandProperty AccessPaths | select-object -first 1
-        }catch{
+        }
+        catch {
             Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
             Write-Error $Error[0]
             exit
@@ -50,13 +58,14 @@ function Mount-FslDisk {
             $Guid = (New-Guid).Guid
             $JunctionPath = Join-path ($GuidPath) ($Guid)
 
-            if(test-path -path $JunctionPath){
+            if (test-path -path $JunctionPath) {
                 Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
             }
 
-            Try{
+            Try {
                 New-Item -Path $JunctionPath -ItemType Directory -ErrorAction Stop | Out-Null
-            }catch{
+            }
+            catch {
                 Write-Warning "Could not create junction path."
                 Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
                 Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
@@ -64,16 +73,18 @@ function Mount-FslDisk {
                 exit
             }
             
-            Try{
+            Try {
                 ## FsLogix's VHD main partition is 1
                 Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 1 -AccessPath $JunctionPath -ErrorAction Stop
-            }catch{
+            }
+            catch {
                 
                 ## If the VHD was created through Microsoft (Disk Management, Hyper-V, ect), Main Partition is 2
-                try{
+                try {
                     $PartitonNumber = 2
                     Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $JunctionPath -ErrorAction Stop                  
-                }catch{
+                }
+                catch {
                     Write-Warning "Could not remove Junction point."
                     Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
                     Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
@@ -85,13 +96,14 @@ function Mount-FslDisk {
             $DriveLetter = $JunctionPath
         }
 
-        if($DriveLetter.Length -eq 3){
+        if ($DriveLetter.Length -eq 3) {
             Write-Verbose "$(Get-Date): $Name mounted on Drive Letter [$Driveletter]."
-        }else{
+        }
+        else {
             Write-Verbose "$(Get-Date): $Name mounted on Drive junction point [$DriveLetter]."
         }
 
-        if($PassThru){
+        if ($PassThru) {
             $Output = [PSCustomObject]@{
                 DiskNumber      = $DiskNumber
                 Mount           = $DriveLetter
