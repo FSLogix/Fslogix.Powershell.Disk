@@ -2,7 +2,7 @@ function Add-FslDisk {
     <#
         Create VHD... ODFC_Samaccountname.vhdx
     #>
-    [CmdletBinding(DefaultParameterSetName = "Vhdx")]
+    [CmdletBinding()]
     param (
         [Parameter( Position = 0, 
                     Mandatory = $true,
