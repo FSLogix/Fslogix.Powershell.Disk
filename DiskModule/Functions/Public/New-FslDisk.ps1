@@ -36,7 +36,15 @@ function New-FslDisk {
         [Switch]$Passthru,
 
         [Parameter( Position = 6)]
-        [Switch]$vhd
+        [Switch]$vhd,
+
+        [Parameter (Position = 7,
+                    ParameterSetName = "DriveLetter")]
+        [Switch]$AssignDriveLetter,
+
+        [Parameter (Position = 8,
+                    ParameterSetName = "DriveLetter")]
+        [Char]$Letter
     )
     
     begin {
@@ -45,7 +53,7 @@ function New-FslDisk {
     }
     
     process {
-
+    
         try {
             $InstallPath = (Get-ItemProperty HKLM:\SOFTWARE\FSLogix\Apps -ErrorAction Stop).InstallPath
         }
@@ -102,6 +110,24 @@ function New-FslDisk {
         }catch{
             Pop-Location
             Write-Error $Error[0]
+        }
+
+        if($PSBoundParameters.ContainsKey("AssignDriveLetter")){
+            if($PSBoundParameters.ContainsKey("Letter")){
+                Try{
+                    Set-FslDriveletter -Path $VHD_Path -Letter $Letter
+                }catch{
+                    Pop-Location
+                    Write-Error $Error[0]
+                }
+            }else{
+                Try{
+                    Add-FslDriveLetter -Path $VHD_Path
+                }catch{
+                    Pop-Location
+                    Write-Error $Error[0]
+                }
+            }
         }
 
         if($Passthru){

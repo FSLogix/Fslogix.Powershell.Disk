@@ -10,6 +10,8 @@ Describe $sut {
         Mock -CommandName Add-FslPermissions -MockWith {}
         Mock -CommandName Invoke-Expression -MockWith {}
         Mock -CommandName Pop-Location -MockWith {}
+        Mock -CommandName Set-FslDriveLetter -MockWith {}
+        Mock -CommandName Add-FslDriveLetter -MockWith {}
         mock -CommandName Test-path -MockWith {
             $true
         }
@@ -86,7 +88,7 @@ Describe $sut {
             Mock -CommandName Add-FslPermissions -MockWith {
                 Throw "Permissions"
             }
-            {Add-Fsldisk -user "Daniel" -Destination "C:\test" -Passthru -ErrorAction Stop} | should throw
+            {New-Fsldisk -user "Daniel" -Destination "C:\test" -Passthru -ErrorAction Stop} | should throw
         }
         it 'Assert mock called' {
             Assert-MockCalled -CommandName Add-FslPermissions -Times 1
@@ -119,6 +121,38 @@ Describe $sut {
         }
         it 'VHD' {
             {New-FslDisk -user "Daniel" -Destination "C:\test" -vhd } | should not throw
+        }
+    }
+    Context -name "DriveLetter"{
+        it 'AssignDriveletter switch'{
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -AssignDriveLetter } | should not throw
+        }
+        it 'assert mock called'{
+            Assert-MockCalled -CommandName Add-FslDriveLetter -Times 1
+        }
+        it 'assigndriveletter with letter parameter'{
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -AssignDriveLetter -Letter 't'} | should not throw
+        }
+        it 'assert mock called'{
+            Assert-MockCalled -CommandName set-FslDriveLetter -Times 1
+        }
+        it 'Set-FslDriveletter throws'{
+            Mock -CommandName Set-FslDriveLetter -MockWith {
+                Throw "set"
+            }
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -AssignDriveLetter -Letter 't' -Passthru -ErrorAction Stop} | should throw
+        }
+        it 'assert script stopped'{
+            Assert-MockCalled -CommandName Get-Fsldisk -times 0
+        }
+        it 'Add-FslDriveLetter throws'{
+            Mock -CommandName Add-FslDriveLetter -MockWith {
+                Throw "Add"
+            }
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -AssignDriveLetter -Passthru -ErrorAction Stop} | should throw
+        }
+        it 'assert script stopped'{
+            Assert-MockCalled -CommandName Get-Fsldisk -times 0
         }
     }
 }
