@@ -15,8 +15,8 @@ Describe $sut {
         }
         Mock -CommandName Get-Aduser -MockWith {
             [PSCustomObject]@{
-                SamAccountName  = "Daniel"
-                SID             = "S-0-2-26-1996"
+                SamAccountName = "Daniel"
+                SID            = "S-0-2-26-1996"
             }
         }
         Mock -CommandName Get-ItemProperty -MockWith {
@@ -36,7 +36,7 @@ Describe $sut {
             Throw "No apps!"
         }
         it "FsLogix Applications not found" {
-            {Add-FslDisk -user "Daniel" -Destination "C:\test"} | should throw
+            {New-FslDisk -user "Daniel" -Destination "C:\test"} | should throw
         }
         it 'assert mock was called' {
             Assert-MockCalled -CommandName Get-itemproperty -Times 1
@@ -50,7 +50,7 @@ Describe $sut {
             $false
         }
         it "Frx.exe not found" {
-            {Add-FslDisk -user "Daniel" -Destination "C:\test"} | should throw
+            {New-FslDisk -user "Daniel" -Destination "C:\test"} | should throw
         }
         it 'assert script stopped' {
             Assert-MockCalled -CommandName Get-Aduser -times 0
@@ -64,7 +64,7 @@ Describe $sut {
             Throw "invalid User"
         }
         it 'Invalid User throws' {
-            {Add-FslDisk -user "Daniel" -Destination "C:\test" -ErrorAction Stop} | should throw
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -ErrorAction Stop} | should throw
         }
         it 'Assert script stopped' {
             Assert-MockCalled -CommandName Invoke-Expression -Times 0
@@ -75,50 +75,50 @@ Describe $sut {
             }
         }
         it 'No errors with valid user' {
-            {Add-FslDisk -user "Daniel" -Destination "C:\test"} | should not throw
+            {New-FslDisk -user "Daniel" -Destination "C:\test"} | should not throw
         }
         it 'Assert mocks called' {
             Assert-MockCalled "Get-AdUser" -Times 1
         }
     }
-    Context -name "Add-FslPermissions fails"{
-        it 'Throws'{
+    Context -name "Add-FslPermissions fails" {
+        it 'Throws' {
             Mock -CommandName Add-FslPermissions -MockWith {
                 Throw "Permissions"
             }
             {Add-Fsldisk -user "Daniel" -Destination "C:\test" -Passthru -ErrorAction Stop} | should throw
         }
-        it 'Assert mock called'{
+        it 'Assert mock called' {
             Assert-MockCalled -CommandName Add-FslPermissions -Times 1
             Assert-MockCalled -CommandName Pop-Location -Times 1
         }
-        it 'assert script stopped'{
+        it 'assert script stopped' {
             Assert-MockCalled -CommandName Get-Fsldisk -Times 0
         }
     }
-    Context -name "parameters"{
+    Context -name "parameters" {
         mock -CommandName test-path -MockWith {
             $true
         }
-        it 'Passthru'{
-            $output = Add-FslDisk -user "Daniel" -Destination "C:\test" -Passthru
+        it 'Passthru' {
+            $output = New-FslDisk -user "Daniel" -Destination "C:\test" -Passthru
             $output.Name | should be "ODFC_Daniel.vhdx"
             $output.format | should be "vhdx"
         }
-        it 'Type'{
-            {Add-FslDisk -user "Daniel" -Destination "C:\test" -Type 0} | should not throw 
+        it 'Type' {
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -Type 0} | should not throw 
         }
-        it 'invalid type should throw'{
-            {Add-FslDisk -user "Daniel" -Destination "C:\test" -Type 2} | should  throw
+        it 'invalid type should throw' {
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -Type 2} | should  throw
         }
-        it 'Size'{
-            {Add-FslDisk -user "Daniel" -Destination "C:\test" -SizeInMB 10000} | should not throw
+        it 'Size' {
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -SizeInMB 10000} | should not throw
         }
-        it 'Label'{
-            {Add-FslDisk -user "Daniel" -Destination "C:\test" -Label "Test"} | should not throw
+        it 'Label' {
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -Label "Test"} | should not throw
         }
-        it 'VHD'{
-            {Add-FslDisk -user "Daniel" -Destination "C:\test" -vhd } | should not throw
+        it 'VHD' {
+            {New-FslDisk -user "Daniel" -Destination "C:\test" -vhd } | should not throw
         }
     }
 }

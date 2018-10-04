@@ -1,4 +1,4 @@
-function Add-FslDisk {
+function New-FslDisk {
     <#
         Create VHD... ODFC_Samaccountname.vhdx
     #>
