@@ -6,6 +6,7 @@ function Mount-FslDisk {
     param(
         [Parameter( Position = 0, 
                     Mandatory = $true, 
+                    ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Path,
@@ -70,8 +71,8 @@ function Mount-FslDisk {
                 
                 ## If the VHD was created through Microsoft (Disk Management, Hyper-V, ect), Main Partition is 2
                 try{
-                    Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $JunctionPath -ErrorAction Stop
                     $PartitonNumber = 2
+                    Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $JunctionPath -ErrorAction Stop                  
                 }catch{
                     Write-Warning "Could not remove Junction point."
                     Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
