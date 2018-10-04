@@ -27,6 +27,7 @@ Describe $sut {
         Mock -CommandName Get-Item -MockWith {
             [PSCustomObject]@{
                 Extension = ".VHD"
+                BaseName  = 'yeahright'
             }
         }
         mock -CommandName Get-ChildItem -MockWith {
@@ -60,6 +61,10 @@ Describe $sut {
         it "Name should be 'yeahright.vhd'"{
             $Command = Get-FslDisk -path $path
             $Command.Name | should be "Yeahright.vhd"
+        }
+        it "basename should be yeahright"{
+            $Command = Get-Fsldisk -path $path
+            $Command.basename | should be "yeahright"
         }
         it "Attached should be false for different values"{
             Mock -CommandName Get-DiskImage -MockWith {

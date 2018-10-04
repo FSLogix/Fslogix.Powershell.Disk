@@ -59,16 +59,18 @@ function Get-FslDisk {
 
             $Format     = $VHD_Item.Extension.TrimStart('.')
             $Name       = split-path -path $VHDPath -Leaf
+            $BaseName   = $VHD_Item.BaseName
             $SizeGb     = $VHD.Size / 1gb
             $SizeMb     = $VHD.Size / 1mb
-            $FreeSpace  = [Math]::Round((($VHD.Size - $VHD.FileSize) / 1gb) , 2)
+            #$FreeSpace  = [Math]::Round((($VHD.Size - $VHD.FileSize) / 1gb) , 2)
             
             $VHD | Add-Member @{ ComputerName   = $Env:COMPUTERNAME}
             $VHD | Add-Member @{ Name           = $Name}
+            $VHD | Add-Member @{ BaseName       = $BaseName}
             $VHD | Add-Member @{ Format         = $Format}
             $VHD | Add-Member @{ SizeGb         = $SizeGb}
             $VHD | Add-Member @{ SizeMb         = $SizeMb}
-            $VHD | Add-Member @{ FreeSpace      = $FreeSpace}
+            #$VHD | Add-Member @{ FreeSpace      = $FreeSpace}
 
             Write-Output $VHD
         }
