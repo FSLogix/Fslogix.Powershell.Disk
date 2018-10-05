@@ -86,7 +86,7 @@ function Add-FslPermissions {
                                     Get-ChildItem $folder -recurse) 
                     }else{
                         $Directory = $( Get-Item $Folder 
-                                    Get-ChildItem $folder -recurse) | Where-Object { $_.PSIsContainer }
+                                    Get-ChildItem $folder -recurse -Directory)
                     }                   
                 }else {                        
                     $Directory = $Folder_isFolder
