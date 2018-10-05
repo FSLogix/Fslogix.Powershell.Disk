@@ -24,7 +24,11 @@ function Add-FslPermissions {
 
         [Parameter( Position = 3,
             ParameterSetName = 'Folder')]
-        [Switch]$Recurse
+        [Switch]$Recurse,
+
+        [Parameter( Position = 4,
+            ParameterSetName = 'Folder')]
+        [Switch]$Full
     )
     
     begin {
@@ -77,8 +81,13 @@ function Add-FslPermissions {
                 }
                 
                 if ($Recurse) {
-                    $Directory = $( Get-Item $Folder 
-                                    Get-ChildItem $folder -recurse)                    
+                    if($full){
+                        $Directory = $( Get-Item $Folder 
+                                    Get-ChildItem $folder -recurse) 
+                    }else{
+                        $Directory = $( Get-Item $Folder 
+                                    Get-ChildItem $folder -recurse) | Where-Object { $_.PSIsContainer }
+                    }                   
                 }else {                        
                     $Directory = $Folder_isFolder
                 }
