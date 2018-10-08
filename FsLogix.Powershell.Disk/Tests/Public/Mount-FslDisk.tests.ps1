@@ -111,6 +111,16 @@ Describe $sut{
         it 'invalid path'{
             {MOunt-fsldisk -path 'C:\blah'} | should throw
         }
+        
+        it 'removes junction'{
+            Mock -CommandName Get-partition -MockWith {
+                [PSCustomObject]@{
+                    AccessPaths = '\\?\volume{test}'
+                }
+            }
+            mock -CommandName Test-path -MockWith {$True}
+            {Mount-fsldisk $path} | Should not throw
+        }
     }
     Context -name "mount"{
         Mock -CommandName Mount-DiskImage -MockWith {
