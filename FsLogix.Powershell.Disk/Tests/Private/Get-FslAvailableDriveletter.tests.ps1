@@ -10,4 +10,11 @@ Describe $sut{
     it 'next'{
         {Get-Fslavailabledriveletter -next} | should not throw
     }
+    it 'Random'{
+        {Get-FslavailableDriveletter -random} | should not throw
+    }
+    mock -CommandName test-path -MockWith {$true}
+    it 'None available'{
+        {Get-Fslavailabledriveletter -ErrorAction Stop} | should throw
+    }
 }

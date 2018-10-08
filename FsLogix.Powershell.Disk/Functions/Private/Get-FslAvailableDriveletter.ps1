@@ -2,7 +2,10 @@ function Get-FslAvailableDriveLetter {
  
     Param(
         [Parameter(Position = 0)]
-        [Switch]$Next
+        [Switch]$Next,
+
+        [Parameter(Position = 1)]
+        [switch]$Random
     )
     ## Start at D rather than A since A-B are floppy drives and C is used by main operating system.
     $Letters = [char[]](68..90)
@@ -14,10 +17,18 @@ function Get-FslAvailableDriveLetter {
         }
     }#>
     $AvailableLetters = $Letters | Where-Object {!(test-path -Path "$($_):")}
-    if ($Next) {
+
+    if($null -eq $AvailableLetters){
+        Write-Error "Could not find available driveletter."
+        exit
+    }
+    
+    if ($PSBoundParameters.ContainsKey("Next")) {
         Write-Output $AvailableLetters | select-object -first 1
     }
-    else {
+    elseif($PSBoundParameters.ContainsKey("Random")) {
+        Write-Output $AvailableLetters | get-random
+    }else{
         Write-Output $AvailableLetters
     }
  
