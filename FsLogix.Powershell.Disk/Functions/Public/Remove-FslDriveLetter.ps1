@@ -2,8 +2,9 @@ function Remove-FslDriveLetter {
     [CmdletBinding()]
     param (
         [Parameter( Position = 0, 
-                    Mandatory = $true,
-                    ValueFromPipelineByPropertyName = $true)]
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true)]
         [System.String]$Path
     )
 
@@ -17,26 +18,32 @@ function Remove-FslDriveLetter {
         if (-not(test-path -path $path)) {
             Write-Error "Could not find path: $path" -ErrorAction Stop
         }
-
         $VHD = Get-FslDisk -path $Path
 
-        try {
-            ## Need to mount ##
-            if ($vhd.attached) {
-                $mount = get-disk | Where-Object {$_.Location -eq $Path}
+    
+        ## Need to mount ##
+        if ($vhd.attached) {
+            $mount = get-disk | Where-Object {$_.Location -eq $Path}
+        }
+        else {
+            Try {
+                $mount = Mount-DiskImage -ImagePath $Path -Passthru -ErrorAction Stop | get-diskimage -ErrorAction Stop
             }
-            else {
-                $mount = Mount-DiskImage -ImagePath $Path -Passthru -ErrorAction Stop | get-diskimage
+            catch {
+                write-error $Error[0]
             }
         }
-        catch {
-            write-error $Error[0]
-            Write-Error "Could not mount VHD. Perhaps the VHDs in use."
-        }
-        $driveLetter = $mount | Get-Disk | Get-Partition | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+        
+       
+        $DiskNumber = $Mount.Number
+        $driveLetter = Get-partition -DiskNumber $DiskNumber | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
 
-        if ($driveLetter -like "*\\?\Volume{*" -or $null -eq $driveLetter) {
-            Write-Warning "Drive Letter is already removed for $Path"
+        if ($null -eq $driveLetter) {
+            Write-Error "Drive Letter is already removed for $Path"
+            exit
+        }
+        if ($driveLetter.length -ne 3) {
+            Write-Error "No valid drive letter found for $Path."
             exit
         }
 
@@ -49,7 +56,7 @@ function Remove-FslDriveLetter {
             Write-Error $Error[0]
         }
         try {
-            $Volume | Get-Partition | Remove-PartitionAccessPath -AccessPath $Driveletter
+            $Volume | Get-Partition | Remove-PartitionAccessPath -AccessPath $Driveletter -ErrorAction Stop
             Write-Verbose "$(Get-Date): Successfully removed $Driveletter"
         }
         catch {
