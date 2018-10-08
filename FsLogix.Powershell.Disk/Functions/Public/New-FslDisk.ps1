@@ -115,14 +115,14 @@ function New-FslDisk {
         if($PSBoundParameters.ContainsKey("AssignDriveLetter")){
             if($PSBoundParameters.ContainsKey("Letter")){
                 Try{
-                    Set-FslDriveletter -Path $VHD_Path -Letter $Letter
+                    Set-FslDriveletter -Path $VHD_Path -Letter $Letter -ErrorAction Stop
                 }catch{
                     Pop-Location
                     Write-Error $Error[0]
                 }
             }else{
                 Try{
-                    Add-FslDriveLetter -Path $VHD_Path
+                    Add-FslDriveLetter -Path $VHD_Path -ErrorAction Stop
                 }catch{
                     Pop-Location
                     Write-Error $Error[0]
