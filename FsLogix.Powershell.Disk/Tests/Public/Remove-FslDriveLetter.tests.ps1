@@ -155,7 +155,12 @@ Describe $sut{
             Throw 'Dismount'
         }
         it 'Dismount'{
-            {Remove-FslDriveLetter -Path $Path -ErrorAction Stop} | should throw
+            {Remove-FslDriveLetter -Path $Path -ErrorAction Stop -dismount} | should throw
+        }
+    }
+    Context -Name "Partition Number"{
+        it 'number'{
+            {Remove-FslDriveLetter -Path $Path -PartitionNumber 2} | should not throw
         }
     }
 }

@@ -5,7 +5,13 @@ function Remove-FslDriveLetter {
             Mandatory = $true,
             ValueFromPipeline = $true,
             ValueFromPipelineByPropertyName = $true)]
-        [System.String]$Path
+        [System.String]$Path,
+
+        [Parameter (Position = 1)]
+        [Switch]$Dismount,
+
+        [Parameter (Position = 2)]
+        [int]$PartitionNumber
     )
 
     begin {
@@ -17,6 +23,10 @@ function Remove-FslDriveLetter {
 
         if (-not(test-path -path $path)) {
             Write-Error "Could not find path: $path" -ErrorAction Stop
+        }
+        if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
+            # FsLogix's VHD partition Number defaulted to 1.
+            $PartitionNumber = 1
         }
         $VHD = Get-FslDisk -path $Path
 
@@ -36,7 +46,7 @@ function Remove-FslDriveLetter {
         
        
         $DiskNumber = $Mount.Number
-        $driveLetter = Get-partition -DiskNumber $DiskNumber | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
+        $driveLetter = Get-partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber | Select-Object -ExpandProperty AccessPaths | Select-Object -first 1
 
         if ($null -eq $driveLetter) {
             Write-Error "Drive Letter is already removed for $Path"
@@ -64,11 +74,13 @@ function Remove-FslDriveLetter {
             exit
         }
             
-        try {
-            Dismount-DiskImage -ImagePath $Path
-        }
-        catch {
-            Write-Error $Error[0]
+        if ($Dismount) {
+            try {
+                Dismount-DiskImage -ImagePath $Path
+            }
+            catch {
+                Write-Error $Error[0]
+            }
         }
     }
 
