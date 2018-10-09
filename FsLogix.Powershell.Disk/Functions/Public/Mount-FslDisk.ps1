@@ -107,7 +107,7 @@ function Mount-FslDisk {
             $Output = [PSCustomObject]@{
                 DiskNumber      = $DiskNumber
                 Mount           = $DriveLetter
-                PartitionNumber = $PartitonNumber
+                PartitionNumber = $PartitionNumber
             }
             $Output
         }
