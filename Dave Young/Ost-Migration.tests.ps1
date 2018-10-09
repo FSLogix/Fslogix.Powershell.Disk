@@ -29,6 +29,8 @@ Describe $sut{
         Mock -CommandName Remove-ADGroupMember -MockWith {}
     }
     Context -name "test"{
-        . "$here\$sut"
+        it 'test'{
+            . "$here\$sut"
+        }
     }
 }
