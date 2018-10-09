@@ -23,14 +23,14 @@ Describe $sut{
                 Mount = "test"
             }
         }
-        Mock -CommandName Copy-item -MockWith {}
+        Mock -CommandName Copy-FslToDisk -MockWith {}
         Mock -CommandName Dismount-fsldisk -MockWith {}
         Mock -CommandName Rename-item -MockWith {}
         Mock -CommandName Remove-ADGroupMember -MockWith {}
     }
     Context -name "test"{
         it 'test'{
-            . "$here\$sut"
+            {. "$here\$sut"} | should not throw
         }
     }
 }

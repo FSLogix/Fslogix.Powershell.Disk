@@ -35,12 +35,15 @@ $FlipFlop               = $false                        #true to have directory 
 Set-StrictMode -Version Latest
 #Requires -RunAsAdministrator
 #Requires -Modules "ActiveDirectory"
-
+Function GetLineNumber(){
+    $MyInvocation.ScriptLineNumber
+}
 
 ## Validate Frx.exe is installed.
 Try{
     $FrxPath = Confirm-Frx -Passthru -ErrorAction Stop
 }catch{
+    Write-Warning "Error Code: $(GetLineNumber)"
     Write-Error $Error[0]
     exit
 }
@@ -50,6 +53,7 @@ Set-Location -path (Split-Path -Path $FrxPath -Parent)
 Try{
     $AdGroup_Members = Get-AdGroupmember -Identity $AdGroup -Recursive -ErrorAction Stop
 }catch{
+    Write-Warning "Error Code: $(GetLineNumber)"
     Write-Error $Error[0]
 }
 
@@ -62,6 +66,7 @@ foreach ($User in $AdGroup_Members) {
         $Label          = $SamAccountName
         Write-Verbose "Current User: $Name."
     }catch{
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -75,6 +80,7 @@ foreach ($User in $AdGroup_Members) {
         }
         Write-Verbose "Generated Directory: $Directory"
     }catch{
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -90,6 +96,7 @@ foreach ($User in $AdGroup_Members) {
         Write-Verbose "Created New Virtual Hard Disk."
         Write-Verbose "Generated at: $VHD_Path"
     }catch{
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -99,6 +106,7 @@ foreach ($User in $AdGroup_Members) {
         Add-FslPermissions -User $Name -folder $Directory -Recurse -Full
         Write-Verbose "Successfully applied security permissions for $name."
     }catch{
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -107,6 +115,7 @@ foreach ($User in $AdGroup_Members) {
     $User_OldOst = $Old_OST_Location -replace "%Username%", $SamAccountName
     if(-not(test-path -path $User_OldOst)){
         Write-Warning "Invalid old ost path: $User_Oldost"
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error "Could not find old ost path for $Name."
         exit
     }else{
@@ -114,6 +123,7 @@ foreach ($User in $AdGroup_Members) {
     }
     if($Null -eq $OST){
         Write-Warning "Could not find ost file in $User_Oldost"
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error "Did not find ost file." 
         exit
     }else{
@@ -126,6 +136,7 @@ foreach ($User in $AdGroup_Members) {
         $MountPath = $Mount.Mount
         Write-Verbose "Created Junction Point: $MountPath"
     }Catch{
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -139,6 +150,7 @@ foreach ($User in $AdGroup_Members) {
         Copy-FslToDisk -VHD $VHD_Path -Path $OST.FullName -Destination $New_OST_Location -ErrorAction Stop
     }catch{
         Dismount-FslDisk -Path $VHD_Path
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -149,6 +161,7 @@ foreach ($User in $AdGroup_Members) {
         Write-Verbose "Successfully applied security permissions for ost files."
     }catch{
         Dismount-FslDisk -Path $VHD_Path
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
@@ -159,6 +172,7 @@ foreach ($User in $AdGroup_Members) {
             Rename-item -path $OST.FullName -NewName "$($OST.basename).old" -Force -ErrorAction Stop
             Write-Verbose "Successfully renamed old ost files."
         }catch{
+            Write-Warning "Error Code: $(GetLineNumber)"
             Write-Error $Error[0]
             exit
         }
@@ -169,6 +183,7 @@ foreach ($User in $AdGroup_Members) {
             Rename-item -path $User_OldOst -NewName "$($User_oldost)_Old" -Force -ErrorAction Stop
             Write-Verbose "Successfully renamed old ost directory"
         }catch{
+            Write-Warning "Error Code: $(GetLineNumber)"
             Write-Error $Error[0]
             exit
         }
@@ -179,6 +194,7 @@ foreach ($User in $AdGroup_Members) {
             Remove-ADGroupMember -Identity $AdGroup -Members $SamAccountName -ErrorAction Stop
             Write-Verbose "Successfully removed $Name from AdGroup: $AdGroup."
         }catch{
+            Write-Warning "Error Code: $(GetLineNumber)"
             Write-Error $Error[0]
             exit
         }
@@ -189,6 +205,7 @@ foreach ($User in $AdGroup_Members) {
         Dismount-FslDisk -Path $VHD_Path -ErrorAction Stop
         Write-Verbose "Dismounted VHD."
     }catch{
+        Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
     }
