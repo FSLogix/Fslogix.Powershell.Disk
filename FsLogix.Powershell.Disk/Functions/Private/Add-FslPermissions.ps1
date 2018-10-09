@@ -1,11 +1,10 @@
 function Add-FslPermissions {
-    [CmdletBinding(DefaultParameterSetName = 'AdUser')]
+    [CmdletBinding(DefaultParameterSetName = 'None')]
     param (
         [Parameter( Position = 0,
             Mandatory = $true,
             ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true,
-            ParameterSetName = 'User')]
+            ValueFromPipelineByPropertyName = $true)]
         [System.String]$User,
 
         [Parameter( Position = 1,
@@ -38,9 +37,9 @@ function Add-FslPermissions {
     }
     
     process {
-
+        
         Try {
-            $Ad_User = Get-ADUser -Identity $User -ErrorAction Stop | Select-Object -ExpandProperty SamAccountName
+            $Ad_User = Get-ADUser $User -ErrorAction Stop | Select-Object -ExpandProperty SamAccountName
         }
         Catch {
             Write-Error $Error[0]
