@@ -6,7 +6,7 @@ $here = $here -replace 'Tests', 'Functions'
 Describe $sut{
 
     $VHD = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
-    $Path = "C:\Users\danie\Documents\VHDModuleProject\sandbox.1.ps1"
+    $Path = "C:\Users\danie\Documents\Scripts\Disk"
     $Destination = "Test"
     BeforeAll {
         Mock -CommandName Mount-FslDisk -MockWith {

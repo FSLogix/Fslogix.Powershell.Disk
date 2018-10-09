@@ -17,7 +17,7 @@ function Move-FslToDisk {
                     Mandatory = $true,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
-        [System.String[]]$Destination,
+        [System.String]$Destination,
 
         [Parameter (Position = 3)]
         [Switch]$Dismount

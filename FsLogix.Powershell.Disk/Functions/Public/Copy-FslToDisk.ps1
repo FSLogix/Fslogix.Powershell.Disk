@@ -16,7 +16,7 @@ function Copy-FslToDisk {
         [Parameter( Position = 2,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
-        [System.String[]]$Destination,
+        [System.String]$Destination,
 
         [Parameter (Position = 3)]
         [Switch]$Dismount
@@ -50,7 +50,6 @@ function Copy-FslToDisk {
             Copy-item -Path $Path -Destination $Copy_Destination -Recurse -Force -ErrorAction Stop
         }catch{
             Dismount-fsldisk -DiskNumber $Disk_Number
-            Write-Error "Could not complete copy process."
             Write-Error $Error[0]
             exit
         }
