@@ -10,6 +10,10 @@ function Mount-FslDisk {
             ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [System.String]$Path,
+
+        [Parameter (Position = 1)]
+        [Alias("Partition")]
+        [int]$PartitionNumber,
         
         [Parameter( Position = 2 )]
         [Switch]$PassThru
@@ -41,17 +45,21 @@ function Mount-FslDisk {
 
         $Name = $VHD.basename
         $DiskNumber = $mount.Number
-        $PartitonNumber = 1
         $GuidPath = "C:\programdata\fslogix\Guid"
 
+        if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
+            $PartitonNumber = 1
+        }
+   
         Try {
-            $DriveLetter = Get-Partition -DiskNumber $DiskNumber -ErrorAction Stop | Select-Object -ExpandProperty AccessPaths | select-object -first 1
+            $DriveLetter = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -ErrorAction Stop | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         }
         catch {
             Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
             Write-Error $Error[0]
             exit
         }
+      
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             
             Write-Verbose "$(Get-Date): Did not receive valid driveletter: $Driveletter. Assigning temporary junction point."
@@ -75,22 +83,14 @@ function Mount-FslDisk {
             
             Try {
                 ## FsLogix's VHD main partition is 1
-                Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 1 -AccessPath $JunctionPath -ErrorAction Stop
+                Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -AccessPath $JunctionPath -ErrorAction Stop
             }
             catch {
                 
-                ## If the VHD was created through Microsoft (Disk Management, Hyper-V, ect), Main Partition is 2
-                try {
-                    $PartitonNumber = 2
-                    Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $JunctionPath -ErrorAction Stop                  
-                }
-                catch {
-                    Write-Warning "Could not remove Junction point."
-                    Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
-                    Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
-                    Write-Error $Error[0]
-                    exit
-                }
+                Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
+                Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
+                Write-Error $Error[0]
+                exit
             }
             
             $DriveLetter = $JunctionPath

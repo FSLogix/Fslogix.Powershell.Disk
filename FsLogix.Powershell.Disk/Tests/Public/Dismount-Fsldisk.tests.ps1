@@ -128,5 +128,8 @@ Describe $sut {
             Assert-MockCalled -CommandName Remove-Item -Times 1
             Assert-MockCalled -CommandName Dismount-DiskImage -Times 1
         }
+        it 'PartitionNumber'{
+            {Dismount-fsldisk -DiskNumber $DiskNumber -PartitionNumber 1} | should not throw
+        }
     }
 }

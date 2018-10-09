@@ -162,7 +162,7 @@ Describe $sut{
             }
         }
         it 'Does not throw'{
-            {Mount-fsldisk $path -ErrorAction Stop} | Should not throw
+            {Mount-fsldisk $path -PartitionNumber 2 -ErrorAction Stop} | Should not throw
         }
     }
     Context -name 'Junction path'{

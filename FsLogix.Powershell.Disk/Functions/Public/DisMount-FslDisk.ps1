@@ -13,7 +13,12 @@ function Dismount-FslDisk {
                     ValueFromPipelineByPropertyName = $true,
                     ParameterSetName = "DiskNumber")]
         [ValidateNotNullOrEmpty()]
-        [int]$DiskNumber
+        [Alias("Disk")]
+        [int]$DiskNumber,
+
+        [Parameter ( Position = 2)]
+        [alias("Partition")]
+        [int]$PartitionNumber
     )
     
     begin {
@@ -22,6 +27,10 @@ function Dismount-FslDisk {
     }
     
     process {
+
+        if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
+            $PartitionNumber = 1
+        }
 
         Switch ($PSCmdlet.ParameterSetName){
             Path {
@@ -33,7 +42,7 @@ function Dismount-FslDisk {
                     Write-Error "Could not find disk with path: $Path" -ErrorAction Stop
                 }
                 $DiskNumber = $Disk.Number
-                $Partition = Get-Partition -DiskNumber $DiskNumber
+                $Partition = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber
             }
             DiskNumber {
                 $Disk = Get-Disk -Number $DiskNumber
@@ -41,7 +50,7 @@ function Dismount-FslDisk {
                     Write-Error "Could not find disk with number: $DiskNumber" -ErrorAction Stop
                 }
                 $Path = $disk.Location
-                $Partition = Get-Partition -DiskNumber $DiskNumber
+                $Partition = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber
             }
         }
 
