@@ -1,5 +1,5 @@
 function Add-FslPermissions {
-    [CmdletBinding(DefaultParameterSetName = 'None')]
+    [CmdletBinding(DefaultParameterSetName = 'File')]
     param (
         [Parameter( Position = 0,
             Mandatory = $true,
@@ -37,7 +37,7 @@ function Add-FslPermissions {
     }
     
     process {
-        
+
         Try {
             $Ad_User = Get-ADUser $User -ErrorAction Stop | Select-Object -ExpandProperty SamAccountName
         }
