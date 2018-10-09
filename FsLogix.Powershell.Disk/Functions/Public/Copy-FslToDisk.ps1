@@ -16,7 +16,7 @@ function Copy-FslToDisk {
         [Parameter( Position = 2,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
-        [System.String]$Destination,
+        [System.String[]]$Destination,
 
         [Parameter (Position = 3)]
         [Switch]$Dismount

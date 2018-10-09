@@ -11,13 +11,13 @@ function Move-FslToDisk {
                     Mandatory = $true,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
-        [System.String]$Path,
+        [System.String[]]$Path,
 
         [Parameter( Position = 2,
                     Mandatory = $true,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
-        [System.String]$Destination,
+        [System.String[]]$Destination,
 
         [Parameter (Position = 3)]
         [Switch]$Dismount
@@ -42,10 +42,14 @@ function Move-FslToDisk {
 
         $Mounted_Path = $Mounted_Disk.Mount
         $Disk_Number = $Mounted_Disk.disknumber
-        $Copy_Destination = join-path ($Mounted_Path) ($Destination)
-     
+        $move_Destination = join-path ($Mounted_Path) ($Destination)
+
+        if(-not(test-path -path $move_Destination)){
+            New-Item -ItemType Directory $move_Destination -Force -ErrorAction SilentlyContinue | Out-Null
+        }
+
         Try{
-            Move-item -Path $Path -Destination $Copy_Destination -Force -ErrorAction Stop
+            Move-item -Path $Path -Destination $move_Destination -Force -ErrorAction Stop
         }catch{
             Dismount-fsldisk -DiskNumber $Disk_Number
             Write-Error $Error[0]
