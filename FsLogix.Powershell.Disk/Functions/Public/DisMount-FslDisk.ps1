@@ -76,7 +76,7 @@ function Dismount-FslDisk {
             }catch{
                 Write-Error $Error[0]
             }
-
+            Write-Verbose "Successfully removed temporary junction point."
         }
         
         try{

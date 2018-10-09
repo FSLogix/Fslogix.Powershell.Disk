@@ -33,15 +33,22 @@ function Move-FslToDisk {
             Write-Error "Could not find Path: $Path" -ErrorAction Stop
         }
         
-        Try{
-            $Mounted_Disk = Mount-FslDisk -Path $VHD -PassThru -ErrorAction Stop
-        }catch{
-            Write-Error $Error
-            exit
+        $Disk = Get-Fsldisk -Path $VHD
+        if($Disk.attached){
+            $Disk_Number = $Disk.number
+            $Partition = Get-Partition -disknumber $Disk_Number | select-object -ExpandProperty Accesspaths | select-object -first 1
+            $Mounted_Path = $Partition
+        }else{
+            Try{
+                $Mounted_Disk = Mount-FslDisk -Path $VHD -PassThru -ErrorAction Stop
+            }Catch{
+                Write-Error $Error[0]
+                exit
+            }
+            $Mounted_Path       = $Mounted_Disk.Mount
+            $Disk_Number        = $Mounted_Disk.disknumber
         }
-
-        $Mounted_Path = $Mounted_Disk.Mount
-        $Disk_Number = $Mounted_Disk.disknumber
+        
         $move_Destination = join-path ($Mounted_Path) ($Destination)
 
         if(-not(test-path -path $move_Destination)){
