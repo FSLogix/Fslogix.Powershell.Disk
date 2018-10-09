@@ -1,3 +1,7 @@
+##
+## REQUIRES FsLogix.PowerShell.Disk to be installed
+##
+
 ## MANDATORY VARIABLES - USER WILL NEED TO CHANGE ##
 $Vhd_Size_InMB          = 30000                                 #VHD Size (In MB)
 $AdGroup                = "Citrix Migrate OST FSLogix VHDX"     #Name of Active Directory Group
