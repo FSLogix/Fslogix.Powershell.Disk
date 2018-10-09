@@ -27,7 +27,7 @@ Describe $sut{
                 Basename = 'public'
             }
         }
-        Mock -CommandName Get-Acl -MockWith {
+        <#Mock -CommandName Get-Acl -MockWith {
             $Acl = Get-Acl 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Private\Add-FslPermissions.ps1'
         }
         Mock -CommandName New-Object -MockWith {
@@ -35,7 +35,7 @@ Describe $sut{
         }
         Mock -CommandName Set-Acl -MockWith {
             $Acl | set-acl
-        }
+        }#>
     }
     Context -name "Mock AdUser"{
         it 'No errors'{

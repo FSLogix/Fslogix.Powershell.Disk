@@ -48,9 +48,9 @@ function Mount-FslDisk {
         $GuidPath = "C:\programdata\fslogix\Guid"
 
         if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
-            $PartitonNumber = 1
+            $PartitionNumber = 1
         }
-   
+        Write-Verbose "$PartitionNUmber"
         Try {
             $DriveLetter = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -ErrorAction Stop | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         }
