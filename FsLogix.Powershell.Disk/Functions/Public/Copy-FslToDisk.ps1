@@ -11,10 +11,9 @@ function Copy-FslToDisk {
                     Mandatory = $true,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
-        [System.String]$Path,
+        [System.String[]]$Path,
 
         [Parameter( Position = 2,
-                    Mandatory = $true,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
         [System.String]$Destination,
@@ -44,6 +43,9 @@ function Copy-FslToDisk {
         $Disk_Number        = $Mounted_Disk.disknumber
         $Copy_Destination   = join-path ($Mounted_Path) ($Destination)
      
+        if(-not(test-path -path $Copy_Destination)){
+            New-Item -ItemType Directory $Copy_Destination -Force -ErrorAction SilentlyContinue | Out-Null
+        }
         Try{
             Copy-item -Path $Path -Destination $Copy_Destination -Recurse -Force -ErrorAction Stop
         }catch{
