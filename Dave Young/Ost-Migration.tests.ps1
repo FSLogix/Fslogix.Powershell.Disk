@@ -5,7 +5,7 @@ $here = $here -replace 'Tests', 'Functions'
 Describe $sut{
     BeforeAll{
         Mock -CommandName Confirm-Frx -MockWith {
-            "C:\Users\danie\Documents\Scripts\DavidYoung\Migrate-Ost"
+            "test"
         }
         Mock -CommandName Set-location -MockWith {}
         Mock -CommandName Get-ADGroupMember -MockWith {

@@ -5,9 +5,9 @@
 ## MANDATORY VARIABLES - USER WILL NEED TO CHANGE ##
 $Vhd_Size_InMB          = 30000                                 #VHD Size (In MB)
 $AdGroup                = "Citrix Migrate OST FSLogix VHDX"     #Name of Active Directory Group
-$Old_OST_Location       = "C:\testost\%username%"               #Location of the ost files
+$Old_OST_Location       = "\\mailcache\ost\%username%"          #Location of the ost files
 $New_OST_Location       = "ODFC"                                #Destination for Ost files within VHD
-$FsLogix_VHDLocation    = "C:\testFslogix\%username%"           #Location of FsLogix VHD
+$FsLogix_VHDLocation    = "\\mailcache\ost\fslogix\%username%"  #Location of FsLogix VHD
 
 ## OPTIONAL VARIABLES - USER DOESN'T NEED TO CHANGE ##
 $ComputerName           = $Env:COMPUTERNAME             #User's computername
@@ -17,6 +17,19 @@ $Rename_Old_Ost         = $false                        #true to rename old ost 
 $Rename_Old_Directory   = $true                         #true to rename old directory to include _old, false to leave old directory the same
 $Remove_FromAD          = $true                         #true to remove AD User after sucessful migration, false to keep AD user
 $FlipFlop               = $false                        #true to have directory name SID_Name, false to have directory name Name_SID
+
+
+### David Young's Notes ###
+
+#old location is currently \\mailcache\ost\%username%
+#vhdx location is \\mailcache\ost\fslogix\%username%
+#need file format
+#after complete rename ost to to .old extension if possible and rename directory of user to _old
+#we are using vhdx not vhd for files
+#Dave request can this be made to read AD group
+#if success can it remove user from ad group and only leave unmigrated users for another attempt of job run
+#file name string is set to username - sid
+
 
 ## Start of Script ##
 Set-StrictMode -Version Latest
