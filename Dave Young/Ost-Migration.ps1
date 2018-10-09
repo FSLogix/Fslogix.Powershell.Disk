@@ -137,8 +137,6 @@ foreach ($User in $AdGroup_Members) {
     }
     Try{
         Copy-FslToDisk -VHD $VHD_Path -Path $OST.FullName -Destination $New_OST_Location -ErrorAction Stop
-        #Copy-Item -path $OST.FullName -Destination $Ost_Destination -Force -ErrorAction Stop
-        Write-Verbose "Copied Ost file successfully."
     }catch{
         Dismount-FslDisk -Path $VHD_Path
         Write-Error $Error[0]
