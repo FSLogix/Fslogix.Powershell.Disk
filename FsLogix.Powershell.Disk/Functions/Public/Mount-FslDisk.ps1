@@ -50,7 +50,7 @@ function Mount-FslDisk {
         if(!$PSBoundParameters.ContainsKey("PartitionNumber")){
             $PartitionNumber = 1
         }
-        Write-Verbose "$PartitionNUmber"
+
         Try {
             $DriveLetter = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -ErrorAction Stop | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         }
