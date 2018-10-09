@@ -5,6 +5,7 @@ function New-FslDirectory {
                     Mandatory = $true,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
+        [Alias("Name")]
         [String]$SamAccountName,
 
         [Parameter (Position = 1,
