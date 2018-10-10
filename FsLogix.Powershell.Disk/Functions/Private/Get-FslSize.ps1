@@ -15,14 +15,16 @@ function Get-FslSize {
     )
     
     begin {
+        Set-Strictmode -version latest
+        $Size = 0
     }
     
     process {
-        
+    
         foreach($file in $Path){
             $Size += (Get-ChildItem -Path $file -Recurse | Measure-Object -Property Length -Sum -ErrorAction Stop).Sum
         }
-        
+       
         switch($PSCmdlet.ParameterSetName){
             'MB' {
                 [Math]::round($Size/1mb,2)
