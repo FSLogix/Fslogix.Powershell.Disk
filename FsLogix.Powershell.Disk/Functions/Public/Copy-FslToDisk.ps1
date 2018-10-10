@@ -28,41 +28,31 @@ function Copy-FslToDisk {
     }
     
     process {
-        if(-not(test-path -path $Path)){
-            Write-Error "Could not find Path: $Path" -ErrorAction Stop
+        Try{
+            $Mounted_Disk = Mount-FslDisk -Path $VHD -PassThru -ErrorAction Stop
+        }Catch{
+            Write-Error $Error[0]
+            exit
         }
-
-        $Disk = Get-Fsldisk -Path $VHD
-        if($Disk.attached){
-            $Disk_Number = $Disk.number
-            $Partition = Get-Partition -disknumber $Disk_Number | select-object -ExpandProperty Accesspaths | select-object -first 1
-            $Mounted_Path = $Partition
-        }else{
-            Try{
-                $Mounted_Disk = Mount-FslDisk -Path $VHD -PassThru -ErrorAction Stop
-            }Catch{
-                Write-Error $Error[0]
-                exit
-            }
-            $Mounted_Path       = $Mounted_Disk.Mount
-            $Disk_Number        = $Mounted_Disk.disknumber
-        }
-
+        $Mounted_Path       = $Mounted_Disk.Mount
+        $Disk_Number        = $Mounted_Disk.disknumber
         
-        $Copy_Destination   = join-path ($Mounted_Path) ($Destination)
-     
+        $Copy_Destination = join-path ($Mounted_Path) ($Destination)
+        Write-Verbose $Copy_Destination
         if(-not(test-path -path $Copy_Destination)){
             New-Item -ItemType Directory $Copy_Destination -Force -ErrorAction SilentlyContinue | Out-Null
         }
         Try{
-            Copy-item -Path $Path -Destination $Copy_Destination -Recurse -Force -ErrorAction Stop
+            foreach($file in $Path){
+                ## Using Robocopy to copy permissions.
+                $Command = "robocopy $file $Copy_Destination /s /w:1 /r:1 /xj /sec /copyall"
+                Invoke-Expression $Command | Out-Null
+            }
         }catch{
             Dismount-fsldisk -DiskNumber $Disk_Number
             Write-Error $Error[0]
             exit
         }
-
-        Write-Verbose "Successfully copied $path to $Destination"
 
         if($Dismount){
             Try{

@@ -15,13 +15,14 @@ Describe $sut{
                 DiskNumber = 1
             }
         }
-        Mock -CommandName Copy-Item -MockWith {}
+        Mock -CommandName Invoke-expression -MockWith {}
         Mock -CommandName Dismount-FslDisk -MockWith {}
     }
 
-    Context -name "Throw"{
-        it 'Invalid Path'{
-            {Copy-FslToDisk -VHD $VHD -Path 'C:\blah' -Destination $Destination} | should throw
+    Context -name "Test-path"{
+        mock -CommandName Test-path -MockWith {$false}
+        it 'creates directory'{
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination} | should not throw
         }
     }
 
@@ -34,11 +35,11 @@ Describe $sut{
         }
         it 'Does not continue script' {
             Assert-MockCalled -CommandName Dismount-FslDisk -Times 0
-            Assert-MockCalled -CommandName Copy-Item -Times 0
+            #Assert-MockCalled -CommandName Copy-Item -Times 0
         }
     }
 
-    Context -name "Copy-Item fails"{
+    <#Context -name "Copy-Item fails"{
         Mock -CommandName Copy-Item -MockWith {
             Throw 'Cannot Copy'
         }
@@ -50,6 +51,17 @@ Describe $sut{
         }
         It 'Dismounts' {
             Assert-MockCalled -CommandName Dismount-FslDisk -Times 2
+        }  
+    }#>
+    COntext -name "Invoke-expression fails"{
+        Mock -CommandName Invoke-expression -MockWith {
+            Throw 'Invoke'
+        }
+        it "Script stops, dismount won't be called."{
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination -ErrorAction Stop -Dismount} | should throw
+        }
+        It 'Dismounts' {
+            Assert-MockCalled -CommandName Dismount-FslDisk -Times 1
         }  
     }
     Context -name "Dismount fails"{
@@ -70,7 +82,7 @@ Describe $sut{
         }
         it "Assert Mocks"{
             Assert-MockCalled -CommandName Mount-FslDisk -Times 1
-            Assert-MockCalled -CommandName Copy-Item -Times 2
+            #Assert-MockCalled -CommandName Copy-Item -Times 2
             Assert-MockCalled -CommandName Dismount-FslDisk -Times 1
         }
     }

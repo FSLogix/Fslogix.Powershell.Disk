@@ -71,7 +71,7 @@ function Mount-FslDisk {
             }
 
             Try {
-                New-Item -Path $JunctionPath -ItemType Directory -ErrorAction Stop | Out-Null
+                New-Item -Path $JunctionPath -ItemType Directory -ErrorAction Stop| Out-Null
             }
             catch {
                 Write-Warning "Could not create junction path."
@@ -86,7 +86,7 @@ function Mount-FslDisk {
                 Add-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -AccessPath $JunctionPath -ErrorAction Stop
             }
             catch {
-                
+                Write-Warning "Could not assign AccessPath. Perhaps you're not using a FsLogix VHD?"
                 Remove-Item -path $JunctionPath -Force -ErrorAction SilentlyContinue
                 Dismount-DiskImage -ImagePath $Path -ErrorAction SilentlyContinue
                 Write-Error $Error[0]
@@ -95,7 +95,7 @@ function Mount-FslDisk {
             
             $DriveLetter = $JunctionPath
         }
-
+        
         if ($DriveLetter.Length -eq 3) {
             Write-Verbose "$(Get-Date): $Name mounted on Drive Letter [$Driveletter]."
         }

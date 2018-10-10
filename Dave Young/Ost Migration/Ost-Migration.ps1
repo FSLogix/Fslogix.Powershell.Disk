@@ -156,6 +156,11 @@ foreach ($User in $AdGroup_Members) {
         exit
     }
 
+    <#
+
+    Copy-FslToDisk copies using robocopy with /copyall parameter, so permissions are
+    Carried over.
+
     Write-Verbose "Applying Permissions to ost files"
     Try{
         Add-FslPermissions -User $Name -folder $Ost_Destination -Recurse -Full
@@ -165,7 +170,7 @@ foreach ($User in $AdGroup_Members) {
         Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]
         exit
-    }
+    }#>
 
     if($Rename_Old_Ost){
         Try{
