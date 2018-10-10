@@ -13,10 +13,22 @@ Describe $sut{
             [PSCustomObject]@{
                 Mount = 'C:\'
                 DiskNumber = 1
+                PartitionNumber = 1
             }
         }
         Mock -CommandName Invoke-expression -MockWith {}
         Mock -CommandName Dismount-FslDisk -MockWith {}
+        <#Mock -commandname Get-Partition -MockWith {
+            Get-partition -DiskNumber 1
+        }
+        Mock -CommandName Get-Volume -MockWith {
+            [PSCustomObject]@{
+                SizeRemaining = 1000
+            }
+        }
+        Mock -CommandName Get-FslSize -MockWith {
+            500
+        }#>
     }
 
     Context -name "Test-path"{
