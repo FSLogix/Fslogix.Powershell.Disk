@@ -36,10 +36,8 @@ function Get-FslDriveLetter {
         $DiskNumber = $mount.Number
         $DriveLetter = Get-Partition -DiskNumber $DiskNumber | Select-Object -ExpandProperty AccessPaths | select-object -first 1
         
-        if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
+        if ($null -eq $DriveLetter -or $DriveLetter.length -ne 3) {
             Write-Warning "No valid driveletter found for $($VHD.name)."
-        }else{
-            Write-Output $DriveLetter
         }
 
         if($Dismount){
