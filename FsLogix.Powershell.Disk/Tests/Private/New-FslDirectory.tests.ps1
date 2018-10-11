@@ -6,10 +6,17 @@ $SamAccountName = "Daniel"
 $SID = "0-2-26-1996"
 $Destination = "test"
 $Destination2 = "test\%Username%"
+$AdUser = "Test"
 
 Describe $sut{
 
     BeforeAll{
+        Mock -CommandName Get-AdUser -MockWith {
+            [PSCustomObject]@{
+                SamAccountName = $SamAccountName
+                SID = $SId
+            }
+        }
         Mock -CommandName Remove-item -MockWith {}
         Mock -CommandName New-Item -MockWith {}
         #mock -CommandName Test-path -MockWith {}
@@ -25,10 +32,30 @@ Describe $sut{
             {$SID | New-FslDirectory -SamAccountName $SamAccountName -Destination $Destination } | should not throw
         }
         it 'Positional arguments'{
-            {New-FslDirectory $SamAccountName $SID $Destination} | should not throw
+            {New-FslDirectory $SamAccountName $SID -destination $Destination} | should not throw
         }
         it '%username%'{
             {New-FslDirectory -SamAccountName $SamAccountName -SID $SID -Destination $Destination2} | should not throw
+        }
+        it 'AdUser'{
+            {New-FslDirectory -user "Test" -Destination $Destination} | should not throw
+        }
+        it 'pipeline'{
+            {$AdUser | New-FslDirectory -Destination $Destination} | should not throw
+        }
+    }
+    Context -name 'Mock AdUser'{
+        Mock -CommandName Get-Aduser -MockWith {
+            Throw 'User'
+        }
+        it 'throws'{
+            {New-FslDirectory -user "Test" -Destination $Destination -ErrorAction Stop} | should throw
+        }
+        it 'assert mock called'{
+            Assert-MockCalled -CommandName Get-Aduser -Times 1
+        }
+        it 'assert script stopped'{
+            Assert-MockCalled -CommandName New-Item -Times 0
         }
     }
     Context -name 'Test-path'{

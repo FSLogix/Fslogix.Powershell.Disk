@@ -1,29 +1,36 @@
 function New-FslDirectory {
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Name')]
     param (
         [Parameter (Position = 0,
                     Mandatory = $true,
                     ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true)]
+                    ValueFromPipelineByPropertyName = $true,
+                    ParameterSetName = 'Name')]
         [Alias("Name")]
         [String]$SamAccountName,
 
         [Parameter (Position = 1,
                     Mandatory = $true,
                     ValueFromPipeline = $true,
-                    ValueFromPipelineByPropertyName = $true)]
+                    ValueFromPipelineByPropertyName = $true,
+                    ParameterSetName = 'Name')]
         [String]$SID,
 
-        [Parameter (Position = 2,
-                    Mandatory = $True,
+        [Parameter (Position = 0,
+                    Mandatory = $true,
+                    ValueFromPipeline = $true,
+                    ValueFromPipelineByPropertyName = $true,
+                    ParameterSetName = 'AdUser')]
+        [Alias("User")]
+        [String]$AdUser,
+
+        [Parameter (Mandatory = $True,
                     ValueFromPipeline = $true,
                     ValueFromPipelineByPropertyName = $true)]
         [String]$Destination,
 
-        [Parameter (Position = 3)]
         [Switch]$FlipFlop,
 
-        [Parameter (Position = 4)]
         [Switch]$Passthru
     )
     
@@ -34,6 +41,16 @@ function New-FslDirectory {
     }
     
     process {
+        
+        if($PSBoundParameters.ContainsKey("Aduser")){
+            Try{
+                $User = Get-AdUser $AdUser -ErrorAction Stop
+                $SamAccountName = $User.Samaccountname
+                $SID = $User.SID
+            }Catch{
+                Write-Error $Error[0]
+            }
+        }
         
         if($PSBoundParameters.ContainsKey("FlipFlop")){
             $User_Dir_Name = $SID + "_" + $SamAccountName
