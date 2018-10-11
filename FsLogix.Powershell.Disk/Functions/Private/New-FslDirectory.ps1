@@ -70,6 +70,7 @@ function New-FslDirectory {
 
         Try{
             New-Item -path $Directory -ItemType Directory -Force -ErrorAction Stop | out-null
+            Write-Verbose "Created Directory: $Directory"
         }catch{
             Write-Error $Error[0]
         }
