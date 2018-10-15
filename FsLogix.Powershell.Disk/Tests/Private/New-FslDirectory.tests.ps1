@@ -6,15 +6,15 @@ $SamAccountName = "Daniel"
 $SID = "0-2-26-1996"
 $Destination = "test"
 $Destination2 = "test\%Username%"
-$AdUser = "Test"
+$AdUser = "Daniel Kim"
 
 Describe $sut{
 
     BeforeAll{
         Mock -CommandName Get-AdUser -MockWith {
             [PSCustomObject]@{
-                SamAccountName = $SamAccountName
-                SID = $SId
+                SamAccountName = "Daniel"
+                SID = "0-2-26-1996"
             }
         }
         Mock -CommandName Remove-item -MockWith {}
@@ -38,7 +38,7 @@ Describe $sut{
             {New-FslDirectory -SamAccountName $SamAccountName -SID $SID -Destination $Destination2} | should not throw
         }
         it 'AdUser'{
-            {New-FslDirectory -user "Test" -Destination $Destination} | should not throw
+            {New-FslDirectory -aduser $AdUser -Destination $Destination} | should not throw
         }
         it 'pipeline'{
             {$AdUser | New-FslDirectory -Destination $Destination} | should not throw
