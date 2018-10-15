@@ -47,11 +47,8 @@ function Set-FslDisk {
         if(-not(test-path -path $Path -ErrorAction Stop)){
             Write-Error "Could not find path: $Path" -ErrorAction Stop
         }
-        Try{
-            $VHDinfo = Get-Fsldisk -Path $Path -ErrorAction Stop
-        }catch{
-            Write-Error $Error[0]
-        }
+       
+        $VHDinfo = Get-Fsldisk -Path $Path -ErrorAction Stop
     
         Switch ($PSBoundParameters.Keys){
             Label{
@@ -60,14 +57,15 @@ function Set-FslDisk {
                 }catch{
                     Write-Error $Error[0]
                 }
+                if($Assign){
+                    Try{
+                        Add-FslDriveLetter -Path $Path -ErrorAction Stop
+                    }catch{
+                        Write-Error $Error[0]
+                    }
+                }
             }
             Name{
-                <#if($Name -notmatch $OriginalMatch){
-                    Write-Warning "$Name does not match original regex. Attempting FlipFlop match."
-                    if($Name -notmatch $FlipFlopMatch){
-                        Write-Error "$Name does not match Syntax." -ErrorAction Stop
-                    }
-                }#>
                 ## What should the name be. CDW had name of 'ODFC_SamAccountName'
                 ## so is the regex match for SID_Name or Name_SID neccessary?
                 
