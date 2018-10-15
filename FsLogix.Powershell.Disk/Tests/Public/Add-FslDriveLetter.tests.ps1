@@ -19,12 +19,12 @@ Describe $sut {
         Number = 1
     }
 
-    $TestInput = [PSCustomObject]@{
+    $Script:TestInput = [PSCustomObject]@{
         Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
         PartitionNumber = 1
     }
-    $Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
-    $PartitionNumber = 1
+    $Script:Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
+    $Script:PartitionNumber = 1
 
     BeforeAll{
         mock -CommandName Get-FslDisk -MockWith {
@@ -64,7 +64,13 @@ Describe $sut {
             Throw 'Set'
         }
         it 'Assign fails'{
-            {Add-FslDriveLetter -path $path -ErrorAction Stop} | should throw
+            {Add-FslDriveLetter -path $path -dismount -Passthru} | should throw
+        }
+        it 'Assert Mock was called'{
+            Assert-MockCalled -CommandName Set-Partition -Times 1
+        }
+        it 'assert script stopped'{
+            Assert-MockCalled -CommandName Dismount-DiskImage -Times 0
         }
     }
     Context 'Attached Disk'{
