@@ -11,7 +11,7 @@ Describe $sut{
     BeforeAll {
         Mock -CommandName Mount-FslDisk -MockWith {
             [PSCustomObject]@{
-                Mount = 'C:\'
+                Path = 'C:\'
                 DiskNumber = 1
             }
         }
