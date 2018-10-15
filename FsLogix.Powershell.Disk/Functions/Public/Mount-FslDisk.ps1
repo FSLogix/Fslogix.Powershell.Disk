@@ -106,7 +106,7 @@ function Mount-FslDisk {
         if ($PassThru) {
             $Output = [PSCustomObject]@{
                 DiskNumber      = $DiskNumber
-                Mount           = $DriveLetter
+                Path            = $DriveLetter
                 PartitionNumber = $PartitionNumber
             }
             $Output

@@ -77,7 +77,7 @@ Describe $sut{
         }
         it 'passthru returns D:\'{
             $Command = MOunt-fsldisk -path $Path -PassThru
-            $Command.Mount | should be 'D:\'
+            $Command.path | should be 'D:\'
         }
         it 'Partition Number should be 1'{
             $Command = Mount-fsldisk -Path $Path -PassThru
@@ -98,7 +98,7 @@ Describe $sut{
         }
         it 'returns guid'{
             $command = mount-fsldisk -path $path -PassThru
-            $command.mount | should be "C:\programdata\fslogix\Guid\test"
+            $command.path | should be "C:\programdata\fslogix\Guid\test"
         }
     }
     Context -name "test-input"{

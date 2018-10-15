@@ -34,7 +34,7 @@ function Copy-FslToDisk {
             Write-Error $Error[0]
             exit
         }
-        $Mounted_Path       = $Mounted_Disk.Mount
+        $Mounted_Path       = $Mounted_Disk.Path
         $Disk_Number        = $Mounted_Disk.disknumber
         #$PartitionNumber    = $Mounted_Disk.PartitionNumber
         

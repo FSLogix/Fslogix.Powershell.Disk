@@ -45,7 +45,7 @@ function Move-FslToDisk {
                 Write-Error $Error[0]
                 exit
             }
-            $Mounted_Path       = $Mounted_Disk.Mount
+            $Mounted_Path       = $Mounted_Disk.Path
             $Disk_Number        = $Mounted_Disk.disknumber
         }
         
