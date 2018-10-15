@@ -41,39 +41,6 @@ function Get-FslDisk {
     begin {
         Set-StrictMode -Version Latest
         #Requires -RunAsAdministrator
-        Function Get-DiskInformation{
-            param(
-                [Parameter (Position = 0,
-                            Mandatory = $true,
-                            ValueFromPipeline = $true,
-                            ValueFromPipelineByPropertyName = $true)]
-                [System.String]$VHDPath
-            )
-
-            Try{
-                $VHD        = Get-Diskimage -ImagePath $VHDPath -ErrorAction Stop
-                $VHD_Item   = Get-Item -path $VHDPath -ErrorAction Stop
-            }catch{
-                Write-Error $Error[0]
-            }
-
-            $Format     = $VHD_Item.Extension.TrimStart('.')
-            $Name       = split-path -path $VHDPath -Leaf
-            $BaseName   = $VHD_Item.BaseName
-            $SizeGb     = $VHD.Size / 1gb
-            $SizeMb     = $VHD.Size / 1mb
-            #$FreeSpace  = [Math]::Round((($VHD.Size - $VHD.FileSize) / 1gb) , 2)
-            
-            $VHD | Add-Member @{ ComputerName   = $Env:COMPUTERNAME}
-            $VHD | Add-Member @{ Name           = $Name}
-            $VHD | Add-Member @{ BaseName       = $BaseName}
-            $VHD | Add-Member @{ Format         = $Format}
-            $VHD | Add-Member @{ SizeGb         = $SizeGb}
-            $VHD | Add-Member @{ SizeMb         = $SizeMb}
-            #$VHD | Add-Member @{ FreeSpace      = $FreeSpace}
-
-            Write-Output $VHD
-        }
     }
     
     Process {
@@ -82,7 +49,7 @@ function Get-FslDisk {
                 if(-not(test-path -path $Path)){
                     Write-Error "Could not find path: $Path" -ErrorAction Stop
                 }
-                $VHD_Info = Get-DiskInformation -VHDPath $Path
+                $VHD_Info = Get-DiskInformation -Path $Path
             }
             Folder {
                 if( -not (test-path -path $Folder)){
@@ -95,7 +62,7 @@ function Get-FslDisk {
                 }
             }
         }
-         Write-Output $VHD_Info
+        $VHD_Info
     }
     
     end {
