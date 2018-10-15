@@ -50,8 +50,7 @@ function Copy-FslToDisk {
         $Size = Get-FslSize -path $Path
         if($Size -ge $FreeSpace){
             Write-Warning "Contents: $([Math]::round($Size/1mb,2)) MB. Disk free space is: $([Math]::round($Freespace/1mb,2)) MB."
-            Write-Error "Disk is too small to copy contents over."
-            exit
+            Write-Error "Disk is too small to copy contents over." -ErrorAction Stop
         }
         
         

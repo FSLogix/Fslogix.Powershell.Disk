@@ -11,10 +11,6 @@ Describe $sut{
     $Script:MockedVolume = [PSCustomObject]@{
         SizeRemaining = 1000
     }
-    #Microsoft.Management.Infrastructure.CimInstance#root\cimv2/MSFT_Disk
-    #Microsoft.Management.Infrastructure.CimInstance#ROOT/Microsoft/Windows/Storage/MSFT_Partition
-    #Microsoft.Management.Infrastructure.CimInstance#/Microsoft/Windows/Storage/MSFT_Partition/MSFT_Disk
-
     $VHD = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\FsLTest.vhdx"
     $Path = "C:\Users\danie\Documents\Scripts\Disk"
     $Destination = "Test"
@@ -60,6 +56,23 @@ Describe $sut{
         it 'returns some verbose lines'{
             $verboseLine = Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination -Verbose 4>&1
             $verboseLine.count | Should Be 1
+        }
+    }
+
+    Context -name 'Not enough space in VHD'{
+        Mock -CommandName Get-FslSize -MockWith {
+            1001
+        }
+        it 'Size is greater than available'{
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination } | should throw
+        }
+        it 'Assert mocks called'{
+            Assert-MockCalled -CommandName Get-partition -times 1
+            Assert-MockCalled -CommandName Get-Volume -Times 1
+            Assert-MockCalled -CommandName Get-FslSize -Times 1
+        }
+        it 'Assert script stopped'{
+            Assert-MockCalled -CommandName Invoke-expression -Times 0
         }
     }
 
