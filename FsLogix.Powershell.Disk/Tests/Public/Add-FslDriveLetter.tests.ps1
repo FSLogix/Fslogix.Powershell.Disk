@@ -19,6 +19,10 @@ Describe $sut {
         Number = 1
     }
 
+    $TestInput = [PSCustomObject]@{
+        Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
+        PartitionNumber = 1
+    }
     $Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
     $PartitionNumber = 1
 
@@ -42,8 +46,11 @@ Describe $sut {
         it "Normal Input"{
             {Add-FslDriveLetter -path $path} | should not throw
         }
-        it 'Accepts pipeline'{
+        it 'Accepts positional pipeline'{
             {$Path | Add-FslDriveLetter } | should not throw
+        }
+        it 'Accepts multiple pipelinese by property name'{
+            {$TestInput | Add-FslDriveLetter} | should not throw
         }
         it 'Positional parameter'{
             {Add-FslDriveLetter $Path $PartitionNumber} | should not throw
