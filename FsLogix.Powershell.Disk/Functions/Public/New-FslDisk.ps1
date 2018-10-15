@@ -53,7 +53,7 @@ function New-FslDisk {
     }
     
     process {
-    
+
         try {
             $InstallPath = (Get-ItemProperty HKLM:\SOFTWARE\FSLogix\Apps -ErrorAction Stop).InstallPath
         }
@@ -69,8 +69,9 @@ function New-FslDisk {
             Write-Error 'frx.exe Not Found' -ErrorAction Stop
         }
         
+       
         Try{
-            $AdUser = Get-Aduser -Identity $User -ErrorAction Stop
+            $AdUser = Get-Aduser $User -ErrorAction Stop
             $SID = $AdUser.SID
             $SamAccountName = $AdUser.samaccountname
 
@@ -78,7 +79,7 @@ function New-FslDisk {
             Pop-Location
             Write-Error $Error[0]
         }
-        
+
         if(!$PSBoundParameters.ContainsKey("Type")){
             $Type = 1
         }
@@ -106,7 +107,7 @@ function New-FslDisk {
         Invoke-expression -command $FrxCommand
 
         Try{
-            Add-FslPermissions -Folder $VHD_FolderPath -Recurse -ErrorAction Stop
+            Add-FslPermissions -User $User -Folder $VHD_FolderPath -Recurse -ErrorAction Stop
         }catch{
             Pop-Location
             Write-Error $Error[0]
