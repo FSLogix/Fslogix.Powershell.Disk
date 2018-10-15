@@ -44,16 +44,10 @@ function Add-FslDriveLetter {
         }
 
         $DiskNumber = $Disk.Number
-
-        Try{
-            $Partition = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -ErrorAction Stop
-        }catch{
-            Write-Error $Error[0]
-        }
         
         while(!$Driveletterassigned){
             Try{
-                $Partition | set-partition -NewDriveLetter $([char]$Letter) -ErrorAction Stop
+                set-partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -NewDriveLetter $([char]$Letter) -ErrorAction Stop
                 $Driveletterassigned = $true
             }catch{
                 ## For some reason

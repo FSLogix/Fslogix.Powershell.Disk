@@ -5,41 +5,78 @@ $here = $here -replace 'Tests', 'Functions'
 
 Describe $sut {
 
+    $Script:FslDisk = [PSCustomObject]@{
+        Attached = $true
+        Number = 1
+    }
+    $Script:Disk = [PSCustomObject]@{
+        Number = 1
+    }
+    $Script:DiskImage = [PSCustomObject]@{
+        Number = 1
+    }
+    $Script:MountImage =  [PSCustomObject]@{
+        Number = 1
+    }
+
     $Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
+    $PartitionNumber = 1
 
     BeforeAll{
         mock -CommandName Get-FslDisk -MockWith {
-            [PSCustomObject]@{
-                Attached = $true
-                Number = 1
-            }
+            $Script:FslDisk
         }
         Mock -CommandName Get-Disk -MockWith {
-            [PSCustomObject]@{
-                Number = 1
-            }
+            $Script:Disk
         }
         Mock -CommandName Get-Diskimage -MockWith{
-            [PSCustomObject]@{
-                Number = 1
-            }
+            $Script:DiskImage
         }
         Mock -CommandName Mount-diskimage -MockWith {
-            [PSCustomObject]@{
-                Number = 1
-            }
+            $Script:MountImage
         }
-        Mock -CommandName Get-Partition -MockWith {}
         mock -CommandName Set-Partition -MockWith {}
         Mock -CommandName Dismount-DiskImage -MockWith {}
     }
-    Context 'Attached Disk'{
-        it 'Valid inputs does not throw'{
+    Context -name 'Input'{
+        it "Normal Input"{
             {Add-FslDriveLetter -path $path} | should not throw
         }
-        it 'Assert mocks were called'{
-            Assert-MockCalled -CommandName Get-Disk -Times 1
-            Assert-MockCalled -CommandName Get-Partition -Times 1
+        it 'Accepts pipeline'{
+            {$Path | Add-FslDriveLetter } | should not throw
+        }
+        it 'Positional parameter'{
+            {Add-FslDriveLetter $Path $PartitionNumber} | should not throw
+        }
+        it 'Switch parameters'{
+            {Add-FslDriveLetter $Path -Dismount -Passthru} | should not throw
+        }
+    }
+    Context -name 'Set-Partition'{
+        Mock -CommandName Set-partition -MockWith {
+            Throw 'Set'
+        }
+        it 'Assign fails'{
+            {Add-FslDriveLetter -path $path -ErrorAction Stop} | should throw
+        }
+    }
+    Context 'Attached Disk'{
+        $Script:FslDisk = [PSCustomObject]@{
+            Attached = $false
+            Number = 1
+        }
+        mock -CommandName Get-FslDisk -MockWith {
+            $Script:FslDisk
+        }
+        it "Disk is not mounted, should mount"{
+            {Add-FslDriveLetter -path $path} | should not throw
+            Assert-MockCalled -CommandName Mount-diskimage -Times 1
+        }
+        it 'Get-Disk should not be called'{
+            Assert-MockCalled -CommandName Get-Disk -Times 0
+        }
+        it 'Assert Script did not stop'{
+            Assert-MockCalled -CommandName Set-Partition -Times 1
         }
         it 'passthru should be z'{
             $command = Add-FslDriveLetter -Path $path -passthru
@@ -47,46 +84,17 @@ Describe $sut {
         }
     }
     Context 'Non-Attached Disk'{
-        mock -CommandName Get-FslDisk -MockWith {
-            [PSCustomObject]@{
-                Attached = $false
-                Number = 1
-            }
-        }
         it 'Valid inputs does not throw'{
             {Add-FslDriveLetter -path $path} | should not throw
         }
         it 'Assert mocks were called'{
             Assert-MockCalled -CommandName Mount-DiskImage -Times 1
             Assert-MockCalled -CommandName Get-Diskimage -Times 1
-            Assert-MockCalled -CommandName Get-Partition -Times 1
         }
         it 'passthru should be z'{
             $command = Add-FslDriveLetter -Path $path -passthru
             $command | should be 'Z:\'
         }
-    }
-    Context -Name "Partition"{
-        Mock -CommandName Get-Partition -MockWith {
-            Throw "partition"
-        }
-        it 'Partition fails'{
-            {Add-FslDriveLetter -path $path -ErrorAction Stop} | should throw
-        }
-        it 'assert partiton was called'{
-            Assert-MockCalled -CommandName Get-Partition -Times 1
-        }
-        it "Partition Number"{
-            Mock -CommandName Get-Partition -MockWith {}
-            {Add-FslDriveLetter -path $path -Dismount -PartitionNumber 1} | should not throw
-        }
-        <#it 'Fails to assign driveletter'{
-            Mock -CommandName Get-Partition -MockWith {}
-            Mock -CommandName Set-Partition -MockWith {
-                Throw "Partition"
-            }
-            {Add-FslDriveLetter -path $path -ErrorAction Stop} | should throw
-        }#>
     }
     Context -Name "Dismount"{
         it 'Valid inputs should not throw'{
@@ -97,6 +105,9 @@ Describe $sut {
                 Throw 'Dismount'
             }
             {Add-FslDriveLetter -path $path -Dismount -ErrorAction Stop} | should throw
+        }
+        it "assert mock was called"{
+            Assert-MockCalled -CommandName Dismount-DiskImage -Times 1
         }
     }
 }
