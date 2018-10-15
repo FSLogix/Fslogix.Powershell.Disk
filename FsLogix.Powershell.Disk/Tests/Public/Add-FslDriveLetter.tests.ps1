@@ -42,7 +42,10 @@ Describe $sut {
         mock -CommandName Set-Partition -MockWith {}
         Mock -CommandName Dismount-DiskImage -MockWith {}
     }
-    Context -name 'Input'{
+    Context -name 'Valid Input'{
+        
+        $Error.clear()
+        
         it "Normal Input"{
             {Add-FslDriveLetter -path $path} | should not throw
         }
@@ -58,8 +61,12 @@ Describe $sut {
         it 'Switch parameters'{
             {Add-FslDriveLetter $Path -Dismount -Passthru} | should not throw
         }
+        it "Did not add to error variable"{
+            $Error.Count | should be 0
+        }
     }
     Context -name 'Set-Partition'{
+        $Error.Clear()
         Mock -CommandName Set-partition -MockWith {
             Throw 'Set'
         }
@@ -72,6 +79,10 @@ Describe $sut {
         it 'assert script stopped'{
             Assert-MockCalled -CommandName Dismount-DiskImage -Times 0
         }
+        it 'Validate Error Count'{
+            ## The Set-Partition will continue to loop until letter = 'C
+            $Error.count | should be 24
+        }
     }
     Context 'Attached Disk'{
         $Script:FslDisk = [PSCustomObject]@{
@@ -81,6 +92,8 @@ Describe $sut {
         mock -CommandName Get-FslDisk -MockWith {
             $Script:FslDisk
         }
+        $Error.clear()
+
         it "Disk is not mounted, should mount"{
             {Add-FslDriveLetter -path $path} | should not throw
             Assert-MockCalled -CommandName Mount-diskimage -Times 1
@@ -95,8 +108,14 @@ Describe $sut {
             $command = Add-FslDriveLetter -Path $path -passthru
             $command | should be 'Z:\'
         }
+        it "Did not add to error variable"{
+            $Error.Count | should be 0
+        }
     }
     Context 'Non-Attached Disk'{
+
+        $Error.clear()
+
         it 'Valid inputs does not throw'{
             {Add-FslDriveLetter -path $path} | should not throw
         }
@@ -108,8 +127,12 @@ Describe $sut {
             $command = Add-FslDriveLetter -Path $path -passthru
             $command | should be 'Z:\'
         }
+        it "Did not add to error variable"{
+            $Error.Count | should be 0
+        }
     }
     Context -Name "Dismount"{
+        $Error.Clear()
         it 'Valid inputs should not throw'{
             {Add-FslDriveLetter -path $path -Dismount} | should not throw
         }
@@ -121,6 +144,9 @@ Describe $sut {
         }
         it "assert mock was called"{
             Assert-MockCalled -CommandName Dismount-DiskImage -Times 1
+        }
+        it "Validate Error Count"{
+            $Error.count | should be 2
         }
     }
 }
