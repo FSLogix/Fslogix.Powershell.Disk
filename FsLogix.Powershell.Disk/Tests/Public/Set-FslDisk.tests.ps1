@@ -10,6 +10,7 @@ Describe $sut{
     $Script:TestDisk = [PSCustomObject]@{
         Attached = $true
         Name     = "Test"
+        Extension = ".vhd"
     }
     $Script:TestGetDisk = [PSCustomObject]@{
         Location = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\FsLTest.vhdx"
@@ -104,8 +105,15 @@ Describe $sut{
     }
     Context -name "Rename"{
         it 'rename'{
+            {Set-Fsldisk -Path $Path -Name "Daniel.vhd"} | should not throw
+        }
+        it 'no extension, should generate one and not throw'{
             {Set-Fsldisk -Path $Path -Name "Daniel"} | should not throw
         }
+        it 'Different extensions should throw'{
+            {Set-Fsldisk -Path $Path -Name "Daniel.vhdx"} | should throw
+        }
+
         it "Dismount fails"{
             Mock -CommandName Dismount-DiskImage -MockWith{
                 Throw "Dismount"

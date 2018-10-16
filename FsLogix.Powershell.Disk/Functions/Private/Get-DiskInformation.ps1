@@ -16,6 +16,7 @@ Function Get-DiskInformation{
     }
 
     $Format     = $VHD_Item.Extension.TrimStart('.')
+    $Extension  = $VHD_Item.Extension
     $Name       = split-path -path $Path -Leaf
     $BaseName   = $VHD_Item.BaseName
     $SizeGb     = $VHD.Size / 1gb
@@ -26,6 +27,7 @@ Function Get-DiskInformation{
     $VHD | Add-Member @{ Name           = $Name}
     $VHD | Add-Member @{ BaseName       = $BaseName}
     $VHD | Add-Member @{ Format         = $Format}
+    $VHD | Add-Member @{ Extension      = $Extension}
     $VHD | Add-Member @{ SizeGb         = $SizeGb}
     $VHD | Add-Member @{ SizeMb         = $SizeMb}
     #$VHD | Add-Member @{ FreeSpace      = $FreeSpace}

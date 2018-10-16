@@ -54,7 +54,7 @@ function Set-FslDisk {
                 catch {
                     Write-Error $Error[0]
                 }
-                if ($Assign) {
+                if ($PSBoundParameters.ContainsKey("Assign")) {
                     Try {
                         Add-FslDriveLetter -Path $Path -ErrorAction Stop
                     }
@@ -75,6 +75,17 @@ function Set-FslDisk {
                     catch {
                         Write-Error $Error[0]
                     }
+                }
+                $Extension = $VHDinfo.Extension
+
+                $NewNameExtension = [IO.path]::GetExtension($Name) 
+                if([String]::IsNullOrEmpty($NewNameExtension)){
+                    $Name = $Name + $Extension
+                }
+                $NewNameExtension = [IO.path]::GetExtension($Name) 
+
+                if($NewNameExtension -ne $Extension){
+                    Write-Error "Extensions must be the same." -ErrorAction Stop
                 }
                 
                 try {
