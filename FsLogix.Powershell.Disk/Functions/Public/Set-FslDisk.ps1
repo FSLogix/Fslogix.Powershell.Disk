@@ -16,10 +16,6 @@ function Set-FslDisk {
             ParameterSetName = "Label")]
         [System.String]$Label,
 
-        [Parameter (Position = 2,
-            ParameterSetName = "Label")]
-        [Switch]$Assign,
-
         [Parameter (Position = 1,
             Mandatory = $true,
             ParameterSetName = "Name")]
@@ -30,7 +26,9 @@ function Set-FslDisk {
             ParameterSetName = "Size")]
         [uint64]$size,
 
-        [switch]$Dismount
+        [switch]$Dismount,
+
+        [Switch]$Assign
     )
     
     begin {
@@ -53,14 +51,6 @@ function Set-FslDisk {
                 }
                 catch {
                     Write-Error $Error[0]
-                }
-                if ($PSBoundParameters.ContainsKey("Assign")) {
-                    Try {
-                        Add-FslDriveLetter -Path $Path -ErrorAction Stop
-                    }
-                    catch {
-                        Write-Error $Error[0]
-                    }
                 }
             }
             Name {
@@ -139,6 +129,16 @@ function Set-FslDisk {
                 }
             }
         } # Switch
+
+
+        if ($PSBoundParameters.ContainsKey("Assign")) {
+            Try {
+                Add-FslDriveLetter -Path $Path -ErrorAction Stop
+            }
+            catch {
+                Write-Error $Error[0]
+            }
+        }
 
         if ($PSBoundParameters.ContainsKey("Dismount")){
             Try{
