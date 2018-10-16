@@ -23,8 +23,8 @@ function Set-FslLabel {
             ParameterSetName = 'Number')]
         [int]$PartitionNumber,
 
-        [Parameter (Mandatory = $true, ParameterSetName = 'Path')]
-        [Parameter (Mandatory = $true, ParameterSetName = 'Number')]
+        [Parameter (Position = 1, Mandatory = $true, ParameterSetName = 'Path')]
+        [Parameter (Position = 2, Mandatory = $true, ParameterSetName = 'Number')]
         [ValidateNotNullOrEmpty()]
         [System.String]$Label,
 
