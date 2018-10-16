@@ -68,6 +68,8 @@ function Set-FslDisk {
                 }
                 $Extension = $VHDinfo.Extension
 
+                # Using .NET to handle illegal characters, and for multiple dots.
+                # Similar PowerShell code would be $Name.Split('.')[1]
                 $NewNameExtension = [IO.path]::GetExtension($Name) 
                 if([String]::IsNullOrEmpty($NewNameExtension)){
                     $Name = $Name + $Extension
