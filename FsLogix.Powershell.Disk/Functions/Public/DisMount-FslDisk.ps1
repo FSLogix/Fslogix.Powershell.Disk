@@ -59,16 +59,11 @@ function Dismount-FslDisk {
       
             Try{
                 ## FsLogix's Default VHD partition number is set to 1
-                Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 1 -AccessPath $Has_JunctionPoint -ErrorAction Stop
+                Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber -AccessPath $Has_JunctionPoint -ErrorAction Stop
             }catch{
-                ## If VHD was created through disk management/Hyper-V, default partition number is set to 2
-                try{
-                    Remove-PartitionAccessPath -DiskNumber $DiskNumber -PartitionNumber 2 -AccessPath $Has_JunctionPoint -ErrorAction Stop
-                }catch{
-                    Write-Warning "Could not remove junction point."
-                    Write-Error $Error[0]
-                    exit
-                }
+                Write-Warning "Could not remove junction point."
+                Write-Error $Error[0]
+                exit
             }
 
             Try{
