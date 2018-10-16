@@ -134,7 +134,7 @@ foreach ($User in $AdGroup_Members) {
     Write-Verbose "Creating Junction point."
     Try{
         $Mount = Mount-FslDisk -Path $VHD_Path -ErrorAction Stop -PassThru
-        $MountPath = $Mount.Mount
+        $MountPath = $Mount.Path
         Write-Verbose "Created Junction Point: $MountPath"
     }Catch{
         Write-Warning "Error Code: $(GetLineNumber)"
