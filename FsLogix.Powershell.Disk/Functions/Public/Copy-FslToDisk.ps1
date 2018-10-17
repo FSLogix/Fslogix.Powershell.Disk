@@ -44,7 +44,7 @@ function Copy-FslToDisk {
             New-Item -ItemType Directory $Copy_Destination -Force -ErrorAction SilentlyContinue | Out-Null
         }
 
-        
+
         $Partition = Get-Partition -disknumber $Disk_Number -PartitionNumber $PartitionNumber
         $FreeSpace = get-volume -Partition $Partition | select-object -expandproperty SizeRemaining
         $Size = Get-FslSize -path $Path
