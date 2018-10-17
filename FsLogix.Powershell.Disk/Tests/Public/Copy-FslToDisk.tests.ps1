@@ -11,6 +11,11 @@ Describe $sut{
     $Script:MockedVolume = [PSCustomObject]@{
         SizeRemaining = 1000
     }
+    $Script:TestInput = [PSCustomObject]@{
+        VHD = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\FsLTest.vhdx"
+        Path = "C:\Users\danie\Documents\Scripts\Disk"
+        Destination = "Test"
+    }
     $VHD = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\FsLTest.vhdx"
     $Path = "C:\Users\danie\Documents\Scripts\Disk"
     $Destination = "Test"
@@ -22,18 +27,37 @@ Describe $sut{
                 DiskNumber = 1
                 PartitionNumber = 1
             }
-        }
+        } -Verifiable
         Mock -CommandName Get-Partition -MockWith { 
            $Script:Partition
-        }
+        } -Verifiable
         Mock -CommandName Get-Volume -MockWith {
             $Script:MockedVolume
-        }
+        } -Verifiable
         Mock -CommandName Get-FslSize -MockWith {
             $Script:testSize
-        }
-        Mock -CommandName Invoke-expression -MockWith {}
+        } -Verifiable
+        Mock -CommandName Invoke-expression -MockWith {} -Verifiable
         Mock -CommandName Dismount-FslDisk -MockWith {}
+    }
+
+    Context -name 'Input'{
+        $Error.Clear()
+        it 'Accepts normal input'{
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination} | should not throw
+        }
+        it 'Accepts positional input'{
+            {Copy-FslToDisk $VHD $Path $Destination} | should not throw
+        }
+        it 'Accepts pipeline by property name'{
+            {$Script:TestInput | Copy-FslToDisk } | should not throw
+        }
+        it 'Confirm no errors were called'{
+            $Error.Count | should be 0
+        }
+        it 'Assert mocks were called'{
+            Assert-VerifiableMock
+        }
     }
 
     Context -name "Test-path"{
