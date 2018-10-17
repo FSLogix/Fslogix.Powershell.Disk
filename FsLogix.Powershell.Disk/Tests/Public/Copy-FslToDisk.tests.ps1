@@ -6,10 +6,10 @@ $here = $here -replace 'Tests', 'Functions'
 Describe $sut{
 
     $script:testDriveLetter = 'C:\'
-    $Script:testSize = 500
+    $Script:testSize = 50000
     $Script:Partition = New-CimInstance -ClassName MSFT_Partition -Namespace /Microsoft/Windows/Storage -ClientOnly -Property @{DriveLetter=$script:testDriveLetter; Number = 1; FriendlyName = "Test"}
     $Script:MockedVolume = [PSCustomObject]@{
-        SizeRemaining = 1000
+        SizeRemaining = 100000
     }
     $Script:TestInput = [PSCustomObject]@{
         VHD = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\FsLTest.vhdx"
@@ -85,7 +85,7 @@ Describe $sut{
 
     Context -name 'Not enough space in VHD'{
         Mock -CommandName Get-FslSize -MockWith {
-            1001
+            1000000
         }
         it 'Size is greater than available'{
             {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination } | should throw
