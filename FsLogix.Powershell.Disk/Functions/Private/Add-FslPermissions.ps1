@@ -21,19 +21,19 @@ function Add-FslPermissions {
             ParameterSetName = 'Folder')]
         [System.String]$Folder,
 
-        [Parameter( Position = 3,
-            ParameterSetName = 'Folder')]
-        [Switch]$Recurse,
-
-        [Parameter( Position = 4,
-            ParameterSetName = 'Folder')]
-        [Switch]$Full,
+        [Parameter(ParameterSetName = 'Folder')]
+        [Switch]$inherit,
 
         [Parameter (ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet("ListDirectory", "ReadData", "WriteData", "CreateFiles", "CreateDirectories", 
+            "AppendData", "ReadExtendedAttributes", "WriteExtendedAttributes", 
+            "Traverse", "ExecuteFile", "DeleteSubdirectoriesAndFiles", "ReadAttributes",
+            "WriteAttributes", "Write", "Delete", "ReadPermissions", "Read", "ReadAndExecute", "Modify", 
+            "ChangePermissions", "TakeOwnership", "Synchronize", "FullControl")]
         [System.String[]]$PermissionType,
 
         [Parameter (ValueFromPipelineByPropertyName = $true)]
-        [ValidateSet("Allow","Deny")]
+        [ValidateSet("Allow", "Deny")]
         [System.String]$Permission
     )
     
@@ -52,10 +52,10 @@ function Add-FslPermissions {
             Write-Error $Error[0]
         }
 
-        if(!$PSBoundParameters.ContainsKey("PermissionType")){
+        if (!$PSBoundParameters.ContainsKey("PermissionType")) {
             $PermissionType = "FullControl"
         }
-        if(!$PSBoundParameters.ContainsKey("Permission")){
+        if (!$PSBoundParameters.ContainsKey("Permission")) {
             $Permission = "Allow"
         }
 
@@ -93,29 +93,24 @@ function Add-FslPermissions {
                     Write-Error "$($Folder_isFolder.BaseName) is not a folder." -ErrorAction Stop
                 }
                 
-                if ($Recurse) {
-                    if($full){
-                        $Directory = $( Get-Item $Folder 
-                                    Get-ChildItem $folder -recurse) 
-                    }else{
-                        $Directory = $( Get-Item $Folder 
-                                    Get-ChildItem $folder -recurse -Directory)
-                    }                   
-                }else {                        
-                    $Directory = $Folder_isFolder
-                }
-
-                foreach ($dir in $Directory) {
-                    Try {
-                        $ACL = Get-Acl $dir.fullname
-                        $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, $PermissionType, $Permission)
-                        $Acl.Setaccessrule($Ar)
-                        Set-Acl -Path $dir.fullname $ACL
-                        Write-Verbose "Assigned permissions for user: $Ad_User"
-                    }catch {
-                        Write-Error $Error[0]
+                $Dir = $Folder_isFolder.FullName
+                
+                Try {
+                    $ACL = Get-Acl $dir
+                    if ($PSBoundParameters.ContainsKey("inherit")) {
+                        $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, $PermissionType, "ContainerInherit, ObjectInherit", "None", $Permission)
                     }
+                    else {
+                        $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, $PermissionType, "None", "none" , $Permission)
+                    }
+                    $Acl.Setaccessrule($Ar)
+                    Set-Acl -Path $dir $ACL
+                    Write-Verbose "Assigned permissions for user: $Ad_User"
                 }
+                catch {
+                    Write-Error $Error[0]
+                }
+                
                 
             }#folder
         }#switch
