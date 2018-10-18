@@ -27,7 +27,14 @@ function Add-FslPermissions {
 
         [Parameter( Position = 4,
             ParameterSetName = 'Folder')]
-        [Switch]$Full
+        [Switch]$Full,
+
+        [Parameter (ValueFromPipelineByPropertyName = $true)]
+        [System.String[]]$PermissionType,
+
+        [Parameter (ValueFromPipelineByPropertyName = $true)]
+        [ValidateSet("Allow","Deny")]
+        [System.String]$Permission
     )
     
     begin {
@@ -45,6 +52,13 @@ function Add-FslPermissions {
             Write-Error $Error[0]
         }
 
+        if(!$PSBoundParameters.ContainsKey("PermissionType")){
+            $PermissionType = "FullControl"
+        }
+        if(!$PSBoundParameters.ContainsKey("Permission")){
+            $Permission = "Allow"
+        }
+
         Switch ($PSCmdlet.ParameterSetName) {
             File {
                 if (-not(test-path -path $file)) {
@@ -59,7 +73,7 @@ function Add-FslPermissions {
 
                 Try {
                     $ACL = Get-Acl $File
-                    $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, "FullControl", "Allow")
+                    $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, $PermissionType, $Permission)
                     $Acl.Setaccessrule($Ar)
                     Set-Acl -Path $File $ACL
                     Write-Verbose "Assigned permissions for user: $Ad_User"
@@ -94,7 +108,7 @@ function Add-FslPermissions {
                 foreach ($dir in $Directory) {
                     Try {
                         $ACL = Get-Acl $dir.fullname
-                        $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, "FullControl", "Allow")
+                        $Ar = New-Object system.Security.AccessControl.FileSystemAccessRule($Ad_User, $PermissionType, $Permission)
                         $Acl.Setaccessrule($Ar)
                         Set-Acl -Path $dir.fullname $ACL
                         Write-Verbose "Assigned permissions for user: $Ad_User"
