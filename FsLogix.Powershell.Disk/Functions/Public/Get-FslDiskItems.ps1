@@ -15,7 +15,7 @@ function Get-FslDiskItems {
         [Switch]$Force,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String[]]$Filter,
+        [String]$Filter,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [String[]]$Include,
@@ -57,11 +57,7 @@ function Get-FslDiskItems {
                 $Command += " -force"
             }
             Filter{
-                $Command += " -Filter"
-                foreach($FilterType in $Filter){
-                    $Command += " $FilterType,"
-                }
-                $command = $Command.TrimEnd(',')
+                $Command += " -Filter $Filter"
             }
             Incldue{
                 $Command += " -Include"

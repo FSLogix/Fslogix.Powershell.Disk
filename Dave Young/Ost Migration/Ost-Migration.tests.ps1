@@ -20,13 +20,16 @@ Describe $sut{
         mock -CommandName Add-FslPermissions -MockWith {}
         Mock -CommandName Mount-FslDisk -MockWith {
             [PSCustomObject]@{
-                Mount = "test"
+                Path = "test"
             }
         }
         Mock -CommandName Copy-FslToDisk -MockWith {}
         Mock -CommandName Dismount-fsldisk -MockWith {}
         Mock -CommandName Rename-item -MockWith {}
         Mock -CommandName Remove-ADGroupMember -MockWith {}
+        mock -CommandName Test-path -MockWith {
+            $True
+        }
     }
     Context -name "test"{
         it 'test'{
