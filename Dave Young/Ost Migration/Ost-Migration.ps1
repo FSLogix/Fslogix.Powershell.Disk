@@ -18,6 +18,7 @@ $Rename_Old_Ost         = $false                        #true to rename old ost 
 $Rename_Old_Directory   = $true                         #true to rename old directory to include _old, false to leave old directory the same
 $Remove_FromAD          = $true                         #true to remove AD User after sucessful migration, false to keep AD user
 $FlipFlop               = $false                        #true to have directory name SID_Name, false to have directory name Name_SID
+$AssignDriveLetter      = $false                        #true to initialize driveletter, false to mount to path
 
 
 ### David Young's Notes ###
@@ -137,9 +138,15 @@ foreach ($User in $AdGroup_Members) {
 
     Write-Verbose "Creating Junction point."
     Try{
-        $Mount = Mount-FslDisk -Path $VHD_Path -ErrorAction Stop -PassThru
-        $MountPath = $Mount.Path
-        Write-Verbose "Created Junction Point: $MountPath"
+        if($AssignDriveLetter){
+            $MountPath = Add-FslDriveLetter -Path $VHD_Path -Passthru
+            Write-Verbose "VHD mounted on: $MountPath"
+        }else{
+            $Mount = Mount-FslDisk -Path $VHD_Path -ErrorAction Stop -PassThru
+            $MountPath = $Mount.Path
+            Write-Verbose "Created Junction Point: $MountPath"
+        }
+        
     }Catch{
         Write-Warning "Error Code: $(GetLineNumber)"
         Write-Error $Error[0]

@@ -3,7 +3,7 @@ $sut = (Split-Path -Leaf $MyInvocation.MyCommand.Path) -replace '\.Tests\.', '.'
 $here = $here -replace 'Tests', 'Functions'
 . "$here\$sut"
 
-$file = 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Private\Add-FslPermissions.ps1'
+$file = 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Public\Add-FslPermissions.ps1'
 $Folder = 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Public'
 
 Describe $sut{
@@ -17,7 +17,7 @@ Describe $sut{
         mock -CommandName Get-Item -MockWith {
             [PSCustomObject]@{
                 Attributes = "Archive"
-                Fullname = 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Private\Add-FslPermissions.ps1'
+                Fullname = 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Public\Add-FslPermissions.ps1'
                 BaseName = "Add-FslPermissions.ps1"
             }
         }
@@ -27,19 +27,16 @@ Describe $sut{
                 Basename = 'public'
             }
         }
-        <#Mock -CommandName Get-Acl -MockWith {
-            $Acl = Get-Acl 'C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\FsLogix.Powershell.Disk\Functions\Private\Add-FslPermissions.ps1'
-        }
-        Mock -CommandName New-Object -MockWith {
-            system.Security.AccessControl.FileSystemAccessRule("Everyone", "FullControl", "Allow")
-        }
-        Mock -CommandName Set-Acl -MockWith {
-            $Acl | set-acl
-        }#>
     }
+    <#
+        HOW TO MOCK ACL OBJECT??????????????
+        ahhhhh
+    #>
     Context -name "Mock AdUser"{
+        $Error.Clear()
         it 'No errors'{
             {Add-FslPermissions -User "Daniel" -file $file} | should not throw
+            $Error.Count | should be 0
         }
         it 'Assert mock called'{
             Assert-MockCalled -CommandName Get-Aduser -Times 1
