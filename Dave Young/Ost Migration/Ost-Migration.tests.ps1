@@ -15,6 +15,9 @@ Describe $sut{
                 SamAccountName = "Daniel"
             }
         }
+        Mock -CommandName Add-FslDriveLetter -MockWith {
+            "D:\"
+        }
         Mock -CommandName Remove-item -MockWith {}
         Mock -CommandName Invoke-Expression -MockWith {}
         mock -CommandName Add-FslPermissions -MockWith {}
