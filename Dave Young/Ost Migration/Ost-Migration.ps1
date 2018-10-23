@@ -104,7 +104,7 @@ foreach ($User in $AdGroup_Members) {
 
     Write-Verbose "Applying security permissions for $Name."
     Try{
-        Add-FslPermissions -User $Name -folder $Directory -Recurse -Full
+        Add-FslPermissions -User $Name -folder $Directory
         Write-Verbose "Successfully applied security permissions for $name."
     }catch{
         Write-Warning "Error Code: $(GetLineNumber)"
