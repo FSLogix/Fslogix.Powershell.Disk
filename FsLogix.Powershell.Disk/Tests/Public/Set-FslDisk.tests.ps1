@@ -75,7 +75,7 @@ Describe $sut{
             Assert-MockCalled -CommandName Add-FslDriveLetter -Times 0
         }
     }
-    Context -Name 'Add-FslDriveletter'{
+    Context -Name 'Assign'{
         Mock -CommandName Add-FslDriveletter -MockWith {
             Throw 'Letter'
         }
