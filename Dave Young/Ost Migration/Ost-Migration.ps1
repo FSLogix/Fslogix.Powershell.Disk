@@ -113,7 +113,11 @@ foreach ($User in $AdGroup_Members) {
     }
 
     Write-Verbose "Obtaining OST File."
-    $User_OldOst = $Old_OST_Location -replace "%Username%", $SamAccountName
+    if($Old_OST_Location.ToLower().Contains("%username%")){
+        $User_OldOst = $Old_OST_Location -replace "%Username%", $SamAccountName
+    }else{
+        $User_OldOst = Join-Path ($Old_OST_Location) ($SamAccountName)
+    }
     if(-not(test-path -path $User_OldOst)){
         Write-Warning "Invalid old ost path: $User_Oldost"
         Write-Warning "Error Code: $(GetLineNumber)"
