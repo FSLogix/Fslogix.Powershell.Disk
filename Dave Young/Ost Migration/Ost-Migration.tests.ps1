@@ -33,10 +33,13 @@ Describe $sut{
         mock -CommandName Test-path -MockWith {
             $True
         }
+        Mock -CommandName Confirm-FslProfile -MockWith{
+            $true
+        }
     }
     Context -name "test"{
         it 'test'{
-            {. "$here\$sut"} | should not throw
+            {. "C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\Dave Young\Ost Migration\Test.ps1"} | should not throw
         }
     }
 }
