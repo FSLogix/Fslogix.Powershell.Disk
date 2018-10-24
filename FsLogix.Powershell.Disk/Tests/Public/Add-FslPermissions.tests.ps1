@@ -31,7 +31,7 @@ Describe $sut{
     <#
         HOW TO MOCK ACL OBJECT??????????????
         ahhhhh
-    #>
+    
     Context -name "Mock AdUser"{
         $Error.Clear()
         it 'No errors'{
@@ -41,16 +41,19 @@ Describe $sut{
         it 'Assert mock called'{
             Assert-MockCalled -CommandName Get-Aduser -Times 1
         }
+        it 'further tests'{
+
+        }
     }
     Context -name "input"{
         it 'Accepts Pipeline file'{
             {$File | Add-FslPermissions -user "Daniel"} | should not throw
         }
-        it 'Accepts pipeline folder'{
-            {$Folder | Add-FslPermissions -user "Daniel"} | should not throw
-        }
         it 'Positional'{
             {Add-FslPermissions "Daniel" $file} | should not throw
         }
-    }
+        it 'pipeline by property'{
+
+        }
+    }#>
 }
