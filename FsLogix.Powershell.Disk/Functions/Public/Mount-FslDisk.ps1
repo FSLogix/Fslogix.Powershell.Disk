@@ -62,7 +62,7 @@ function Mount-FslDisk {
       
         if (($null -eq $DriveLetter) -or ($driveLetter -like "*\\?\Volume{*")) {
             
-            Write-Verbose "$(Get-Date): Did not receive valid driveletter: $Driveletter. Assigning temporary junction point."
+            Write-Verbose "$(Get-Date): Did not receive valid driveletter: [$Driveletter]. Assigning temporary junction point."
             $Guid = (New-Guid).Guid
             $JunctionPath = Join-path ($GuidPath) ($Guid)
 
