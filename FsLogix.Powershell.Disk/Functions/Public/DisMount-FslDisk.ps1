@@ -50,6 +50,11 @@ function Dismount-FslDisk {
                     Write-Error "Could not find disk with number: $DiskNumber" -ErrorAction Stop
                 }
                 $Path = $disk.Location
+                Try{
+                    Get-FslDisk -path $Path -ErrorAction Stop | out-null
+                }catch{
+                    Write-Error "DiskNumber: $DiskNumber is not a valid VHD."
+                }
                 $Partition = Get-Partition -DiskNumber $DiskNumber -PartitionNumber $PartitionNumber
             }
         }

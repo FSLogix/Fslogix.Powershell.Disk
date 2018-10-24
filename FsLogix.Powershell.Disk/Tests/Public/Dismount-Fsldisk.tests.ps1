@@ -5,8 +5,8 @@ $here = $here -replace 'Tests', 'Functions'
 
 Describe $sut {
 
-    $Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
-    $DiskNumber = 1
+    $Script:Path = "C:\Users\danie\Documents\VHDModuleProject\ODFCtest3\yeahright.vhd"
+    $Script:DiskNumber = 1
 
     BeforeAll {
         Mock -CommandName Get-Disk -MockWith {}
@@ -14,6 +14,30 @@ Describe $sut {
         mock -CommandName Remove-PartitionAccessPath -MockWith {}
         mock -CommandName Remove-Item -MockWith {}
         mock -CommandName Dismount-diskimage -MockWith {}
+        mock -CommandName Get-FslDisk -MockWith {}
+    }
+    Context -Name 'Get-FslDisk'{
+        $Error.Clear()
+        Mock -CommandName Get-Fsldisk -MockWith {
+            Throw 'Disk'
+        }
+        Mock -CommandName Get-Disk -MockWith {
+            [PSCustomObject]@{
+                Location = $Script:Path
+            }
+        }
+        it 'Should throw'{
+            {Dismount-FslDisk -DiskNumber $Script:DiskNumber -ErrorAction Stop} | should throw
+        }
+        it 'Assert error was called'{
+            $Error.count | should be 2
+        }
+        it 'Mock should be called'{
+            Assert-MockCalled -CommandName Get-fsldisk -Times 1
+        }
+        it 'Assert script stopped'{
+            Assert-MockCalled -CommandName Get-Partition -Times 0
+        }
     }
     Context -Name "Throws" {
         it 'invalid path' {
