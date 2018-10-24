@@ -111,7 +111,6 @@ function Add-FslPermissions {
                     Write-Error $Error[0]
                 }
                 
-                
             }#folder
         }#switch
     }#process
