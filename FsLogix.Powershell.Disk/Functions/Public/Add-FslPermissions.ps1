@@ -67,7 +67,7 @@ function Add-FslPermissions {
                 else {
                     $File_isFile = Get-item -path $file
                     if ($File_isFile.Attributes -ne "Archive") {
-                        Write-Error "$($File_isFile.BaseName) is not a file."
+                        Write-Error "$($File_isFile.BaseName) is not a file." -ErrorAction Stop
                     }
                 }
 
