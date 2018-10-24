@@ -103,6 +103,18 @@ foreach ($User in $AdGroup_Members) {
         exit
     }
 
+    Write-Verbose "Validating FsLogix's outlook container."
+    $FslPath = $FsLogix_VHDLocation.TrimEnd('\%username%')
+    if($FlipFlop){
+        $IsFslProfile = Confirm-FslProfile -Path $FslPath -SamAccountName $SamAccountName -SID $SID -FlipFlop
+    }else{
+        $IsFslProfile = Confirm-FslProfile -Path $FslPath -SamAccountName $SamAccountName -SID $SID
+    }
+    if($IsFslProfile){
+        Write-Verbose "Validated FsLogix outlook containers."
+    }else{
+        Write-Error $Error "Could not validate FsLogix outlook containers."
+    }
     Write-Verbose "Applying security permissions for $Name."
     Try{
         Add-FslPermissions -User $Name -folder $Directory
