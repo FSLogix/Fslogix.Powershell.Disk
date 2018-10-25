@@ -21,7 +21,7 @@ Function Get-DiskInformation{
     $BaseName   = $VHD_Item.BaseName
     $SizeGb     = $VHD.Size / 1gb
     $SizeMb     = $VHD.Size / 1mb
-    #$FreeSpace  = [Math]::Round((($VHD.Size - $VHD.FileSize) / 1gb) , 2)
+    $FreeSpace  = [Math]::Round((($VHD.Size - $VHD.FileSize) / 1gb) , 2)
     
     $VHD | Add-Member @{ ComputerName   = $Env:COMPUTERNAME}
     $VHD | Add-Member @{ Name           = $Name}
@@ -30,7 +30,7 @@ Function Get-DiskInformation{
     $VHD | Add-Member @{ Extension      = $Extension}
     $VHD | Add-Member @{ SizeGb         = $SizeGb}
     $VHD | Add-Member @{ SizeMb         = $SizeMb}
-    #$VHD | Add-Member @{ FreeSpace      = $FreeSpace}
+    $VHD | Add-Member @{ FreeSpaceGB      = $FreeSpace}
 
     Write-Output $VHD
 }
