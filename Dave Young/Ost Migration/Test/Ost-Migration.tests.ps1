@@ -39,7 +39,7 @@ Describe $sut{
     }
     Context -name "test"{
         it 'test'{
-            {. "C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\Dave Young\Ost Migration\Test.ps1"} | should not throw
+            {. "C:\Users\danie\Documents\Scripts\Disk\Fslogix.Powershell.Disk\Dave Young\Ost Migration\Test\Test.ps1"} | should not throw
         }
     }
 }

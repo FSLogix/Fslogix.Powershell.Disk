@@ -1,19 +1,24 @@
 function Export-PathPing {
     [CmdletBinding()]
     param (
-        [Parameter(Position = 0)]
+        [Parameter(Position = 0,
+            ValueFromPipelineByPropertyName = $true)]
         [System.String]$log = "$env:TEMP\PathPing.log",
 
-        [Parameter(Position = 1)]
+        [Parameter(Position = 1,
+            ValueFromPipelineByPropertyName = $true)]
         [System.String]$Logging = "$env:TEMP\Logging.log",
 
-        [Parameter(Position = 2, Mandatory = $true)]
+        [Parameter(Position = 2, 
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
         [System.String]$Location,
 
-        [Parameter(Position = 3, Mandatory = $true)]
+        [Parameter(Position = 3, 
+            Mandatory = $true,
+            ValueFromPipelineByPropertyName = $true)]
         [int]$Seconds,
 
-        [Parameter(Position = 4)]
         [Switch]$append
     )
 
@@ -191,7 +196,7 @@ function Export-PathPing {
 
     process {
         # Start Logging
-        if (!$append) {
+        if ($PSBoundParameters.ContainsKey("Append")) {
             Write-Log -StartNew -Path $Logging
         }
 
