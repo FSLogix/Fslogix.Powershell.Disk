@@ -19,7 +19,9 @@ function Copy-FslToDisk {
         [System.String]$Destination,
 
         [Parameter (Position = 3)]
-        [Switch]$Dismount
+        [Switch]$Dismount,
+
+        [Switch]$CheckSpace
     )
     
     begin {
@@ -44,13 +46,14 @@ function Copy-FslToDisk {
             New-Item -ItemType Directory $Copy_Destination -Force -ErrorAction SilentlyContinue | Out-Null
         }
 
-
-        $Partition = Get-Partition -disknumber $Disk_Number -PartitionNumber $PartitionNumber
-        $FreeSpace = get-volume -Partition $Partition | select-object -expandproperty SizeRemaining
-        $Size = Get-FslSize -path $Path
-        if($Size -ge $FreeSpace){
-            Write-Warning "Contents: $([Math]::round($Size/1mb,2)) MB. Disk free space is: $([Math]::round($Freespace/1mb,2)) MB."
-            Write-Error "Disk is too small to copy contents over." -ErrorAction Stop
+        if($PSBoundParameters.ContainsKey("CheckSpace")){
+            $Partition = Get-Partition -disknumber $Disk_Number -PartitionNumber $PartitionNumber
+            $FreeSpace = get-volume -Partition $Partition | select-object -expandproperty SizeRemaining
+            $Size = Get-FslSize -path $Path
+            if($Size -ge $FreeSpace){
+                Write-Warning "Contents: $([Math]::round($Size/1mb,2)) MB. Disk free space is: $([Math]::round($Freespace/1mb,2)) MB."
+                Write-Error "Disk is too small to copy contents over." -ErrorAction Stop
+            }
         }
         
         

@@ -44,7 +44,7 @@ Describe $sut{
     Context -name 'Input'{
         $Error.Clear()
         it 'Accepts normal input'{
-            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination} | should not throw
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination -CheckSpace} | should not throw
         }
         it 'Accepts positional input'{
             {Copy-FslToDisk $VHD $Path $Destination} | should not throw
@@ -88,7 +88,7 @@ Describe $sut{
             1000000
         }
         it 'Size is greater than available'{
-            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination } | should throw
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination -CheckSpace} | should throw
         }
         it 'Assert mocks called'{
             Assert-MockCalled -CommandName Get-partition -times 1
@@ -163,6 +163,9 @@ Describe $sut{
         }
         it "Dismount switch"{
             {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination -dismount } | should not throw
+        }
+        it 'checkspace switch'{
+            {Copy-FslToDisk -VHD $VHD -Path $Path -Destination $Destination -checkspace} | should not throw
         }
         it "Assert Mocks"{
             Assert-MockCalled -CommandName Mount-FslDisk -Times 1
