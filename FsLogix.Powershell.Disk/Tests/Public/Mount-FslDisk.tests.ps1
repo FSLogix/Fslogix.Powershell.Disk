@@ -197,4 +197,18 @@ Describe $sut{
         }
 
     }
+    Context -name "AsString"{
+        it 'Does not throw'{
+            {Mount-FslDisk $path -PassThru -AsString} | should not Throw
+        }
+        it 'is not null or empty'{
+            $Output = Mount-FslDisk $path -PassThru -AsString
+            $Output | should -Not -BeNullOrEmpty
+        }
+        it 'Confirm output values'{
+            $Output = Mount-FslDisk $path -PassThru -AsString
+            $Output.DiskNumber + 1 | should be 11
+            $Output.PartitionNumber + 1 | should be 11
+        }
+    }
 }

@@ -16,7 +16,9 @@ function Mount-FslDisk {
         [int]$PartitionNumber,
         
         [Parameter( Position = 2 )]
-        [Switch]$PassThru
+        [Switch]$PassThru,
+
+        [Switch]$AsString
 
     )
     begin {
@@ -103,7 +105,14 @@ function Mount-FslDisk {
             Write-Verbose "$(Get-Date): $Name mounted on Drive junction point [$DriveLetter]."
         }
 
-        if ($PassThru) {
+        if ($PSBoundParameters.ContainsKey("Passthru")) {
+            
+            if($PSBoundParameters.ContainsKey("AsString")){
+                [System.String]$DiskNumber = $DiskNumber
+                [System.String]$DriveLetter = $DriveLetter
+                [System.String]$PartitionNumber = $PartitionNumber
+            }
+
             $Output = [PSCustomObject]@{
                 DiskNumber      = $DiskNumber
                 Path            = $DriveLetter
