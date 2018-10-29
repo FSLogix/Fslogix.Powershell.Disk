@@ -59,6 +59,8 @@ function Add-FslPermissions {
             $Permission = "Allow"
         }
 
+        $PermissionType = $PermissionType | Get-Unique
+
         Switch ($PSCmdlet.ParameterSetName) {
             File {
                 if (-not(test-path -path $file)) {
